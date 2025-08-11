@@ -2,7 +2,7 @@ class AppStrings {
   static const appName = 'Oftal Web';
   static const pageNotFound = '404 - Página no encontrada';
   //login view
-  static const loginTitle = 'Iniciar sesión';
+  static const begin = 'Comencemos...';
   static const email = 'Email';
   static const password = 'Contraseña';
   static const loginButton = 'Iniciar sesión';

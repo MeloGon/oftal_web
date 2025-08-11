@@ -26,6 +26,10 @@ class LoginView extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 20,
               children: [
+                Text(
+                  AppStrings.begin,
+                  style: ShadTheme.of(context).textTheme.h1,
+                ),
                 ShadInputFormField(
                   label: Text(AppStrings.email),
                   placeholder: Text(AppStrings.emailExample),

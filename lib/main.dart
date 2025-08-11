@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:oftal_web/core/constants/app_strings.dart';
+import 'package:oftal_web/features/login/pages/login_view.dart';
 import 'package:oftal_web/router/app_router.dart';
 import 'package:oftal_web/shared/layouts/layouts.dart';
 import 'package:oftal_web/shared/providers/providers.dart';
@@ -33,26 +34,17 @@ class MainApp extends ConsumerWidget {
       onGenerateRoute: Flurorouter.router.generator,
       builder: (_, child) {
         final authState = ref.watch(authProvider);
-        print(authState.status);
 
-        return AuthLayout(child: child!);
+        if (authState.status == AuthStatus.checking) {
+          return const LoginView();
+        }
 
-        // if (authState.status == AuthStatus.checking) {
-        //   return const LoginView();
-        // }
-
-        // if (authState.status == AuthStatus.authenticated) {
-        //   return const LoginView();
-        // } else {
-        //   return AuthLayout(child: child!);
-        // }
+        if (authState.status == AuthStatus.authenticated) {
+          return const LoginView();
+        } else {
+          return AuthLayout(child: child!);
+        }
       },
-
-      // theme: ThemeData.light().copyWith(
-      //   scrollbarTheme: ScrollbarThemeData().copyWith(
-      //     thumbColor: MaterialStateProperty.all(Colors.grey.withOpacity(0.5)),
-      //   ),
-      // ),
     );
   }
 }

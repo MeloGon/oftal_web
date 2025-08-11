@@ -35,12 +35,10 @@ class _MobileBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 1000,
-      color: Colors.black,
+      color: Colors.white,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          SizedBox(height: 20),
-          // CustomTitle(),
           SizedBox(
             width: double.infinity,
             height: 420,
@@ -50,7 +48,7 @@ class _MobileBody extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             height: 400,
-            // child: BackgroundTwitter(),
+            child: BackgroundOpticalLenses(),
           ),
         ],
       ),
@@ -69,7 +67,7 @@ class _DesktopBody extends StatelessWidget {
 
     return Container(
       width: size.width,
-      height: size.height * 0.95,
+      height: size.height,
       color: Colors.black,
       child: Row(
         children: [
