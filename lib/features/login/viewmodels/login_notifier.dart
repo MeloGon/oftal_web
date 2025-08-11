@@ -25,4 +25,8 @@ class LoginNotifier extends StateNotifier<LoginState> {
       print('form is invalid');
     }
   }
+
+  void togglePasswordVisibility() {
+    state = state.copyWith(isPasswordVisible: !state.isPasswordVisible);
+  }
 }

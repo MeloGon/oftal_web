@@ -6,12 +6,14 @@ class LoginState {
   final String errorMessage;
   final bool isFormValid;
   final GlobalKey<ShadFormState>? formKey;
+  final bool isPasswordVisible;
 
   LoginState({
     this.isLoading = false,
     this.errorMessage = '',
     this.isFormValid = false,
     this.formKey,
+    this.isPasswordVisible = true,
   });
 
   LoginState copyWith({
@@ -19,12 +21,14 @@ class LoginState {
     String? errorMessage,
     bool? isFormValid,
     GlobalKey<ShadFormState>? formKey,
+    bool? isPasswordVisible,
   }) {
     return LoginState(
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage ?? this.errorMessage,
       isFormValid: isFormValid ?? this.isFormValid,
       formKey: formKey ?? this.formKey,
+      isPasswordVisible: isPasswordVisible ?? this.isPasswordVisible,
     );
   }
 }

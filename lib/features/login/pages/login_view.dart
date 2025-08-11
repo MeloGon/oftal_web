@@ -10,8 +10,8 @@ class LoginView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final formKeyShadForm = ref.watch(loginProvider).formKey;
     final loginNotifier = ref.watch(loginProvider.notifier);
+    final loginProviderState = ref.watch(loginProvider);
 
     return Container(
       margin: EdgeInsets.only(top: 100),
@@ -20,7 +20,7 @@ class LoginView extends ConsumerWidget {
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: 370),
           child: ShadForm(
-            key: formKeyShadForm,
+            key: loginProviderState.formKey,
             autovalidateMode: ShadAutovalidateMode.onUserInteraction,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,6 +34,7 @@ class LoginView extends ConsumerWidget {
                   label: Text(AppStrings.email),
                   placeholder: Text(AppStrings.emailExample),
                   controller: loginNotifier.emailController,
+                  keyboardType: TextInputType.emailAddress,
                   onSubmitted: (_) => loginNotifier.onFormSubmit(),
                   validator: (value) {
                     if (!EmailValidator.validate(value)) {
@@ -43,6 +44,20 @@ class LoginView extends ConsumerWidget {
                   },
                 ),
                 ShadInputFormField(
+                  obscureText: loginProviderState.isPasswordVisible,
+                  trailing: ShadButton(
+                    width: 24,
+                    height: 24,
+                    padding: EdgeInsets.zero,
+                    child: Icon(
+                      loginProviderState.isPasswordVisible
+                          ? LucideIcons.eyeOff
+                          : LucideIcons.eye,
+                    ),
+                    onPressed: () {
+                      loginNotifier.togglePasswordVisibility();
+                    },
+                  ),
                   label: Text(AppStrings.password),
                   placeholder: Text(AppStrings.passwordExample),
                   controller: loginNotifier.passwordController,
