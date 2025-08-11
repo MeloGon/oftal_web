@@ -44,7 +44,6 @@ class _MobileBody extends StatelessWidget {
             height: 420,
             child: child,
           ),
-
           SizedBox(
             width: double.infinity,
             height: 400,
@@ -71,19 +70,13 @@ class _DesktopBody extends StatelessWidget {
       color: Colors.black,
       child: Row(
         children: [
-          // Twitter Background
           Expanded(child: BackgroundOpticalLenses()),
-
-          // View Container
           Container(
             width: 600,
             height: double.infinity,
             color: Colors.white,
             child: Column(
               children: [
-                SizedBox(height: 20),
-                // CustomTitle(),
-                SizedBox(height: 50),
                 Expanded(child: child),
               ],
             ),
