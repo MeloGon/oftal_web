@@ -2,8 +2,8 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:oftal_web/features/login/pages/login_view.dart';
-import 'package:oftal_web/shared/providers/auth/auth_provider.dart';
-import 'package:oftal_web/shared/providers/auth/auth_state.dart';
+import 'package:oftal_web/shared/providers/auth_general/auth_provider.dart';
+import 'package:oftal_web/shared/providers/auth_general/auth_state.dart';
 
 class AdminHandlers {
   static Handler login = Handler(

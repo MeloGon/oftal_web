@@ -24,7 +24,7 @@ class MainApp extends ConsumerWidget {
         brightness: Brightness.light,
         colorScheme: const ShadZincColorScheme.light(),
         textTheme: ShadTextTheme.fromGoogleFont(
-          GoogleFonts.poppins,
+          GoogleFonts.montserrat,
         ),
       ),
       debugShowCheckedModeBanner: false,
@@ -42,7 +42,8 @@ class MainApp extends ConsumerWidget {
         if (authState.status == AuthStatus.authenticated) {
           return const LoginView();
         } else {
-          return AuthLayout(child: child!);
+          // return AuthLayout(child: child!);
+          return DashboardLayout(child: child!);
         }
       },
     );
