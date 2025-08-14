@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:oftal_web/core/constants/app_strings.dart';
-import 'package:oftal_web/features/login/pages/login_view.dart';
+import 'package:oftal_web/features/login/views/login_view.dart';
 import 'package:oftal_web/router/app_router.dart';
 import 'package:oftal_web/shared/layouts/layouts.dart';
 import 'package:oftal_web/shared/providers/providers.dart';
@@ -14,11 +14,36 @@ void main() {
   runApp(const ProviderScope(child: MainApp()));
 }
 
-class MainApp extends ConsumerWidget {
+class MainApp extends ConsumerStatefulWidget {
   const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends ConsumerState<MainApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Sincronizar el estado de autenticación después de que se construya el widget
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncAuthStatus();
+    });
+  }
+
+  void _syncAuthStatus() {
+    final authState = ref.read(authProvider);
+    final navigationNotifier = ref.read(navigationProvider.notifier);
+
+    if (authState.status == AuthStatus.authenticated) {
+      navigationNotifier.setAuthenticationStatus(true);
+    } else {
+      navigationNotifier.setAuthenticationStatus(false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return ShadApp(
       theme: ShadThemeData(
         brightness: Brightness.light,
@@ -40,10 +65,9 @@ class MainApp extends ConsumerWidget {
         }
 
         if (authState.status == AuthStatus.authenticated) {
-          return const LoginView();
+          return DashboardLayout(child: child ?? const SizedBox());
         } else {
-          // return AuthLayout(child: child!);
-          return DashboardLayout(child: child!);
+          return AuthLayout(child: child ?? const LoginView());
         }
       },
     );

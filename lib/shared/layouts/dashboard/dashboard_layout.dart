@@ -1,29 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/shared/providers/providers.dart';
+import 'package:oftal_web/shared/providers/navigation/navigation_provider.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
 
-class DashboardLayout extends ConsumerStatefulWidget {
+class DashboardLayout extends ConsumerWidget {
   final Widget child;
   const DashboardLayout({super.key, required this.child});
 
   @override
-  ConsumerState<DashboardLayout> createState() => _DashboardLayoutState();
-}
-
-class _DashboardLayoutState extends ConsumerState<DashboardLayout>
-    with SingleTickerProviderStateMixin {
-  @override
-  void initState() {
-    super.initState();
-    ref.read(sideMenuProvider(this).notifier);
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
-    final state = ref.watch(sideMenuProvider(this));
-    final menu = ref.read(sideMenuProvider(this).notifier);
+    final navigationState = ref.watch(navigationProvider);
+    final navigationNotifier = ref.read(navigationProvider.notifier);
 
     return Scaffold(
       backgroundColor: const Color(0xffEDF1F2),
@@ -35,8 +24,8 @@ class _DashboardLayoutState extends ConsumerState<DashboardLayout>
               Expanded(
                 child: Column(
                   children: [
-                    Navbar(onMenuTap: menu.openMenu),
-                    Expanded(child: widget.child),
+                    Navbar(onMenuTap: navigationNotifier.openMenu),
+                    Expanded(child: child),
                   ],
                 ),
               ),
@@ -44,29 +33,31 @@ class _DashboardLayoutState extends ConsumerState<DashboardLayout>
           ),
 
           if (size.width < 700)
-            AnimatedBuilder(
-              animation: menu.controller,
-              builder:
-                  (context, _) => Stack(
-                    children: [
-                      if (state.isOpen)
-                        Opacity(
-                          opacity: menu.opacity.value,
-                          child: GestureDetector(
-                            onTap: menu.closeMenu,
-                            child: Container(
-                              width: size.width,
-                              height: size.height,
-                              color: Colors.black26,
-                            ),
-                          ),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+              transform: Matrix4.translationValues(
+                navigationState.isMenuOpen ? 0 : -200,
+                0,
+                0,
+              ),
+              child: Stack(
+                children: [
+                  if (navigationState.isMenuOpen)
+                    Opacity(
+                      opacity: navigationState.isMenuOpen ? 1.0 : 0.0,
+                      child: GestureDetector(
+                        onTap: navigationNotifier.closeMenu,
+                        child: Container(
+                          width: size.width,
+                          height: size.height,
+                          color: Colors.black26,
                         ),
-                      Transform.translate(
-                        offset: Offset(menu.movement.value, 0),
-                        child: Sidebar(),
                       ),
-                    ],
-                  ),
+                    ),
+                  Sidebar(),
+                ],
+              ),
             ),
         ],
       ),
