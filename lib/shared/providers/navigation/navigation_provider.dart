@@ -1,22 +1,28 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:oftal_web/shared/providers/navigation/navigation_notifier.dart';
 import 'package:oftal_web/shared/providers/navigation/navigation_state.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-// Provider principal para la navegación
-final navigationProvider =
-    StateNotifierProvider<NavigationNotifier, NavigationState>(
-      (ref) => NavigationNotifier(),
-    );
+part 'navigation_provider.g.dart';
 
-// Providers específicos para acceder fácilmente a partes del estado
-final currentPageProvider = Provider<String>((ref) {
-  return ref.watch(navigationProvider).currentPage;
-});
+@riverpod
+class Navigation extends _$Navigation {
+  @override
+  NavigationState build() {
+    return NavigationState();
+  }
 
-final isMenuOpenProvider = Provider<bool>((ref) {
-  return ref.watch(navigationProvider).isMenuOpen;
-});
+  void openMenu() {
+    state = state.copyWith(isMenuOpen: true);
+  }
 
-final isAuthenticatedProvider = Provider<bool>((ref) {
-  return ref.watch(navigationProvider).isAuthenticated;
-});
+  void closeMenu() {
+    state = state.copyWith(isMenuOpen: false);
+  }
+
+  void toggleMenu() {
+    state.isMenuOpen ? closeMenu() : openMenu();
+  }
+
+  void setCurrentPage(String page) {
+    state = state.copyWith(currentPage: page);
+  }
+}

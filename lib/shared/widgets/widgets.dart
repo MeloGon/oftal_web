@@ -3,3 +3,4 @@ export 'menu_item.dart';
 export 'sidebar.dart';
 export 'text_separator.dart';
 export 'navbar.dart';
+export 'logo.dart';

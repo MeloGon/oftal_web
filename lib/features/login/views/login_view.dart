@@ -10,8 +10,8 @@ class LoginView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loginState = ref.watch(loginProvider);
     final loginNotifier = ref.watch(loginProvider.notifier);
-    final loginProviderState = ref.watch(loginProvider);
 
     return Container(
       margin: EdgeInsets.only(top: 100),
@@ -20,7 +20,7 @@ class LoginView extends ConsumerWidget {
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: 370),
           child: ShadForm(
-            key: loginProviderState.formKey,
+            key: loginState.formKey,
             autovalidateMode: ShadAutovalidateMode.onUserInteraction,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,13 +44,13 @@ class LoginView extends ConsumerWidget {
                   },
                 ),
                 ShadInputFormField(
-                  obscureText: loginProviderState.isPasswordVisible,
+                  obscureText: loginState.isPasswordVisible,
                   trailing: ShadButton(
                     width: 24,
                     height: 24,
                     padding: EdgeInsets.zero,
                     child: Icon(
-                      loginProviderState.isPasswordVisible
+                      loginState.isPasswordVisible
                           ? LucideIcons.eyeOff
                           : LucideIcons.eye,
                     ),

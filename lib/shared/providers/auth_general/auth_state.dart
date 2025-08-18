@@ -10,7 +10,7 @@ class AuthState {
 
   AuthState({
     this.token,
-    this.status = AuthStatus.notAuthenticated,
+    this.status = AuthStatus.checking,
   });
 
   AuthState copyWith({
