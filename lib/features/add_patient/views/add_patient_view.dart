@@ -7,61 +7,98 @@ class AddPatientView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final genderOptions = {
+      'Masculino': 'Masculino',
+      'Femenino': 'Femenino',
+      'Otro': 'Otro',
+    };
     return Container(
-      margin: EdgeInsets.only(top: 100),
+      margin: EdgeInsets.only(top: 50),
       padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 370),
-          child: ShadForm(
-            autovalidateMode: ShadAutovalidateMode.onUserInteraction,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: ShadCard(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Wrap(
               spacing: 20,
+              runSpacing: 20,
               children: [
-                Text(
-                  'Nuevo paciente',
-                  style: ShadTheme.of(context).textTheme.h1,
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 200),
+                  child: ShadInputFormField(
+                    label: Text('Identificación'),
+                  ),
                 ),
-                Text(
-                  'Nuevo paciente',
-                  style: ShadTheme.of(context).textTheme.h1,
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 200),
+                  child: ShadInputFormField(
+                    readOnly: true,
+                    label: Text('ID Unico'),
+                  ),
                 ),
-                Text(
-                  'Nuevo paciente',
-                  style: ShadTheme.of(context).textTheme.h1,
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 200),
+                  child: ShadInputFormField(
+                    label: Text('Fecha de registro'),
+                  ),
                 ),
-                Text(
-                  'Nuevo paciente',
-                  style: ShadTheme.of(context).textTheme.h1,
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 200),
+                  child: ShadInputFormField(
+                    label: Text('Sucursal de registro'),
+                  ),
                 ),
-                Text(
-                  'Nuevo paciente',
-                  style: ShadTheme.of(context).textTheme.h1,
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 360),
+                  child: ShadInputFormField(
+                    label: Text('Apellidos y Nombres'),
+                  ),
                 ),
-                Text(
-                  'Nuevo paciente',
-                  style: ShadTheme.of(context).textTheme.h1,
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 200),
+                  child: ShadDatePickerFormField(
+                    height: 36,
+                    label: Text('Fecha de nacimiento'),
+                    placeholder: Text('Fecha de nacimiento'),
+                  ),
                 ),
-                Text(
-                  'Nuevo paciente',
-                  style: ShadTheme.of(context).textTheme.h1,
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 80),
+                  child: ShadInputFormField(
+                    label: Text('Edad'),
+                  ),
                 ),
-                Text(
-                  'Nuevo paciente',
-                  style: ShadTheme.of(context).textTheme.h1,
-                ),
-                Text(
-                  'Nuevo paciente',
-                  style: ShadTheme.of(context).textTheme.h1,
-                ),
-                Text(
-                  'Nuevo paciente',
-                  style: ShadTheme.of(context).textTheme.h1,
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 200),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 7.5,
+                    children: [
+                      Text('Género'),
+                      ShadSelect<String>(
+                        placeholder: Text('Género'),
+                        selectedOptionBuilder: (context, value) => Text(value),
+                        options:
+                            genderOptions.entries
+                                .map(
+                                  (e) => ShadOption(
+                                    value: e.key,
+                                    child: Text(e.value),
+                                  ),
+                                )
+                                .toList(),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 20),
+            ShadButton(
+              child: Text('Guardar'),
+              onPressed: () {},
+            ),
+          ],
         ),
       ),
     );
