@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:oftal_web/features/sell/views/sell_view.dart';
 import 'package:oftal_web/features/views.dart';
 import 'package:oftal_web/router/router_name.dart';
 import 'package:oftal_web/shared/layouts/auth/auth_layout.dart';
@@ -19,25 +20,6 @@ GoRouter appRouter(Ref ref) {
     initialLocation: RouterName.login,
     debugLogDiagnostics: false,
     redirect: (context, state) {
-      // final authState = ref.watch(authProvider);
-      // final authStatus = authState.status;
-      // final navigationState = ref.watch(navigationProvider);
-      // switch (authStatus) {
-      //   case AuthStatus.checking:
-      //     print('checking');
-      //     return '/';
-      //   case AuthStatus.authenticated:
-      //     print('authenticated');
-      //     if (navigationState.currentPage == '/dashboard/add-patient') {
-      //       return '/dashboard/add-patient';
-      //     } else {
-      //       return '/dashboard';
-      //     }
-      //   case AuthStatus.notAuthenticated:
-      //     print('not authenticated');
-      //     return '/auth/login';
-      // }
-      //--------------------------------
       final status = ref.watch(authProvider).status;
       final loc = state.matchedLocation;
 
@@ -63,7 +45,7 @@ GoRouter appRouter(Ref ref) {
       debugPrint('error: ${state.error}');
       return const NoPageFoundView();
     },
-    //errorPageBuilder: (context, state) => _fadeRoute(const NoPageFoundView()),
+
     routes: [
       ShellRoute(
         builder: (context, state, child) => const SplashLayout(),
@@ -112,6 +94,19 @@ GoRouter appRouter(Ref ref) {
                     .read(navigationProvider.notifier)
                     .setCurrentPage(RouterName.settings);
                 return RouterName.settings;
+              }
+              return null;
+            },
+          ),
+          GoRoute(
+            path: RouterName.sell,
+            pageBuilder: (context, state) => _fadeRoute(const SellView()),
+            redirect: (context, state) {
+              if (state.matchedLocation == RouterName.sell) {
+                ref
+                    .read(navigationProvider.notifier)
+                    .setCurrentPage(RouterName.sell);
+                return RouterName.sell;
               }
               return null;
             },

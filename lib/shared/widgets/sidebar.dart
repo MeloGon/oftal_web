@@ -30,6 +30,14 @@ class Sidebar extends ConsumerWidget {
             isActive: navigationState.currentPage == RouterName.addPatient,
           ),
           MenuItem(
+            text: 'Vender',
+            icon: Icons.sell_outlined,
+            onPressed: () {
+              ref.read(appRouterProvider).go(RouterName.sell);
+            },
+            isActive: navigationState.currentPage == RouterName.sell,
+          ),
+          MenuItem(
             text: 'Configuración',
             icon: Icons.settings_outlined,
             onPressed: () {
