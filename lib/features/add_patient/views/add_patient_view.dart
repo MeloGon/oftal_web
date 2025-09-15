@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/constants/constants.dart';
+import 'package:oftal_web/features/add_patient/viewmodels/add_patient_provider.dart';
+import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class AddPatientView extends ConsumerWidget {
@@ -7,15 +10,17 @@ class AddPatientView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final addPatientNotifier = ref.watch(addPatientProvider.notifier);
     final genderOptions = {
       'Masculino': 'Masculino',
       'Femenino': 'Femenino',
       'Otro': 'Otro',
     };
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxWidth: MediaQuery.sizeOf(context).width * .8,
-      ),
+    final branchOptions = {
+      'OFTALVISION': 'OFTALVISION',
+      'MEDILENT': 'MEDILENT',
+    };
+    return SizedBox(
       child: ShadCard(
         child: ListView(
           shrinkWrap: true,
@@ -27,46 +32,23 @@ class AddPatientView extends ConsumerWidget {
                 ConstrainedBox(
                   constraints: BoxConstraints(maxWidth: 200),
                   child: ShadInputFormField(
-                    label: Text('Identificación'),
+                    label: Text(AppStrings.identification),
                   ),
                 ),
                 ConstrainedBox(
                   constraints: BoxConstraints(maxWidth: 200),
                   child: ShadInputFormField(
                     readOnly: true,
-                    label: Text('ID Unico'),
+                    label: Text(AppStrings.uniqueId),
+                    controller: addPatientNotifier.uniqueIdController,
                   ),
                 ),
                 ConstrainedBox(
                   constraints: BoxConstraints(maxWidth: 200),
                   child: ShadInputFormField(
-                    label: Text('Fecha de registro'),
-                  ),
-                ),
-                ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 200),
-                  child: ShadInputFormField(
-                    label: Text('Sucursal de registro'),
-                  ),
-                ),
-                ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 360),
-                  child: ShadInputFormField(
-                    label: Text('Apellidos y Nombres'),
-                  ),
-                ),
-                ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 200),
-                  child: ShadDatePickerFormField(
-                    height: 36,
-                    label: Text('Fecha de nacimiento'),
-                    placeholder: Text('Fecha de nacimiento'),
-                  ),
-                ),
-                ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 80),
-                  child: ShadInputFormField(
-                    label: Text('Edad'),
+                    label: Text(AppStrings.registerDate),
+                    controller: addPatientNotifier.registerDateController,
+                    readOnly: true,
                   ),
                 ),
                 ConstrainedBox(
@@ -75,9 +57,52 @@ class AddPatientView extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     spacing: 7.5,
                     children: [
-                      Text('Género'),
+                      Text(AppStrings.registrationBranch),
                       ShadSelect<String>(
-                        placeholder: Text('Género'),
+                        placeholder: Text(AppStrings.select),
+                        selectedOptionBuilder: (context, value) => Text(value),
+                        options:
+                            branchOptions.entries
+                                .map(
+                                  (e) => ShadOption(
+                                    value: e.key,
+                                    child: Text(e.value),
+                                  ),
+                                )
+                                .toList(),
+                      ),
+                    ],
+                  ),
+                ),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 360),
+                  child: ShadInputFormField(
+                    label: Text(AppStrings.fullName),
+                  ),
+                ),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 200),
+                  child: ShadDatePickerFormField(
+                    height: 36,
+                    label: Text(AppStrings.birthDate),
+                    placeholder: Text(AppStrings.birthDate),
+                  ),
+                ),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 80),
+                  child: ShadInputFormField(
+                    label: Text(AppStrings.age),
+                  ),
+                ),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 200),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 7.5,
+                    children: [
+                      Text(AppStrings.gender),
+                      ShadSelect<String>(
+                        placeholder: Text(AppStrings.select),
                         selectedOptionBuilder: (context, value) => Text(value),
                         options:
                             genderOptions.entries
@@ -96,12 +121,12 @@ class AddPatientView extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
             ShadButton(
-              child: Text('Guardar'),
+              child: Text(AppStrings.save),
               onPressed: () {},
             ),
           ],
         ),
       ),
-    );
+    ).marginOnly(top: 50).paddingSymmetric(horizontal: 20);
   }
 }

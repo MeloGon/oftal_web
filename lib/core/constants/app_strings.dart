@@ -15,4 +15,16 @@ class AppStrings {
   static const emailInvalid = 'El email no es válido';
   //sell view
   static const search = 'Buscar';
+  //add patient view
+  static const addPatient = 'Agregar paciente';
+  static const identification = 'Identificación';
+  static const uniqueId = 'ID Unico';
+  static const registerDate = 'Fecha de registro';
+  static const registrationBranch = 'Sucursal de registro';
+  static const fullName = 'Apellidos y Nombres';
+  static const birthDate = 'Fecha de nacimiento';
+  static const age = 'Edad';
+  static const gender = 'Género';
+  static const select = '-- Seleccione --';
+  static const save = 'Guardar';
 }
