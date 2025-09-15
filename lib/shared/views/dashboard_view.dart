@@ -12,6 +12,7 @@ class DashboardView extends ConsumerWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: ListView(
+        shrinkWrap: true,
         physics: ClampingScrollPhysics(),
         children: [
           Text('Dashboard'),
