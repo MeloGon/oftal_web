@@ -12,9 +12,10 @@ class AddPatientView extends ConsumerWidget {
       'Femenino': 'Femenino',
       'Otro': 'Otro',
     };
-    return Container(
-      margin: EdgeInsets.only(top: 50),
-      padding: EdgeInsets.symmetric(horizontal: 20),
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.sizeOf(context).width * .8,
+      ),
       child: ShadCard(
         child: ListView(
           shrinkWrap: true,
