@@ -13,4 +13,6 @@ class AppStrings {
   static const passwordMinLength = 'La contraseña debe de ser de 6 caracteres';
   static const emailRequired = 'El email es requerido';
   static const emailInvalid = 'El email no es válido';
+  //sell view
+  static const search = 'Buscar';
 }
