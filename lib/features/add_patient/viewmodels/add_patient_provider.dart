@@ -24,4 +24,25 @@ class AddPatient extends _$AddPatient {
     ).format(DateTime.now());
     return AddPatientState();
   }
+
+  // Métodos para manejar las selecciones
+  void updateGender(String? gender) {
+    state = state.copyWith(selectedGender: gender);
+  }
+
+  void updateBranch(String? branch) {
+    state = state.copyWith(selectedBranch: branch);
+  }
+
+  void clearForm() {
+    identificationController.clear();
+    fullNameController.clear();
+    birthDateController.clear();
+    ageController.clear();
+    state = state.copyWith(
+      selectedGender: null,
+      selectedBranch: null,
+      errorMessage: '',
+    );
+  }
 }

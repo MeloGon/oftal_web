@@ -4,3 +4,4 @@ export 'sidebar.dart';
 export 'text_separator.dart';
 export 'navbar.dart';
 export 'logo.dart';
+export 'responsive.dart';
