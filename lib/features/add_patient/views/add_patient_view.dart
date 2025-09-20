@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:oftal_web/features/add_patient/views/widgets/add_patient_desk.dart';
 import 'package:oftal_web/features/add_patient/views/widgets/add_patient_mob.dart';
 import 'package:oftal_web/features/add_patient/views/widgets/add_patient_tabl.dart';
