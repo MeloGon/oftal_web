@@ -17,6 +17,7 @@ class AppStrings {
   static const search = 'Buscar';
   //add patient view
   static const addPatient = 'Agregar paciente';
+  static const patientData = 'Datos del paciente';
   static const identification = 'Identificación';
   static const uniqueId = 'ID Unico';
   static const registerDate = 'Fecha de registro';
@@ -25,6 +26,7 @@ class AppStrings {
   static const birthDate = 'Fecha de nacimiento';
   static const age = 'Edad';
   static const gender = 'Género';
-  static const select = '-- Seleccione --';
+  static const select = '- Seleccione -';
   static const save = 'Guardar';
+  static const cancel = 'Cancelar';
 }
