@@ -12,10 +12,18 @@ class PatientModel with _$PatientModel {
   @override
   @JsonKey(name: 'NOMBRE COMPLETO', includeFromJson: true, includeToJson: true)
   final String name;
+  @override
+  @JsonKey(
+    name: 'FECHA DE REGISTRO',
+    includeFromJson: true,
+    includeToJson: true,
+  )
+  final String registerDate;
 
   PatientModel({
     required this.id,
     required this.name,
+    required this.registerDate,
   });
 
   factory PatientModel.fromJson(Map<String, Object?> json) =>

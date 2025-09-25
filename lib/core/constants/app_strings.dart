@@ -29,4 +29,5 @@ class AppStrings {
   static const select = '- Seleccione -';
   static const save = 'Guardar';
   static const cancel = 'Cancelar';
+  static const lastPatients = 'Ultimos pacientes agregados';
 }
