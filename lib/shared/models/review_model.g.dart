@@ -1,0 +1,76 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'review_model.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+ReviewModel _$ReviewModelFromJson(Map<String, dynamic> json) => ReviewModel(
+  idReview: (json['ID REFRACCION'] as num).toInt(),
+  patientName: json['PACIENTE'] as String?,
+  date: json['FECHA'] as String?,
+  reasonConsult: json['MOTIVO DE CONSULTA'] as String?,
+  clinicHistory: json['HISTORIA CLINICA'] as String?,
+  odEsf: json['OD ESF'] as String?,
+  odCil: json['OD CIL'] as String?,
+  odEje: json['OD EJE'] as String?,
+  odAv: json['OD AV'] as String?,
+  oiEsf: json['OI ESF'] as String?,
+  oiCil: json['OI CIL'] as String?,
+  oiEje: json['OI EJE'] as String?,
+  oiAv: json['OI AV'] as String?,
+  add: json['ADD'] as String?,
+  observation: json['OBSERVACIONES'] as String?,
+  dip: json['DIP'] as String?,
+  branchName: json['SUCURSAL'] as String?,
+  odCbLc: json['OD CB LC'] as String?,
+  odDiamLc: json['OD DIAM LC'] as String?,
+  oiCbLc: json['OI CB LC'] as String?,
+  oiDiamLc: json['OI DIAM LC'] as String?,
+  graduationType: json['TIPO DE GRADUACION'] as String?,
+  avSinRxOdLejos: json['AV SIN RX OD LEJOS'] as String?,
+  avSinRxOiLejos: json['AV SIN RX OI LEJOS'] as String?,
+  cvOdLejos: json['CV OD LEJOS'] as String?,
+  cvOiLejos: json['CV OI LEJOS'] as String?,
+  avSinRxOdCerca: json['AV SIN RX OD CERCA'] as String?,
+  avSinRxOiCerca: json['AV SIN RX OI CERCA'] as String?,
+  avConRxOdCerca: json['AV CON RX OD CERCA'] as String?,
+  avConRxOiCerca: json['AV CON RX OI CERCA'] as String?,
+  optometricDiagnosis: json['DIAGNOSTICO OPTOMETRICO'] as String?,
+);
+
+Map<String, dynamic> _$ReviewModelToJson(ReviewModel instance) =>
+    <String, dynamic>{
+      'ID REFRACCION': instance.idReview,
+      'PACIENTE': instance.patientName,
+      'FECHA': instance.date,
+      'MOTIVO DE CONSULTA': instance.reasonConsult,
+      'HISTORIA CLINICA': instance.clinicHistory,
+      'OD ESF': instance.odEsf,
+      'OD CIL': instance.odCil,
+      'OD EJE': instance.odEje,
+      'OD AV': instance.odAv,
+      'OI ESF': instance.oiEsf,
+      'OI CIL': instance.oiCil,
+      'OI EJE': instance.oiEje,
+      'OI AV': instance.oiAv,
+      'ADD': instance.add,
+      'OBSERVACIONES': instance.observation,
+      'DIP': instance.dip,
+      'SUCURSAL': instance.branchName,
+      'OD CB LC': instance.odCbLc,
+      'OD DIAM LC': instance.odDiamLc,
+      'OI CB LC': instance.oiCbLc,
+      'OI DIAM LC': instance.oiDiamLc,
+      'TIPO DE GRADUACION': instance.graduationType,
+      'AV SIN RX OD LEJOS': instance.avSinRxOdLejos,
+      'AV SIN RX OI LEJOS': instance.avSinRxOiLejos,
+      'CV OD LEJOS': instance.cvOdLejos,
+      'CV OI LEJOS': instance.cvOiLejos,
+      'AV SIN RX OD CERCA': instance.avSinRxOdCerca,
+      'AV SIN RX OI CERCA': instance.avSinRxOiCerca,
+      'AV CON RX OD CERCA': instance.avConRxOdCerca,
+      'AV CON RX OI CERCA': instance.avConRxOiCerca,
+      'DIAGNOSTICO OPTOMETRICO': instance.optometricDiagnosis,
+    };

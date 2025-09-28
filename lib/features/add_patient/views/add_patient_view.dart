@@ -246,7 +246,6 @@ class AddPatientView extends ConsumerWidget {
                                   icon: Icon(LucideIcons.shoppingBasket300),
                                   onPressed: () {},
                                 ),
-
                                 ShadIconButton(
                                   icon: Icon(LucideIcons.trash2300),
                                   onPressed: () {},

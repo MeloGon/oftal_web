@@ -39,4 +39,28 @@ class Sell extends _$Sell {
       state = state.copyWith(isLoading: false);
     }
   }
+
+  void selectPatient(PatientModel patient) {
+    state = state.copyWith(selectedPatient: patient);
+  }
+
+  Future<void> getViewMeasurements() async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final response = await Supabase.instance.client
+          .from('revisiones')
+          .select()
+          .ilike(
+            '"PACIENTE"',
+            '%${state.selectedPatient?.name ?? ''}%',
+          );
+      state = state.copyWith(
+        reviews: response.map((json) => ReviewModel.fromJson(json)).toList(),
+      );
+    } catch (e) {
+      state = state.copyWith(errorMessage: e.toString(), isLoading: false);
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
 }

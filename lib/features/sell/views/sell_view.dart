@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/constants/constants.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_provider.dart';
+import 'package:oftal_web/features/sell/viewmodels/sell_state.dart';
+import 'package:oftal_web/features/sell/views/widgets/reviews_dialog.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -12,6 +14,37 @@ class SellView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final sellNotifier = ref.watch(sellProvider.notifier);
     final sellState = ref.watch(sellProvider);
+
+    ref.listen<SellState>(sellProvider, (previous, next) {
+      // next.messageSnackbar.isNotEmpty && previous?.messageSnackbar != next.messageSnackbar
+      if (next.reviews.isNotEmpty && previous?.reviews != next.reviews) {
+        if (context.mounted) {
+          showShadDialog(
+            context: context,
+            builder:
+                (context) => ShadDialog(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.sizeOf(context).width * .6,
+                    minWidth: 293,
+                  ),
+                  title: Text(
+                    'Datos del paciente: ${next.selectedPatient?.name ?? 'N/A'}',
+                  ),
+                  description: Text(
+                    'Se encontraron ${next.reviews.length} mediciones',
+                  ),
+                  actions: [
+                    ShadButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text('Cerrar'),
+                    ),
+                  ],
+                  child: ReviewsDialog(state: next, reviews: next.reviews),
+                ),
+          );
+        }
+      }
+    });
     return SizedBox(
       child: ShadCard(
         child: Column(
@@ -43,19 +76,49 @@ class SellView extends ConsumerWidget {
             if (sellState.patients.isNotEmpty && !sellState.isLoading)
               ShadCard(
                 height: 300,
-                backgroundColor: Colors.blueGrey[50],
                 child: Scrollbar(
                   thumbVisibility: true,
                   child: CustomScrollView(
                     primary: true,
                     slivers: [
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          if (index.isOdd) return const Divider();
+                      SliverList.separated(
+                        separatorBuilder: (context, index) => const Divider(),
+                        itemBuilder: (context, index) {
                           return ListTile(
                             title: Text(sellState.patients[index].name),
+                            subtitle: Row(
+                              spacing: 10,
+                              children: [
+                                Text(AppStrings.registerDate),
+                                Text(sellState.patients[index].registerDate),
+                              ],
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              spacing: 10,
+                              children: [
+                                ShadIconButton(
+                                  icon: Icon(LucideIcons.shoppingBasket300),
+                                  onPressed: () {},
+                                ),
+                                ShadIconButton(
+                                  icon: Icon(LucideIcons.eye300),
+                                  onPressed: () async {
+                                    sellNotifier.selectPatient(
+                                      sellState.patients[index],
+                                    );
+                                    await sellNotifier.getViewMeasurements();
+                                  },
+                                ),
+                                ShadIconButton(
+                                  icon: Icon(LucideIcons.trash2300),
+                                  onPressed: () {},
+                                ),
+                              ],
+                            ),
                           );
-                        }, childCount: sellState.patients.length),
+                        },
+                        itemCount: sellState.patients.length,
                       ),
                     ],
                   ),
@@ -64,7 +127,6 @@ class SellView extends ConsumerWidget {
             if (sellState.patients.isEmpty && !sellState.isLoading)
               ShadCard(
                 height: 70,
-                backgroundColor: Colors.blueGrey[100],
                 child: const Center(
                   child: Text(
                     'No se encontraron pacientes o no se ha realizado la búsqueda',
