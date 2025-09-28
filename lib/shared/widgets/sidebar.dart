@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/router/app_router.dart';
 import 'package:oftal_web/router/router_name.dart';
+import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/providers/providers.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
 
@@ -47,11 +48,14 @@ class Sidebar extends ConsumerWidget {
           ),
         ],
       ),
-    );
+    ).paddingOnly(top: 10, bottom: 10, left: 7, right: 7);
   }
 
   BoxDecoration buildBoxDecoration() => BoxDecoration(
     gradient: LinearGradient(colors: [Colors.black, Colors.black54]),
     boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
+    borderRadius: BorderRadius.all(
+      Radius.circular(22),
+    ),
   );
 }

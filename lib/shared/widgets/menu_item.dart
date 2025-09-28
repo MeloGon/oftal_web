@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:oftal_web/shared/extensions/extensions.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class MenuItem extends StatefulWidget {
   final String text;
@@ -26,12 +27,16 @@ class MenuItemState extends State<MenuItem> {
   Widget build(BuildContext context) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
-      color:
-          isHovered
-              ? Colors.white.withValues(alpha: 0.1)
-              : widget.isActive
-              ? Colors.white.withValues(alpha: 0.1)
-              : Colors.transparent,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color:
+            isHovered
+                ? Colors.white.withValues(alpha: 0.1)
+                : widget.isActive
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.transparent,
+      ),
+
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -42,14 +47,15 @@ class MenuItemState extends State<MenuItem> {
               onEnter: (_) => setState(() => isHovered = true),
               onExit: (_) => setState(() => isHovered = false),
               child: Row(
+                spacing: 10,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Icon(widget.icon, color: Colors.white.withValues(alpha: 0.3)),
-                  const SizedBox(width: 10),
                   Text(
                     widget.text,
-                    style: GoogleFonts.roboto(
-                      fontSize: 15,
+                    style: ShadTheme.of(
+                      context,
+                    ).textTheme.muted.copyWith(
                       color: Colors.white.withValues(alpha: 0.8),
                     ),
                   ),
@@ -59,6 +65,6 @@ class MenuItemState extends State<MenuItem> {
           ),
         ),
       ),
-    );
+    ).marginOnly(left: 5, right: 5);
   }
 }
