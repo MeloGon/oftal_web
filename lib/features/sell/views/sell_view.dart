@@ -16,7 +16,6 @@ class SellView extends ConsumerWidget {
     final sellState = ref.watch(sellProvider);
 
     ref.listen<SellState>(sellProvider, (previous, next) {
-      // next.messageSnackbar.isNotEmpty && previous?.messageSnackbar != next.messageSnackbar
       if (next.reviews.isNotEmpty && previous?.reviews != next.reviews) {
         if (context.mounted) {
           showShadDialog(
@@ -81,6 +80,11 @@ class SellView extends ConsumerWidget {
                   child: CustomScrollView(
                     primary: true,
                     slivers: [
+                      SliverToBoxAdapter(
+                        child: Text(
+                          'Se encontraron (${sellState.patients.length}) resultados',
+                        ),
+                      ),
                       SliverList.separated(
                         separatorBuilder: (context, index) => const Divider(),
                         itemBuilder: (context, index) {
@@ -129,7 +133,7 @@ class SellView extends ConsumerWidget {
                 height: 70,
                 child: const Center(
                   child: Text(
-                    'No se encontraron pacientes o no se ha realizado la búsqueda',
+                    AppStrings.noPatientsFound,
                   ),
                 ),
               ).paddingOnly(top: 20),
