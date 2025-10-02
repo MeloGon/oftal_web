@@ -30,4 +30,7 @@ class AppStrings {
   static const save = 'Guardar';
   static const cancel = 'Cancelar';
   static const lastPatients = 'Ultimos pacientes agregados';
+  //sell view
+  static const noPatientsFound =
+      'No se encontraron pacientes o no se ha realizado la búsqueda';
 }
