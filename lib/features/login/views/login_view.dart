@@ -2,7 +2,10 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/constants/app_strings.dart';
+import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/login/viewmodels/login_provider.dart';
+import 'package:oftal_web/shared/models/snackbar_config_model.dart';
+import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class LoginView extends ConsumerWidget {
@@ -12,6 +15,16 @@ class LoginView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final loginState = ref.watch(loginProvider);
     final loginNotifier = ref.watch(loginProvider.notifier);
+
+    ref.listen(loginProvider, (previous, next) {
+      if (next.errorMessage.isNotEmpty &&
+          previous?.errorMessage != next.errorMessage) {
+        _showSnackbar(context, next.snackbarConfig, next.errorMessage);
+        Future.microtask(
+          () => ref.read(loginProvider.notifier).clearErrorMessage(),
+        );
+      }
+    });
 
     return Container(
       margin: EdgeInsets.only(top: 100),
@@ -81,4 +94,17 @@ class LoginView extends ConsumerWidget {
       ),
     );
   }
+}
+
+void _showSnackbar(
+  BuildContext context,
+  SnackbarConfigModel? snackbarConfig,
+  String errorMessage,
+) {
+  CustomSnackbar().show(
+    context,
+    snackbarConfig ??
+        SnackbarConfigModel(title: 'Error', type: SnackbarEnum.error),
+    errorMessage,
+  );
 }

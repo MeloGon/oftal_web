@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:oftal_web/shared/models/snackbar_config_model.dart';
+
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class LoginState {
@@ -7,6 +9,7 @@ class LoginState {
   final bool isFormValid;
   final GlobalKey<ShadFormState>? formKey;
   final bool isPasswordVisible;
+  final SnackbarConfigModel? snackbarConfig;
 
   LoginState({
     this.isLoading = false,
@@ -14,6 +17,7 @@ class LoginState {
     this.isFormValid = false,
     this.formKey,
     this.isPasswordVisible = true,
+    this.snackbarConfig,
   });
 
   LoginState copyWith({
@@ -22,6 +26,7 @@ class LoginState {
     bool? isFormValid,
     GlobalKey<ShadFormState>? formKey,
     bool? isPasswordVisible,
+    SnackbarConfigModel? snackbarConfig,
   }) {
     return LoginState(
       isLoading: isLoading ?? this.isLoading,
@@ -29,6 +34,7 @@ class LoginState {
       isFormValid: isFormValid ?? this.isFormValid,
       formKey: formKey ?? this.formKey,
       isPasswordVisible: isPasswordVisible ?? this.isPasswordVisible,
+      snackbarConfig: snackbarConfig ?? this.snackbarConfig,
     );
   }
 }
