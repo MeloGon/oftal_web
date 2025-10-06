@@ -30,7 +30,7 @@ class SellView extends ConsumerWidget {
                     'Datos del paciente: ${next.selectedPatient?.name ?? 'N/A'}',
                   ),
                   description: Text(
-                    'Se encontraron ${next.reviews.length} mediciones',
+                    'Se encontraron ${next.reviews.length} mediciones, escrollea para ver las mediciones',
                   ),
                   actions: [
                     ShadButton(
@@ -82,7 +82,7 @@ class SellView extends ConsumerWidget {
                     slivers: [
                       SliverToBoxAdapter(
                         child: Text(
-                          'Se encontraron (${sellState.patients.length}) resultados',
+                          'Se encontraron (${sellState.patients.length}) resultados, escrollea para ver los pacientes',
                         ),
                       ),
                       SliverList.separated(
