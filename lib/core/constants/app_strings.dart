@@ -13,6 +13,12 @@ class AppStrings {
   static const passwordMinLength = 'La contraseña debe de ser de 6 caracteres';
   static const emailRequired = 'El email es requerido';
   static const emailInvalid = 'El email no es válido';
+  static const phoneRequired = 'El número de teléfono es requerido';
+  static const birthDateRequired = 'La fecha de nacimiento es requerida';
+  static const fullNameRequired = 'El nombre completo es requerido';
+  static const genderRequired = 'El género es requerido';
+  static const registrationBranchRequired =
+      'La sucursal de registro es requerida';
   //sell view
   static const search = 'Buscar';
   //add patient view
