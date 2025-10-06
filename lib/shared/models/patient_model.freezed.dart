@@ -15,7 +15,10 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PatientModel {
 
- int get id; String get name; String get registerDate;
+ int get id; String get branch; String get registerDate; String get name; String get birthDate;// @override
+// @JsonKey(name: 'EDAD', includeFromJson: true, includeToJson: true)
+// final String age;
+ String get phone; String get gender; String get updatedRegisterDate;
 /// Create a copy of PatientModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +29,16 @@ $PatientModelCopyWith<PatientModel> get copyWith => _$PatientModelCopyWithImpl<P
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PatientModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.registerDate, registerDate) || other.registerDate == registerDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PatientModel&&(identical(other.id, id) || other.id == id)&&(identical(other.branch, branch) || other.branch == branch)&&(identical(other.registerDate, registerDate) || other.registerDate == registerDate)&&(identical(other.name, name) || other.name == name)&&(identical(other.birthDate, birthDate) || other.birthDate == birthDate)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.updatedRegisterDate, updatedRegisterDate) || other.updatedRegisterDate == updatedRegisterDate));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,registerDate);
+int get hashCode => Object.hash(runtimeType,id,branch,registerDate,name,birthDate,phone,gender,updatedRegisterDate);
 
 @override
 String toString() {
-  return 'PatientModel(id: $id, name: $name, registerDate: $registerDate)';
+  return 'PatientModel(id: $id, branch: $branch, registerDate: $registerDate, name: $name, birthDate: $birthDate, phone: $phone, gender: $gender, updatedRegisterDate: $updatedRegisterDate)';
 }
 
 
@@ -46,7 +49,7 @@ abstract mixin class $PatientModelCopyWith<$Res>  {
   factory $PatientModelCopyWith(PatientModel value, $Res Function(PatientModel) _then) = _$PatientModelCopyWithImpl;
 @useResult
 $Res call({
- int id, String name, String registerDate
+ int id, String branch, String registerDate, String name, String birthDate, String phone, String gender, String updatedRegisterDate
 });
 
 
@@ -63,11 +66,16 @@ class _$PatientModelCopyWithImpl<$Res>
 
 /// Create a copy of PatientModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? registerDate = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? branch = null,Object? registerDate = null,Object? name = null,Object? birthDate = null,Object? phone = null,Object? gender = null,Object? updatedRegisterDate = null,}) {
   return _then(PatientModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as int,branch: null == branch ? _self.branch : branch // ignore: cast_nullable_to_non_nullable
 as String,registerDate: null == registerDate ? _self.registerDate : registerDate // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,birthDate: null == birthDate ? _self.birthDate : birthDate // ignore: cast_nullable_to_non_nullable
+as String,phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String,gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
+as String,updatedRegisterDate: null == updatedRegisterDate ? _self.updatedRegisterDate : updatedRegisterDate // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

@@ -10,8 +10,8 @@ class PatientModel with _$PatientModel {
   @JsonKey(name: 'ID PACIENTE', includeFromJson: true, includeToJson: true)
   final int id;
   @override
-  @JsonKey(name: 'NOMBRE COMPLETO', includeFromJson: true, includeToJson: true)
-  final String name;
+  @JsonKey(name: 'SUCURSAL', includeFromJson: true, includeToJson: true)
+  final String branch;
   @override
   @JsonKey(
     name: 'FECHA DE REGISTRO',
@@ -19,11 +19,43 @@ class PatientModel with _$PatientModel {
     includeToJson: true,
   )
   final String registerDate;
+  @override
+  @JsonKey(name: 'NOMBRE COMPLETO', includeFromJson: true, includeToJson: true)
+  final String name;
+  @override
+  @JsonKey(
+    name: 'FECHA DE NACIMIENTO',
+    includeFromJson: true,
+    includeToJson: true,
+  )
+  final String birthDate;
+  // @override
+  // @JsonKey(name: 'EDAD', includeFromJson: true, includeToJson: true)
+  // final String age;
+  @override
+  @JsonKey(name: 'TELEFONO CEL', includeFromJson: true, includeToJson: true)
+  final String phone;
+  @override
+  @JsonKey(name: 'GENERO', includeFromJson: true, includeToJson: true)
+  final String gender;
+  @override
+  @JsonKey(
+    name: 'fecha_registro_actualizada',
+    includeFromJson: true,
+    includeToJson: true,
+  )
+  final String updatedRegisterDate;
 
   PatientModel({
     required this.id,
-    required this.name,
+    required this.branch,
     required this.registerDate,
+    required this.name,
+    required this.birthDate,
+    // required this.age,
+    required this.phone,
+    required this.gender,
+    required this.updatedRegisterDate,
   });
 
   factory PatientModel.fromJson(Map<String, Object?> json) =>
