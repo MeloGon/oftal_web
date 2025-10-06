@@ -15,10 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PatientModel {
 
- int get id; String get branch; String get registerDate; String get name; String get birthDate;// @override
-// @JsonKey(name: 'EDAD', includeFromJson: true, includeToJson: true)
-// final String age;
- String get phone; String get gender; String get updatedRegisterDate;
+ int get id; String get branch; String get registerDate; String get name; String get birthDate; String get phone; String get observations; String get gender; String get updatedRegisterDate;
 /// Create a copy of PatientModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +26,16 @@ $PatientModelCopyWith<PatientModel> get copyWith => _$PatientModelCopyWithImpl<P
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PatientModel&&(identical(other.id, id) || other.id == id)&&(identical(other.branch, branch) || other.branch == branch)&&(identical(other.registerDate, registerDate) || other.registerDate == registerDate)&&(identical(other.name, name) || other.name == name)&&(identical(other.birthDate, birthDate) || other.birthDate == birthDate)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.updatedRegisterDate, updatedRegisterDate) || other.updatedRegisterDate == updatedRegisterDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PatientModel&&(identical(other.id, id) || other.id == id)&&(identical(other.branch, branch) || other.branch == branch)&&(identical(other.registerDate, registerDate) || other.registerDate == registerDate)&&(identical(other.name, name) || other.name == name)&&(identical(other.birthDate, birthDate) || other.birthDate == birthDate)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.observations, observations) || other.observations == observations)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.updatedRegisterDate, updatedRegisterDate) || other.updatedRegisterDate == updatedRegisterDate));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,branch,registerDate,name,birthDate,phone,gender,updatedRegisterDate);
+int get hashCode => Object.hash(runtimeType,id,branch,registerDate,name,birthDate,phone,observations,gender,updatedRegisterDate);
 
 @override
 String toString() {
-  return 'PatientModel(id: $id, branch: $branch, registerDate: $registerDate, name: $name, birthDate: $birthDate, phone: $phone, gender: $gender, updatedRegisterDate: $updatedRegisterDate)';
+  return 'PatientModel(id: $id, branch: $branch, registerDate: $registerDate, name: $name, birthDate: $birthDate, phone: $phone, observations: $observations, gender: $gender, updatedRegisterDate: $updatedRegisterDate)';
 }
 
 
@@ -49,7 +46,7 @@ abstract mixin class $PatientModelCopyWith<$Res>  {
   factory $PatientModelCopyWith(PatientModel value, $Res Function(PatientModel) _then) = _$PatientModelCopyWithImpl;
 @useResult
 $Res call({
- int id, String branch, String registerDate, String name, String birthDate, String phone, String gender, String updatedRegisterDate
+ int id, String branch, String registerDate, String name, String birthDate, String phone, String observations, String gender, String updatedRegisterDate
 });
 
 
@@ -66,7 +63,7 @@ class _$PatientModelCopyWithImpl<$Res>
 
 /// Create a copy of PatientModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? branch = null,Object? registerDate = null,Object? name = null,Object? birthDate = null,Object? phone = null,Object? gender = null,Object? updatedRegisterDate = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? branch = null,Object? registerDate = null,Object? name = null,Object? birthDate = null,Object? phone = null,Object? observations = null,Object? gender = null,Object? updatedRegisterDate = null,}) {
   return _then(PatientModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,branch: null == branch ? _self.branch : branch // ignore: cast_nullable_to_non_nullable
@@ -74,6 +71,7 @@ as String,registerDate: null == registerDate ? _self.registerDate : registerDate
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,birthDate: null == birthDate ? _self.birthDate : birthDate // ignore: cast_nullable_to_non_nullable
 as String,phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String,observations: null == observations ? _self.observations : observations // ignore: cast_nullable_to_non_nullable
 as String,gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
 as String,updatedRegisterDate: null == updatedRegisterDate ? _self.updatedRegisterDate : updatedRegisterDate // ignore: cast_nullable_to_non_nullable
 as String,

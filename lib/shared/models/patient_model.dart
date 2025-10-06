@@ -29,12 +29,12 @@ class PatientModel with _$PatientModel {
     includeToJson: true,
   )
   final String birthDate;
-  // @override
-  // @JsonKey(name: 'EDAD', includeFromJson: true, includeToJson: true)
-  // final String age;
   @override
   @JsonKey(name: 'TELEFONO CEL', includeFromJson: true, includeToJson: true)
   final String phone;
+  @override
+  @JsonKey(name: 'OBSERVACIONES', includeFromJson: true, includeToJson: true)
+  final String observations;
   @override
   @JsonKey(name: 'GENERO', includeFromJson: true, includeToJson: true)
   final String gender;
@@ -52,8 +52,8 @@ class PatientModel with _$PatientModel {
     required this.registerDate,
     required this.name,
     required this.birthDate,
-    // required this.age,
     required this.phone,
+    required this.observations,
     required this.gender,
     required this.updatedRegisterDate,
   });

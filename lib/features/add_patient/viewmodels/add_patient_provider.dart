@@ -1,14 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:oftal_web/features/add_patient/viewmodels/add_patient_state.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:uuid/uuid.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'dart:math';
 
-import '../../../shared/models/shared_models.dart';
+import 'package:flutter/material.dart';
+import 'package:oftal_web/core/enums/snackbar_enum.dart';
+import 'package:oftal_web/shared/models/snackbar_config_model.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:oftal_web/features/add_patient/viewmodels/add_patient_state.dart';
+import 'package:oftal_web/shared/models/shared_models.dart';
+
 part 'add_patient_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class AddPatient extends _$AddPatient {
   final identificationController = TextEditingController();
   final uniqueIdController = TextEditingController();
@@ -16,17 +19,19 @@ class AddPatient extends _$AddPatient {
   final registrationBranchController = TextEditingController();
   final fullNameController = TextEditingController();
   final birthDateController = TextEditingController();
-  final ageController = TextEditingController();
+  final genderController = ShadSelectController<String>();
+  final phoneController = TextEditingController();
+  final observationsController = TextEditingController();
 
   @override
   AddPatientState build() {
-    uniqueIdController.text = Uuid().v4();
+    uniqueIdController.text = _generateRandomId(17).toString();
     registerDateController.text = DateFormat(
       'dd-MMM-yyyy',
       'es_ES',
     ).format(DateTime.now());
 
-    Future.microtask(getPatients);
+    Future.microtask(_getPatients);
 
     ref.onDispose(() {
       identificationController.dispose();
@@ -34,33 +39,127 @@ class AddPatient extends _$AddPatient {
       registerDateController.dispose();
       fullNameController.dispose();
       birthDateController.dispose();
-      ageController.dispose();
+      genderController.dispose();
     });
 
-    return AddPatientState();
+    return AddPatientState(formKey: GlobalKey<ShadFormState>());
+  }
+
+  BigInt _generateRandomId(int length) {
+    final random = Random.secure();
+    final buffer = StringBuffer();
+    buffer.write(random.nextInt(9) + 1);
+    for (int i = 1; i < length; i++) {
+      buffer.write(random.nextInt(10));
+    }
+    return BigInt.parse(buffer.toString());
   }
 
   void updateGender(String? gender) {
     state = state.copyWith(selectedGender: gender);
+    genderController.value = {gender ?? ''};
   }
 
   void updateBranch(String? branch) {
     state = state.copyWith(selectedBranch: branch);
   }
 
-  Future<void> getPatients() async {
+  void updateBirthDate(DateTime? birthDate) {
+    birthDateController.text =
+        DateFormat('yyyy-MM-dd').format(birthDate ?? DateTime.now()).toString();
+  }
+
+  Future<void> _getPatients() async {
     state = state.copyWith(isLoading: true);
     try {
       final response = await Supabase.instance.client
           .from('pacientes')
           .select()
-          .limit(8)
+          .limit(5)
           .order('fecha_registro_actualizada', ascending: false);
       state = state.copyWith(
         patients: response.map((json) => PatientModel.fromJson(json)).toList(),
       );
     } catch (e) {
-      state = state.copyWith(errorMessage: e.toString());
+      state = state.copyWith(
+        errorMessage: e.toString(),
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+      );
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> createPatient() async {
+    if (!_validateForm()) return;
+    state = state.copyWith(isLoading: true);
+
+    try {
+      final patient = PatientModel(
+        id: int.parse(uniqueIdController.text),
+        branch: state.selectedBranch ?? '',
+        registerDate: registerDateController.text,
+        name: fullNameController.text,
+        birthDate: birthDateController.text,
+        phone: phoneController.text,
+        observations: observationsController.text,
+        gender: state.selectedGender ?? '',
+        updatedRegisterDate:
+            DateFormat('yyyy-MM-dd').format(DateTime.now()).toString(),
+      );
+      /* final response = */
+      await Supabase.instance.client
+          .from('pacientes')
+          .insert(patient.toJson())
+          .select();
+      _getPatients();
+      state = state.copyWith(
+        // patients: response.map((json) => PatientModel.fromJson(json)).toList(),
+        errorMessage: 'Paciente creado correctamente',
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Aviso',
+          type: SnackbarEnum.success,
+        ),
+      );
+    } catch (e) {
+      state = state.copyWith(
+        errorMessage: e.toString(),
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+      );
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> deletePatient(int id) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      await Supabase.instance.client
+          .from('pacientes')
+          .delete()
+          .eq('ID PACIENTE', id);
+      state = state.copyWith(
+        errorMessage: 'Paciente eliminado correctamente',
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Aviso',
+          type: SnackbarEnum.success,
+        ),
+      );
+      _getPatients();
+    } catch (e) {
+      state = state.copyWith(
+        errorMessage: e.toString(),
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+      );
     } finally {
       state = state.copyWith(isLoading: false);
     }
@@ -70,11 +169,25 @@ class AddPatient extends _$AddPatient {
     identificationController.clear();
     fullNameController.clear();
     birthDateController.clear();
-    ageController.clear();
+    genderController.value.clear();
     state = state.copyWith(
       selectedGender: null,
       selectedBranch: null,
       errorMessage: '',
+    );
+  }
+
+  bool _validateForm() {
+    if (state.formKey?.currentState?.validate() ?? false) {
+      return true;
+    }
+    return false;
+  }
+
+  void clearErrorMessage() {
+    state = state.copyWith(
+      errorMessage: '',
+      snackbarConfig: null,
     );
   }
 }

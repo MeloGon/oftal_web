@@ -13,6 +13,7 @@ PatientModel _$PatientModelFromJson(Map<String, dynamic> json) => PatientModel(
   name: json['NOMBRE COMPLETO'] as String,
   birthDate: json['FECHA DE NACIMIENTO'] as String,
   phone: json['TELEFONO CEL'] as String,
+  observations: json['OBSERVACIONES'] as String,
   gender: json['GENERO'] as String,
   updatedRegisterDate: json['fecha_registro_actualizada'] as String,
 );
@@ -25,6 +26,7 @@ Map<String, dynamic> _$PatientModelToJson(PatientModel instance) =>
       'NOMBRE COMPLETO': instance.name,
       'FECHA DE NACIMIENTO': instance.birthDate,
       'TELEFONO CEL': instance.phone,
+      'OBSERVACIONES': instance.observations,
       'GENERO': instance.gender,
       'fecha_registro_actualizada': instance.updatedRegisterDate,
     };

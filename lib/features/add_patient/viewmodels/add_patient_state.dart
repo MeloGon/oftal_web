@@ -1,4 +1,7 @@
+import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
+import 'package:oftal_web/shared/models/snackbar_config_model.dart';
 
 class AddPatientState {
   final bool isLoading;
@@ -6,12 +9,19 @@ class AddPatientState {
   final String? selectedGender;
   final String? selectedBranch;
   final List<PatientModel> patients;
+  final PatientModel? patient;
+  final GlobalKey<ShadFormState>? formKey;
+  final SnackbarConfigModel? snackbarConfig;
+
   AddPatientState({
     this.isLoading = false,
     this.errorMessage = '',
     this.selectedGender,
     this.selectedBranch,
     this.patients = const [],
+    this.patient,
+    this.formKey,
+    this.snackbarConfig,
   });
 
   AddPatientState copyWith({
@@ -20,6 +30,9 @@ class AddPatientState {
     String? selectedGender,
     String? selectedBranch,
     List<PatientModel>? patients,
+    PatientModel? patient,
+    GlobalKey<ShadFormState>? formKey,
+    SnackbarConfigModel? snackbarConfig,
   }) {
     return AddPatientState(
       isLoading: isLoading ?? this.isLoading,
@@ -27,6 +40,9 @@ class AddPatientState {
       selectedGender: selectedGender ?? this.selectedGender,
       selectedBranch: selectedBranch ?? this.selectedBranch,
       patients: patients ?? this.patients,
+      patient: patient ?? this.patient,
+      formKey: formKey ?? this.formKey,
+      snackbarConfig: snackbarConfig ?? this.snackbarConfig,
     );
   }
 }
