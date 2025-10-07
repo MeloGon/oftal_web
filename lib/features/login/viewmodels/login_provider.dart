@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -54,6 +56,7 @@ class Login extends _$Login {
         );
         return false;
       } catch (e) {
+        log('Error al iniciar sesión $e');
         state = state.copyWith(
           errorMessage: 'Error al iniciar sesión $e',
           isLoading: false,

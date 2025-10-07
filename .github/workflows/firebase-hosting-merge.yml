@@ -15,26 +15,10 @@ jobs:
         with:
           java-version: '12.x'
       - uses: subosito/flutter-action@v1
-      - name: 'Create .env file'
-        run: |
-          echo "URL=${{ secrets.SUPABASE_URL }}" > .env
-          echo "ANONKEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
-          echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" >> .env
-          echo "API_TIMEOUT=${{ secrets.API_TIMEOUT }}" >> .env
-          echo "APP_NAME=Oftal Web" >> .env
-          echo "APP_VERSION=0.1.0" >> .env
-          echo "DEBUG_MODE=false" >> .env
-          echo "Created .env file with:"
-          cat .env
       - name: 'Run flutter pub get'
         run: flutter pub get
-      - name: 'Verify environment variables'
-        run: |
-          echo "Checking environment variables:"
-          echo "URL: ${{ secrets.SUPABASE_URL }}"
-          echo "ANONKEY: ${{ secrets.SUPABASE_ANON_KEY }}"
       - name: 'Build Web App'
-        run: flutter build web
+        run: flutter build web --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
