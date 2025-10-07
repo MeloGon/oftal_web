@@ -14,7 +14,7 @@ class Sidebar extends ConsumerWidget {
     final navigationState = ref.watch(navigationProvider);
 
     return Container(
-      width: 200,
+      width: 230,
       height: double.infinity,
       decoration: buildBoxDecoration(),
       child: ListView(
@@ -37,6 +37,13 @@ class Sidebar extends ConsumerWidget {
               ref.read(appRouterProvider).go(RouterName.sell);
             },
             isActive: navigationState.currentPage == RouterName.sell,
+          ),
+          MenuItem(
+            text: 'Ventas realizadas',
+            icon: Icons.history_outlined,
+            onPressed: () {
+              ref.read(appRouterProvider).go(RouterName.salesHistory);
+            },
           ),
           MenuItem(
             text: 'Configuración',

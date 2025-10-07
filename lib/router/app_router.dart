@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:oftal_web/features/sell/views/sell_view.dart';
+import 'package:oftal_web/features/sales_history/views/sales_history_view.dart';
 import 'package:oftal_web/features/views.dart';
 import 'package:oftal_web/router/router_name.dart';
 import 'package:oftal_web/shared/layouts/auth/auth_layout.dart';
@@ -107,6 +108,20 @@ GoRouter appRouter(Ref ref) {
                     .read(navigationProvider.notifier)
                     .setCurrentPage(RouterName.sell);
                 return RouterName.sell;
+              }
+              return null;
+            },
+          ),
+          GoRoute(
+            path: RouterName.salesHistory,
+            pageBuilder:
+                (context, state) => _fadeRoute(const SalesHistoryView()),
+            redirect: (context, state) {
+              if (state.matchedLocation == RouterName.salesHistory) {
+                ref
+                    .read(navigationProvider.notifier)
+                    .setCurrentPage(RouterName.salesHistory);
+                return RouterName.salesHistory;
               }
               return null;
             },

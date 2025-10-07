@@ -208,10 +208,14 @@ class SellView extends ConsumerWidget {
           ShadCard(
             width: MediaQuery.sizeOf(context).width * .9,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Nota de venta',
                   style: ShadTheme.of(context).textTheme.h2,
+                ),
+                ShadCard(
+                  // child: ,
                 ),
               ],
             ),
