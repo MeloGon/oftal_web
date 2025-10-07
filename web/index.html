@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -27,12 +28,37 @@
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="icon" type="image/png" href="favicon.png" />
 
   <title>oftal_web</title>
   <link rel="manifest" href="manifest.json">
 </head>
+
 <body>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyDPey3dU9xPUxbi9j1ai6j81YsYCGY4-Q0",
+      authDomain: "oftal-web.firebaseapp.com",
+      projectId: "oftal-web",
+      storageBucket: "oftal-web.firebasestorage.app",
+      messagingSenderId: "733960620657",
+      appId: "1:733960620657:web:93ba6b87d589dccc48e9d0",
+      measurementId: "G-RCYWXF11H7"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
+
 </html>
