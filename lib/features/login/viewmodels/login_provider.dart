@@ -55,7 +55,7 @@ class Login extends _$Login {
         return false;
       } catch (e) {
         state = state.copyWith(
-          errorMessage: 'Error al iniciar sesión',
+          errorMessage: 'Error al iniciar sesión $e',
           isLoading: false,
           snackbarConfig: SnackbarConfigModel(
             title: 'Error',
