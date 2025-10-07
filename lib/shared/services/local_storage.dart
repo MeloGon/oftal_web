@@ -24,4 +24,12 @@ class LocalStorage {
         ? ProfileModel.fromJson(jsonDecode(profile))
         : ProfileModel();
   }
+
+  static Future<void> removeToken() async {
+    await prefs.remove('token');
+  }
+
+  static Future<void> removeProfile() async {
+    await prefs.remove('profile');
+  }
 }

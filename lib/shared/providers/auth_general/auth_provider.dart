@@ -64,12 +64,22 @@ class Auth extends _$Auth {
 
   Future<bool> _isAuthenticated() async {
     final token = LocalStorage.prefs.getString('token');
+
     if (token == null) {
       state = state.copyWith(status: AuthStatus.notAuthenticated);
       return false;
     }
+    final userData = await LocalStorage.getProfile();
+    state = state.copyWith(profile: ProfileModel.fromJson(userData.toJson()));
     await Future.delayed(const Duration(seconds: 1));
     state = state.copyWith(status: AuthStatus.authenticated);
     return true;
+  }
+
+  Future<void> logout() async {
+    await supabase.Supabase.instance.client.auth.signOut();
+    state = state.copyWith(status: AuthStatus.notAuthenticated);
+    LocalStorage.removeToken();
+    LocalStorage.removeProfile();
   }
 }

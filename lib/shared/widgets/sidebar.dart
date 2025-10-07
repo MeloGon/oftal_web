@@ -45,13 +45,21 @@ class Sidebar extends ConsumerWidget {
               ref.read(appRouterProvider).go(RouterName.salesHistory);
             },
           ),
+          // MenuItem(
+          //   text: 'Configuración',
+          //   icon: Icons.settings_outlined,
+          //   onPressed: () {
+          //     ref.read(appRouterProvider).go(RouterName.settings);
+          //   },
+          //   isActive: navigationState.currentPage == RouterName.settings,
+          // ),
           MenuItem(
-            text: 'Configuración',
-            icon: Icons.settings_outlined,
+            text: 'Logout',
+            icon: Icons.login_outlined,
             onPressed: () {
-              ref.read(appRouterProvider).go(RouterName.settings);
+              ref.read(authProvider.notifier).logout();
+              ref.read(appRouterProvider).go(RouterName.login);
             },
-            isActive: navigationState.currentPage == RouterName.settings,
           ),
         ],
       ),
