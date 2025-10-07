@@ -13,7 +13,6 @@ class Auth extends _$Auth {
   AuthState build() {
     Future.microtask(() {
       _isAuthenticated();
-      // _getUserData();
     });
     return AuthState();
   }

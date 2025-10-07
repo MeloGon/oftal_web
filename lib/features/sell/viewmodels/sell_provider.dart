@@ -50,6 +50,10 @@ class Sell extends _$Sell {
     state = state.copyWith(selectedPatient: patient);
   }
 
+  void selectItemOption(SellItemOptionsEnum itemOption) {
+    state = state.copyWith(selectedItemOption: itemOption);
+  }
+
   Future<void> getViewMeasurements() async {
     state = state.copyWith(isLoading: true);
     try {

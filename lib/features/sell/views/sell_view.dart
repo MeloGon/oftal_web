@@ -117,109 +117,134 @@ class SellView extends ConsumerWidget {
               ],
             ),
           ),
-          ShadCard(
-            width: MediaQuery.sizeOf(context).width * .9,
-            child: Column(
-              spacing: 20,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Seleccione los productos a vender',
-                  style: ShadTheme.of(context).textTheme.h2,
-                ),
-                Wrap(
-                  spacing: 16,
-                  runSpacing: 8,
-                  direction: Axis.horizontal,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 8,
+          if (sellState.selectedPatient != null &&
+              sellState.selectedItemOption != null &&
+              sellState.selectedItemOption == SellItemOptionsEnum.sell) ...[
+            ShadCard(
+              width: MediaQuery.sizeOf(context).width * .9,
+              child: Column(
+                spacing: 20,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Seleccione los productos a vender',
+                    style: ShadTheme.of(context).textTheme.h2,
+                  ),
+                  Wrap(
+                    spacing: 16,
+                    runSpacing: 8,
+                    direction: Axis.horizontal,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 8,
+                        children: [
+                          Text('Clasificación'),
+                          ShadSelect<String>(
+                            placeholder: Text(AppStrings.select),
+                            // initialValue: addPatientState.selectedGender,
+                            selectedOptionBuilder:
+                                (context, value) => Text(value),
+                            options:
+                                OptionsToSellEnum.values
+                                    .map(
+                                      (e) => ShadOption(
+                                        value: e.name,
+                                        child: Text(e.name),
+                                      ),
+                                    )
+                                    .toList(),
+                            onChanged: (value) {
+                              // addPatientNotifier.updateGender(value);
+                            },
+                            // controller: addPatientNotifier.genderController,
+                          ),
+                        ],
+                      ),
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.sizeOf(context).width * .6,
+                        ),
+                        child: Column(
+                          children: [
+                            ShadInputFormField(
+                              placeholder: Text('Ingrese'),
+                              label: Text('Nombre del producto'),
+                              controller:
+                                  sellNotifier.searchItemToSellController,
+                              onSubmitted: (_) => sellNotifier.getMounts(),
+                            ),
+                            if (sellState.mounts.isNotEmpty &&
+                                !sellState.isLoading)
+                              ShadCard(
+                                height: 300,
+                                child: Scrollbar(
+                                  thumbVisibility: true,
+                                  child: CustomScrollView(
+                                    primary: true,
+                                    slivers: [
+                                      SliverToBoxAdapter(
+                                        child: Text(
+                                          'Se encontraron (${sellState.mounts.length}) lineas',
+                                        ),
+                                      ),
+                                      SliverList.separated(
+                                        separatorBuilder:
+                                            (context, index) => const Divider(),
+                                        itemBuilder: (context, index) {
+                                          final mount = sellState.mounts[index];
+                                          return ItemToAddCart(mount: mount);
+                                        },
+                                        itemCount: sellState.mounts.length,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ).paddingOnly(top: 20),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            ShadCard(
+              width: MediaQuery.sizeOf(context).width * .9,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Nota de venta',
+                    style: ShadTheme.of(context).textTheme.h2,
+                  ),
+                  ShadCard(
+                    child: Column(
                       children: [
-                        Text('Clasificación'),
-                        ShadSelect<String>(
-                          placeholder: Text(AppStrings.select),
-                          // initialValue: addPatientState.selectedGender,
-                          selectedOptionBuilder:
-                              (context, value) => Text(value),
-                          options:
-                              OptionsToSellEnum.values
-                                  .map(
-                                    (e) => ShadOption(
-                                      value: e.name,
-                                      child: Text(e.name),
-                                    ),
-                                  )
-                                  .toList(),
-                          onChanged: (value) {
-                            // addPatientNotifier.updateGender(value);
-                          },
-                          // controller: addPatientNotifier.genderController,
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Paciente: ',
+                              ),
+                              TextSpan(
+                                text: '  ',
+                              ),
+                              TextSpan(
+                                text: sellState.selectedPatient?.name ?? '',
+                                style: ShadTheme.of(context).textTheme.h4,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: MediaQuery.sizeOf(context).width * .6,
-                      ),
-                      child: Column(
-                        children: [
-                          ShadInputFormField(
-                            placeholder: Text('Ingrese'),
-                            label: Text('Nombre del producto'),
-                            controller: sellNotifier.searchItemToSellController,
-                            onSubmitted: (_) => sellNotifier.getMounts(),
-                          ),
-                          if (sellState.mounts.isNotEmpty &&
-                              !sellState.isLoading)
-                            ShadCard(
-                              height: 300,
-                              child: Scrollbar(
-                                thumbVisibility: true,
-                                child: CustomScrollView(
-                                  primary: true,
-                                  slivers: [
-                                    SliverToBoxAdapter(
-                                      child: Text(
-                                        'Se encontraron (${sellState.mounts.length}) lineas',
-                                      ),
-                                    ),
-                                    SliverList.separated(
-                                      separatorBuilder:
-                                          (context, index) => const Divider(),
-                                      itemBuilder: (context, index) {
-                                        final mount = sellState.mounts[index];
-                                        return ItemToAddCart(mount: mount);
-                                      },
-                                      itemCount: sellState.mounts.length,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ).paddingOnly(top: 20),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          ShadCard(
-            width: MediaQuery.sizeOf(context).width * .9,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Nota de venta',
-                  style: ShadTheme.of(context).textTheme.h2,
-                ),
-                ShadCard(
-                  // child: ,
-                ),
-              ],
-            ),
-          ),
+          ],
         ],
       ),
     ).marginOnly(top: 50).paddingSymmetric(horizontal: 20);
