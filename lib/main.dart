@@ -15,10 +15,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await AppEnviroment.initEnvironment();
-  
+
   // Debug: Print environment variables
   DebugEnv.printEnvironmentVariables();
-  
+
   await supabase.Supabase.initialize(
     url: AppEnviroment.url,
     anonKey: AppEnviroment.anonKey,
