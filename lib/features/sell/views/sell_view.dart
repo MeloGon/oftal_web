@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/constants/constants.dart';
+import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_provider.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_state.dart';
+import 'package:oftal_web/features/sell/views/widgets/item_to_add_cart.dart';
+import 'package:oftal_web/features/sell/views/widgets/item_to_sell.dart';
 import 'package:oftal_web/features/sell/views/widgets/reviews_dialog.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -44,101 +47,176 @@ class SellView extends ConsumerWidget {
         }
       }
     });
+
     return SizedBox(
-      child: ShadCard(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Vender',
-              style: ShadTheme.of(context).textTheme.h2,
-            ).alignment(Alignment.centerLeft).paddingOnly(bottom: 20),
-            ShadInput(
-              placeholder: Text('Ingrese el nombre del paciente'),
-              leading: Icon(LucideIcons.search),
-              controller: sellNotifier.searchController,
-              trailing: ShadButton(
-                height: 30,
-                onPressed: () => sellNotifier.searchPatient(),
-                child: Text(
-                  AppStrings.search,
+      child: Column(
+        spacing: 20,
+        children: [
+          ShadCard(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Vender',
+                  style: ShadTheme.of(context).textTheme.h2,
+                ).alignment(Alignment.centerLeft).paddingOnly(bottom: 20),
+                ShadInput(
+                  placeholder: Text('Ingrese el nombre del paciente'),
+                  leading: Icon(LucideIcons.search),
+                  controller: sellNotifier.searchController,
+                  trailing: ShadButton(
+                    height: 30,
+                    onPressed: () => sellNotifier.searchPatient(),
+                    child: Text(
+                      AppStrings.search,
+                    ),
+                  ),
+                  onSubmitted: (_) => sellNotifier.searchPatient(),
                 ),
-              ),
-              onSubmitted: (_) => sellNotifier.searchPatient(),
+                if (sellState.isLoading)
+                  const Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  ).paddingOnly(top: 20),
+                if (sellState.patients.isNotEmpty && !sellState.isLoading)
+                  ShadCard(
+                    height: 300,
+                    child: Scrollbar(
+                      thumbVisibility: true,
+                      child: CustomScrollView(
+                        primary: true,
+                        slivers: [
+                          SliverToBoxAdapter(
+                            child: Text(
+                              'Se encontraron (${sellState.patients.length}) resultados, escrollea para ver los pacientes',
+                            ),
+                          ),
+                          SliverList.separated(
+                            separatorBuilder:
+                                (context, index) => const Divider(),
+                            itemBuilder: (context, index) {
+                              final patient = sellState.patients[index];
+                              return ItemToSell(patient: patient);
+                            },
+                            itemCount: sellState.patients.length,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ).paddingOnly(top: 20),
+                if (sellState.patients.isEmpty && !sellState.isLoading)
+                  ShadCard(
+                    height: 70,
+                    child: const Center(
+                      child: Text(
+                        AppStrings.noPatientsFound,
+                      ),
+                    ),
+                  ).paddingOnly(top: 20),
+              ],
             ),
-            if (sellState.isLoading)
-              const Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
+          ),
+          ShadCard(
+            width: MediaQuery.sizeOf(context).width * .9,
+            child: Column(
+              spacing: 20,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Seleccione los productos a vender',
+                  style: ShadTheme.of(context).textTheme.h2,
                 ),
-              ).paddingOnly(top: 20),
-            if (sellState.patients.isNotEmpty && !sellState.isLoading)
-              ShadCard(
-                height: 300,
-                child: Scrollbar(
-                  thumbVisibility: true,
-                  child: CustomScrollView(
-                    primary: true,
-                    slivers: [
-                      SliverToBoxAdapter(
-                        child: Text(
-                          'Se encontraron (${sellState.patients.length}) resultados, escrollea para ver los pacientes',
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 8,
+                  direction: Axis.horizontal,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 8,
+                      children: [
+                        Text('Clasificación'),
+                        ShadSelect<String>(
+                          placeholder: Text(AppStrings.select),
+                          // initialValue: addPatientState.selectedGender,
+                          selectedOptionBuilder:
+                              (context, value) => Text(value),
+                          options:
+                              OptionsToSellEnum.values
+                                  .map(
+                                    (e) => ShadOption(
+                                      value: e.name,
+                                      child: Text(e.name),
+                                    ),
+                                  )
+                                  .toList(),
+                          onChanged: (value) {
+                            // addPatientNotifier.updateGender(value);
+                          },
+                          // controller: addPatientNotifier.genderController,
                         ),
+                      ],
+                    ),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: MediaQuery.sizeOf(context).width * .6,
                       ),
-                      SliverList.separated(
-                        separatorBuilder: (context, index) => const Divider(),
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            title: Text(sellState.patients[index].name),
-                            subtitle: Row(
-                              spacing: 10,
-                              children: [
-                                Text(AppStrings.registerDate),
-                                Text(sellState.patients[index].registerDate),
-                              ],
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              spacing: 10,
-                              children: [
-                                ShadIconButton(
-                                  icon: Icon(LucideIcons.shoppingBasket300),
-                                  onPressed: () {},
+                      child: Column(
+                        children: [
+                          ShadInputFormField(
+                            placeholder: Text('Ingrese'),
+                            label: Text('Nombre del producto'),
+                            controller: sellNotifier.searchItemToSellController,
+                            onSubmitted: (_) => sellNotifier.getMounts(),
+                          ),
+                          if (sellState.mounts.isNotEmpty &&
+                              !sellState.isLoading)
+                            ShadCard(
+                              height: 300,
+                              child: Scrollbar(
+                                thumbVisibility: true,
+                                child: CustomScrollView(
+                                  primary: true,
+                                  slivers: [
+                                    SliverToBoxAdapter(
+                                      child: Text(
+                                        'Se encontraron (${sellState.mounts.length}) lineas',
+                                      ),
+                                    ),
+                                    SliverList.separated(
+                                      separatorBuilder:
+                                          (context, index) => const Divider(),
+                                      itemBuilder: (context, index) {
+                                        final mount = sellState.mounts[index];
+                                        return ItemToAddCart(mount: mount);
+                                      },
+                                      itemCount: sellState.mounts.length,
+                                    ),
+                                  ],
                                 ),
-                                ShadIconButton(
-                                  icon: Icon(LucideIcons.eye300),
-                                  onPressed: () async {
-                                    sellNotifier.selectPatient(
-                                      sellState.patients[index],
-                                    );
-                                    await sellNotifier.getViewMeasurements();
-                                  },
-                                ),
-                                ShadIconButton(
-                                  icon: Icon(LucideIcons.trash2300),
-                                  onPressed: () {},
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                        itemCount: sellState.patients.length,
+                              ),
+                            ).paddingOnly(top: 20),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ).paddingOnly(top: 20),
-            if (sellState.patients.isEmpty && !sellState.isLoading)
-              ShadCard(
-                height: 70,
-                child: const Center(
-                  child: Text(
-                    AppStrings.noPatientsFound,
-                  ),
+              ],
+            ),
+          ),
+          ShadCard(
+            width: MediaQuery.sizeOf(context).width * .9,
+            child: Column(
+              children: [
+                Text(
+                  'Nota de venta',
+                  style: ShadTheme.of(context).textTheme.h2,
                 ),
-              ).paddingOnly(top: 20),
-          ],
-        ),
+              ],
+            ),
+          ),
+        ],
       ),
     ).marginOnly(top: 50).paddingSymmetric(horizontal: 20);
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_state.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -9,6 +10,7 @@ part 'sell_provider.g.dart';
 @riverpod
 class Sell extends _$Sell {
   final searchController = TextEditingController();
+  final searchItemToSellController = TextEditingController();
   @override
   SellState build() {
     return SellState();
@@ -34,6 +36,10 @@ class Sell extends _$Sell {
         errorMessage: e.toString(),
         isLoading: false,
         patients: [],
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
       );
     } finally {
       state = state.copyWith(isLoading: false);
@@ -54,11 +60,47 @@ class Sell extends _$Sell {
             '"PACIENTE"',
             '%${state.selectedPatient?.name ?? ''}%',
           );
+      print(response);
       state = state.copyWith(
         reviews: response.map((json) => ReviewModel.fromJson(json)).toList(),
       );
     } catch (e) {
-      state = state.copyWith(errorMessage: e.toString(), isLoading: false);
+      state = state.copyWith(
+        errorMessage: e.toString(),
+        isLoading: false,
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+      );
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> getMounts() async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final response = await Supabase.instance.client
+          .from('armazones')
+          .select()
+          .textSearch(
+            '"MARCA"',
+            '%${searchItemToSellController.text}%',
+            type: TextSearchType.plain,
+          );
+      state = state.copyWith(
+        mounts: response.map((json) => MountModel.fromJson(json)).toList(),
+      );
+    } catch (e) {
+      state = state.copyWith(
+        errorMessage: e.toString(),
+        isLoading: false,
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+      );
     } finally {
       state = state.copyWith(isLoading: false);
     }

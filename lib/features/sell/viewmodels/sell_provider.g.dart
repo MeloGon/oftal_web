@@ -6,7 +6,7 @@ part of 'sell_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$sellHash() => r'793c468dfa9c489553a15ff42e0ca1b9959bfc29';
+String _$sellHash() => r'69adebbebe53a698656f57b414ff86666681849b';
 
 /// See also [Sell].
 @ProviderFor(Sell)
