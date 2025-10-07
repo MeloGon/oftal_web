@@ -35,7 +35,9 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
     ref.watch(authProvider);
+
     return ShadApp.router(
+      locale: const Locale('es', 'ES'),
       routerConfig: router,
       theme: ShadThemeData(
         colorScheme: ShadZincColorScheme.light(),
