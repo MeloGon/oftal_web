@@ -5,12 +5,8 @@ class DebugEnv {
   static void printEnvironmentVariables() {
     print('=== ENVIRONMENT VARIABLES DEBUG ===');
     
-    // Check system environment variables
-    const systemUrl = String.fromEnvironment('SUPABASE_URL');
-    const systemKey = String.fromEnvironment('SUPABASE_ANON_KEY');
-    
-    print('SYSTEM ENV - SUPABASE_URL: ${systemUrl.isEmpty ? "NOT FOUND" : "FOUND"}');
-    print('SYSTEM ENV - SUPABASE_ANON_KEY: ${systemKey.isEmpty ? "NOT FOUND" : "FOUND"}');
+    // Check if dotenv is loaded
+    print('DOTENV LOADED: ${dotenv.isInitialized}');
     
     // Check .env file variables
     print('DOTENV - URL: ${dotenv.env["URL"] ?? "NOT FOUND"}');

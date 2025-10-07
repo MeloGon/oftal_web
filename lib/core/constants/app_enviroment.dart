@@ -7,27 +7,21 @@ class AppEnviroment {
     
     try {
       await dotenv.load(fileName: fileName);
+      print('✅ .env file loaded successfully');
     } catch (e) {
-      print('Warning: Could not load .env file: $e');
+      print('❌ Error loading .env file: $e');
     }
   }
 
-  // Try to get from environment variables first, then from .env file
   static String get url {
-    // Try environment variables first (for production)
-    const envUrl = String.fromEnvironment('SUPABASE_URL');
-    if (envUrl.isNotEmpty) return envUrl;
-    
-    // Fallback to .env file
-    return dotenv.env["URL"] ?? 'No url';
+    final dotenvUrl = dotenv.env["URL"];
+    print('🔍 URL from .env: $dotenvUrl');
+    return dotenvUrl ?? 'No url';
   }
   
   static String get anonKey {
-    // Try environment variables first (for production)
-    const envKey = String.fromEnvironment('SUPABASE_ANON_KEY');
-    if (envKey.isNotEmpty) return envKey;
-    
-    // Fallback to .env file
-    return dotenv.env["ANONKEY"] ?? 'No anon key';
+    final dotenvKey = dotenv.env["ANONKEY"];
+    print('🔍 ANONKEY from .env: $dotenvKey');
+    return dotenvKey ?? 'No anon key';
   }
 }
