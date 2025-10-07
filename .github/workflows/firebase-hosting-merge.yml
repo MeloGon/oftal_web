@@ -24,8 +24,15 @@ jobs:
           echo "APP_NAME=Oftal Web" >> .env
           echo "APP_VERSION=0.1.0" >> .env
           echo "DEBUG_MODE=false" >> .env
+          echo "Created .env file with:"
+          cat .env
       - name: 'Run flutter pub get'
         run: flutter pub get
+      - name: 'Verify environment variables'
+        run: |
+          echo "Checking environment variables:"
+          echo "URL: ${{ secrets.SUPABASE_URL }}"
+          echo "ANONKEY: ${{ secrets.SUPABASE_ANON_KEY }}"
       - name: 'Build Web App'
         run: flutter build web
       - uses: FirebaseExtended/action-hosting-deploy@v0

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:oftal_web/core/constants/constants.dart';
+import 'package:oftal_web/core/constants/debug_env.dart';
 import 'package:oftal_web/router/app_router.dart';
 import 'package:oftal_web/shared/providers/auth_general/auth_provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -14,6 +15,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await AppEnviroment.initEnvironment();
+  
+  // Debug: Print environment variables
+  DebugEnv.printEnvironmentVariables();
+  
   await supabase.Supabase.initialize(
     url: AppEnviroment.url,
     anonKey: AppEnviroment.anonKey,
