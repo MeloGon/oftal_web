@@ -2,12 +2,11 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:oftal_web/core/enums/snackbar_enum.dart';
-import 'package:oftal_web/shared/models/snackbar_config_model.dart';
+import 'package:oftal_web/features/add_patient/viewmodels/add_patient_state.dart';
+import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:oftal_web/features/add_patient/viewmodels/add_patient_state.dart';
-import 'package:oftal_web/shared/models/shared_models.dart';
 
 part 'add_patient_provider.g.dart';
 
