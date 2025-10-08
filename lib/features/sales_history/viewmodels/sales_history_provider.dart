@@ -85,10 +85,10 @@ class SalesHistory extends _$SalesHistory {
       final response = await Supabase.instance.client
           .from('ventas')
           .select()
-          .eq('ID REMISION', state.saleSelectedForDetails!.id);
+          .eq('FOLIO DE VENTA', state.saleSelectedForDetails!.folioSale!);
       state = state.copyWith(
         saleDetails:
-            response.map((json) => SalesDetailsModel.fromJson(json)).first,
+            response.map((json) => SalesDetailsModel.fromJson(json)).toList(),
       );
     } catch (e) {
       state = state.copyWith(

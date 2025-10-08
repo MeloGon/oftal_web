@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/features/sales_history/views/widgets/sales_details_section.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/label_sales_item.dart';
@@ -15,6 +16,7 @@ class SalesHistoryView extends ConsumerWidget {
     return SizedBox(
       child: Column(
         spacing: 20,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ShadCard(
             width: MediaQuery.sizeOf(context).width * .9,
@@ -60,7 +62,7 @@ class SalesHistoryView extends ConsumerWidget {
                           ),
                         ),
                       ),
-                    (salesState.sales.isNotEmpty)
+                    (salesState.sales.isNotEmpty && !salesState.isLoading)
                         ? SliverList.separated(
                           separatorBuilder: (context, index) => const Divider(),
                           itemBuilder: (context, index) {
@@ -88,7 +90,7 @@ class SalesHistoryView extends ConsumerWidget {
                                 spacing: 10,
                                 children: [
                                   Text(
-                                    'S/. ${sale.total.toStringAsFixed(2)}',
+                                    'S/. ${sale.total?.toStringAsFixed(2)}',
                                     style:
                                         ShadTheme.of(context).textTheme.large,
                                   ),
@@ -116,169 +118,14 @@ class SalesHistoryView extends ConsumerWidget {
           ),
           if (ref.watch(salesHistoryProvider).saleSelectedForDetails?.id !=
                   null &&
-              ref.watch(salesHistoryProvider).saleSelectedForDetails?.id != 0)
-            ShadCard(
-              width: MediaQuery.sizeOf(context).width * .9,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: IconButton(
-                      onPressed: salesNotifier.closeSaleDetails,
-
-                      icon: Icon(
-                        Icons.close,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    'Detalles de la venta',
-                    style: ShadTheme.of(context).textTheme.h2,
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Fecha de la venta: '),
-                        TextSpan(text: salesState.saleDetails?.dateSale),
-                      ],
-                    ),
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Paciente: '),
-                        TextSpan(text: salesState.saleDetails?.patient),
-                      ],
-                    ),
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Descripción: '),
-                        TextSpan(text: salesState.saleDetails?.description),
-                      ],
-                    ),
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Diseño: '),
-                        TextSpan(text: salesState.saleDetails?.design),
-                      ],
-                    ),
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Linea: '),
-                        TextSpan(text: salesState.saleDetails?.line),
-                      ],
-                    ),
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Material: '),
-                        TextSpan(text: salesState.saleDetails?.material),
-                      ],
-                    ),
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Tecnología: '),
-                        TextSpan(text: salesState.saleDetails?.technology),
-                      ],
-                    ),
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Serie: '),
-                        TextSpan(text: salesState.saleDetails?.serie),
-                      ],
-                    ),
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Texto: '),
-                        TextSpan(text: salesState.saleDetails?.text),
-                      ],
-                    ),
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Cantidad: '),
-                        TextSpan(text: salesState.saleDetails?.quantity),
-                      ],
-                    ),
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Precio: '),
-                        TextSpan(
-                          text: salesState.saleDetails?.price.toString(),
-                        ),
-                      ],
-                    ),
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Montura: '),
-                        TextSpan(text: salesState.saleDetails?.mount),
-                      ],
-                    ),
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Montura marca: '),
-                        TextSpan(text: salesState.saleDetails?.mountBrand),
-                      ],
-                    ),
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Montura modelo: '),
-                        TextSpan(text: salesState.saleDetails?.mountModel),
-                      ],
-                    ),
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Montura cantidad: '),
-                        TextSpan(text: salesState.saleDetails?.mountQuantity),
-                      ],
-                    ),
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Montura precio: '),
-                        TextSpan(
-                          text: salesState.saleDetails?.mountPrice.toString(),
-                        ),
-                      ],
-                    ),
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Montura texto: '),
-                        TextSpan(text: salesState.saleDetails?.mountText),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              ref.watch(salesHistoryProvider).saleSelectedForDetails?.id != 0 &&
+              !ref.watch(salesHistoryProvider).isLoading)
+            Wrap(
+              spacing: 20,
+              runSpacing: 20,
+              children: [
+                SalesDetailsSection(),
+              ],
             ),
         ],
       ),

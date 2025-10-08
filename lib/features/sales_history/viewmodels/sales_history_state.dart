@@ -4,7 +4,7 @@ class SalesHistoryState {
   final bool isLoading;
   final List<SalesModel> sales;
   final SalesModel? saleSelectedForDetails;
-  final SalesDetailsModel? saleDetails;
+  final List<SalesDetailsModel> saleDetails;
   SnackbarConfigModel? snackbarConfig;
   final String errorMessage;
 
@@ -12,7 +12,7 @@ class SalesHistoryState {
     this.isLoading = false,
     this.sales = const [],
     this.saleSelectedForDetails,
-    this.saleDetails,
+    this.saleDetails = const [],
     this.snackbarConfig,
     this.errorMessage = '',
   });
@@ -21,7 +21,7 @@ class SalesHistoryState {
     bool? isLoading,
     List<SalesModel>? sales,
     SalesModel? saleSelectedForDetails,
-    SalesDetailsModel? saleDetails,
+    List<SalesDetailsModel>? saleDetails,
     SnackbarConfigModel? snackbarConfig,
     String? errorMessage,
   }) {

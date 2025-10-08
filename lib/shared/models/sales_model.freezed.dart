@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SalesModel {
 
- int get id; String get branch; String get date; String get patient; String get authorName; double get total; double get discount; double get totalWithDiscount; double get account; double get rest;
+ int get id; String? get branch; String? get date; String? get patient; String? get authorName; double? get total; double? get discount; double? get totalWithDiscount; double? get account; double? get rest; String? get folioSale;
 /// Create a copy of SalesModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $SalesModelCopyWith<SalesModel> get copyWith => _$SalesModelCopyWithImpl<SalesMo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SalesModel&&(identical(other.id, id) || other.id == id)&&(identical(other.branch, branch) || other.branch == branch)&&(identical(other.date, date) || other.date == date)&&(identical(other.patient, patient) || other.patient == patient)&&(identical(other.authorName, authorName) || other.authorName == authorName)&&(identical(other.total, total) || other.total == total)&&(identical(other.discount, discount) || other.discount == discount)&&(identical(other.totalWithDiscount, totalWithDiscount) || other.totalWithDiscount == totalWithDiscount)&&(identical(other.account, account) || other.account == account)&&(identical(other.rest, rest) || other.rest == rest));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SalesModel&&(identical(other.id, id) || other.id == id)&&(identical(other.branch, branch) || other.branch == branch)&&(identical(other.date, date) || other.date == date)&&(identical(other.patient, patient) || other.patient == patient)&&(identical(other.authorName, authorName) || other.authorName == authorName)&&(identical(other.total, total) || other.total == total)&&(identical(other.discount, discount) || other.discount == discount)&&(identical(other.totalWithDiscount, totalWithDiscount) || other.totalWithDiscount == totalWithDiscount)&&(identical(other.account, account) || other.account == account)&&(identical(other.rest, rest) || other.rest == rest)&&(identical(other.folioSale, folioSale) || other.folioSale == folioSale));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,branch,date,patient,authorName,total,discount,totalWithDiscount,account,rest);
+int get hashCode => Object.hash(runtimeType,id,branch,date,patient,authorName,total,discount,totalWithDiscount,account,rest,folioSale);
 
 @override
 String toString() {
-  return 'SalesModel(id: $id, branch: $branch, date: $date, patient: $patient, authorName: $authorName, total: $total, discount: $discount, totalWithDiscount: $totalWithDiscount, account: $account, rest: $rest)';
+  return 'SalesModel(id: $id, branch: $branch, date: $date, patient: $patient, authorName: $authorName, total: $total, discount: $discount, totalWithDiscount: $totalWithDiscount, account: $account, rest: $rest, folioSale: $folioSale)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $SalesModelCopyWith<$Res>  {
   factory $SalesModelCopyWith(SalesModel value, $Res Function(SalesModel) _then) = _$SalesModelCopyWithImpl;
 @useResult
 $Res call({
- int id, String branch, String date, String patient, String authorName, double total, double discount, double totalWithDiscount, double account, double rest
+ int id, String? branch, String? date, String? patient, String? authorName, double? total, double? discount, double? totalWithDiscount, double? account, double? rest, String? folioSale
 });
 
 
@@ -63,19 +63,20 @@ class _$SalesModelCopyWithImpl<$Res>
 
 /// Create a copy of SalesModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? branch = null,Object? date = null,Object? patient = null,Object? authorName = null,Object? total = null,Object? discount = null,Object? totalWithDiscount = null,Object? account = null,Object? rest = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? branch = freezed,Object? date = freezed,Object? patient = freezed,Object? authorName = freezed,Object? total = freezed,Object? discount = freezed,Object? totalWithDiscount = freezed,Object? account = freezed,Object? rest = freezed,Object? folioSale = freezed,}) {
   return _then(SalesModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int,branch: null == branch ? _self.branch : branch // ignore: cast_nullable_to_non_nullable
-as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
-as String,patient: null == patient ? _self.patient : patient // ignore: cast_nullable_to_non_nullable
-as String,authorName: null == authorName ? _self.authorName : authorName // ignore: cast_nullable_to_non_nullable
-as String,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
-as double,discount: null == discount ? _self.discount : discount // ignore: cast_nullable_to_non_nullable
-as double,totalWithDiscount: null == totalWithDiscount ? _self.totalWithDiscount : totalWithDiscount // ignore: cast_nullable_to_non_nullable
-as double,account: null == account ? _self.account : account // ignore: cast_nullable_to_non_nullable
-as double,rest: null == rest ? _self.rest : rest // ignore: cast_nullable_to_non_nullable
-as double,
+as int,branch: freezed == branch ? _self.branch : branch // ignore: cast_nullable_to_non_nullable
+as String?,date: freezed == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as String?,patient: freezed == patient ? _self.patient : patient // ignore: cast_nullable_to_non_nullable
+as String?,authorName: freezed == authorName ? _self.authorName : authorName // ignore: cast_nullable_to_non_nullable
+as String?,total: freezed == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
+as double?,discount: freezed == discount ? _self.discount : discount // ignore: cast_nullable_to_non_nullable
+as double?,totalWithDiscount: freezed == totalWithDiscount ? _self.totalWithDiscount : totalWithDiscount // ignore: cast_nullable_to_non_nullable
+as double?,account: freezed == account ? _self.account : account // ignore: cast_nullable_to_non_nullable
+as double?,rest: freezed == rest ? _self.rest : rest // ignore: cast_nullable_to_non_nullable
+as double?,folioSale: freezed == folioSale ? _self.folioSale : folioSale // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

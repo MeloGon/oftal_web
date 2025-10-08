@@ -11,35 +11,38 @@ class SalesModel with _$SalesModel {
   final int id;
   @override
   @JsonKey(name: 'SUCURSAL', includeFromJson: true, includeToJson: true)
-  final String branch;
+  final String? branch;
   @override
   @JsonKey(name: 'FECHA', includeFromJson: true, includeToJson: true)
-  final String date;
+  final String? date;
   @override
   @JsonKey(name: 'PACIENTE', includeFromJson: true, includeToJson: true)
-  final String patient;
+  final String? patient;
   @override
   @JsonKey(name: 'AUTOR NOMBRE', includeFromJson: true, includeToJson: true)
-  final String authorName;
+  final String? authorName;
   @override
   @JsonKey(name: 'TOTAL', includeFromJson: true, includeToJson: true)
-  final double total;
+  final double? total;
   @override
   @JsonKey(name: 'DESCUENTO', includeFromJson: true, includeToJson: true)
-  final double discount;
+  final double? discount;
   @override
   @JsonKey(
     name: 'TOTAL CON DESCUENTO',
     includeFromJson: true,
     includeToJson: true,
   )
-  final double totalWithDiscount;
+  final double? totalWithDiscount;
   @override
   @JsonKey(name: 'A CUENTA', includeFromJson: true, includeToJson: true)
-  final double account;
+  final double? account;
   @override
   @JsonKey(name: 'RESTA', includeFromJson: true, includeToJson: true)
-  final double rest;
+  final double? rest;
+  @override
+  @JsonKey(name: 'FOLIO REMISION', includeFromJson: true, includeToJson: true)
+  final String? folioSale;
 
   SalesModel({
     required this.id,
@@ -52,6 +55,7 @@ class SalesModel with _$SalesModel {
     required this.totalWithDiscount,
     required this.account,
     required this.rest,
+    required this.folioSale,
   });
 
   factory SalesModel.fromJson(Map<String, Object?> json) =>
@@ -70,5 +74,6 @@ class SalesModel with _$SalesModel {
     totalWithDiscount: 0,
     account: 0,
     rest: 0,
+    folioSale: '',
   );
 }
