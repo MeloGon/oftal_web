@@ -158,22 +158,22 @@ class AddPatientView extends ConsumerWidget {
                     ),
                     ConstrainedBox(
                       constraints: BoxConstraints(
-                        maxWidth: MediaQuery.sizeOf(context).width * .3,
+                        maxWidth: MediaQuery.sizeOf(context).width * .1,
                       ),
-                      child: ShadDatePickerFormField(
-                        height: 36,
-                        label: Text(
-                          AppStrings.birthDate,
-                        ),
-                        onChanged: (date) {
-                          addPatientNotifier.updateBirthDate(date);
-                        },
-                        validator: (value) {
-                          if (value == null) {
-                            return AppStrings.birthDateRequired;
-                          }
-                          return null;
-                        },
+                      child: ShadInputFormField(
+                        inputFormatters: [
+                          addPatientNotifier.mask,
+                        ],
+                        placeholder: Text('31-03-2000'),
+                        label: Text(AppStrings.birthDate),
+                        controller: addPatientNotifier.birthDateController,
+                        validator:
+                            (v) =>
+                                RegExp(
+                                      r'^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(19|20)\d{2}$',
+                                    ).hasMatch(v)
+                                    ? null
+                                    : AppStrings.birthDateRequired,
                       ),
                     ),
                     Column(
