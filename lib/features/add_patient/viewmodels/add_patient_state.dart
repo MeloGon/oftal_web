@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
-import 'package:oftal_web/shared/models/snackbar_config_model.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class AddPatientState {
   final bool isLoading;
