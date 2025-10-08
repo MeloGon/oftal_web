@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/constants/constants.dart';
-import 'package:oftal_web/core/enums/snackbar_enum.dart';
+import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/add_patient/viewmodels/add_patient_provider.dart';
 import 'package:oftal_web/features/add_patient/views/widgets/last_patient_item.dart';
 import 'package:oftal_web/shared/extensions/widget_extension.dart';
@@ -21,10 +21,6 @@ class AddPatientView extends ConsumerWidget {
       'Masculino': 'Masculino',
       'Femenino': 'Femenino',
       'Otro': 'Otro',
-    };
-    final branchOptions = {
-      'OFTALVISION': 'OFTALVISION',
-      'MEDILENT': 'MEDILENT',
     };
 
     ref.listen(addPatientProvider, (previous, next) {
@@ -59,6 +55,7 @@ class AddPatientView extends ConsumerWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const SizedBox(height: 6),
                         Text(
                           AppStrings.registrationBranch,
                           style:
@@ -70,22 +67,29 @@ class AddPatientView extends ConsumerWidget {
                                   : ShadTheme.of(context).textTheme.small,
                         ),
                         const SizedBox(height: 8),
-                        ShadSelect<String>(
+                        ShadSelect<BranchEnum>(
                           placeholder: Text(AppStrings.select),
-                          initialValue: addPatientState.selectedBranch,
+                          initialValue:
+                              addPatientState.selectedBranch == null
+                                  ? null
+                                  : BranchEnum.values.firstWhere(
+                                    (e) =>
+                                        e.name ==
+                                        addPatientState.selectedBranch,
+                                  ),
                           selectedOptionBuilder:
-                              (context, value) => Text(value),
+                              (context, value) => Text(value.name),
                           options:
-                              branchOptions.entries
+                              BranchEnum.values
                                   .map(
                                     (e) => ShadOption(
-                                      value: e.key,
-                                      child: Text(e.value),
+                                      value: e,
+                                      child: Text(e.name),
                                     ),
                                   )
                                   .toList(),
                           onChanged: (value) {
-                            addPatientNotifier.updateBranch(value);
+                            addPatientNotifier.updateBranch(value?.name);
                           },
                         ),
                         if (ref.read(addPatientProvider).selectedBranch == null)

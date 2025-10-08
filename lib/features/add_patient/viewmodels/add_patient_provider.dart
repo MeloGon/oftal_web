@@ -6,6 +6,7 @@ import 'package:oftal_web/features/add_patient/viewmodels/add_patient_state.dart
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:oftal_web/shared/services/local_storage.dart' as local_storage;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'add_patient_provider.g.dart';
@@ -30,7 +31,10 @@ class AddPatient extends _$AddPatient {
       'es_ES',
     ).format(DateTime.now());
 
-    Future.microtask(_getPatients);
+    Future.microtask(() {
+      _getPatients();
+      initializeBranch();
+    });
 
     ref.onDispose(() {
       identificationController.dispose();
@@ -54,13 +58,30 @@ class AddPatient extends _$AddPatient {
     return BigInt.parse(buffer.toString());
   }
 
+  Future<void> initializeBranch() async {
+    final profile = await local_storage.LocalStorage.getProfile();
+    state = state.copyWith(selectedBranch: profile.branchName);
+  }
+
   void updateGender(String? gender) {
     state = state.copyWith(selectedGender: gender);
     genderController.value = {gender ?? ''};
   }
 
-  void updateBranch(String? branch) {
-    state = state.copyWith(selectedBranch: branch);
+  Future<void> updateBranch(String? branch) async {
+    final profile = await local_storage.LocalStorage.getProfile();
+    if (profile.role == 'admin') {
+      state = state.copyWith(selectedBranch: branch);
+    } else {
+      state = state.copyWith(
+        errorMessage:
+            'No tienes permisos para cambiar la sucursal, asi lo intentes no se guardara con la sucursal que seleccionaste',
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+      );
+    }
   }
 
   void updateBirthDate(DateTime? birthDate) {
