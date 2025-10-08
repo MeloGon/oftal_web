@@ -34,6 +34,7 @@ class SalesHistoryView extends ConsumerWidget {
                   SliverToBoxAdapter(
                     child: ShadInputFormField(
                       controller: salesNotifier.searchController,
+                      placeholder: Text('Ingresa el nombre del paciente'),
                       onSubmitted: (_) => salesNotifier.getSales(),
                       trailing: ShadButton(
                         onPressed: () {

@@ -13,10 +13,24 @@ class CardStatisticItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ShadCard(
-      child: Column(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 15,
         children: [
-          Text(title),
-          Text(content),
+          Container(
+            width: 2,
+            height: 100,
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          Column(
+            children: [
+              Text(title, style: ShadTheme.of(context).textTheme.h3),
+              Text(content, style: ShadTheme.of(context).textTheme.h2),
+            ],
+          ),
         ],
       ),
     );

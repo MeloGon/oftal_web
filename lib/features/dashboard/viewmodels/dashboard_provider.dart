@@ -12,6 +12,7 @@ class DashboardProvider extends _$DashboardProvider {
   DashboardState build() {
     Future.microtask(() {
       getSalesToday();
+      getClientsByBranch();
     });
     return DashboardState();
   }
@@ -48,12 +49,15 @@ class DashboardProvider extends _$DashboardProvider {
     try {
       final response =
           await Supabase.instance.client
-              .from('clientes')
+              .from('pacientes')
               .select('*')
               .eq('"SUCURSAL"', profile.branchName ?? '')
               .count();
       final clientesByBranch = response.count;
-      state = state.copyWith(clientsByBranch: clientesByBranch);
+      state = state.copyWith(
+        clientsByBranch: clientesByBranch,
+        branchName: profile.branchName ?? '',
+      );
     } catch (e) {
       state = state.copyWith(errorMessage: e.toString());
     } finally {

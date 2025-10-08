@@ -1,4 +1,4 @@
-import 'package:fl_chart/fl_chart.dart';
+// import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/features/dashboard/viewmodels/dashboard_provider.dart';
@@ -15,9 +15,13 @@ class DashboardView extends ConsumerWidget {
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      width: MediaQuery.sizeOf(context).width * .9,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Wrap(
+            spacing: 20,
+            runSpacing: 20,
             children: [
               CardStatisticItem(
                 title: 'Ventas del día',
@@ -27,38 +31,42 @@ class DashboardView extends ConsumerWidget {
                 title: 'Clientes de la sucursal',
                 content: '${dashboardState.clientsByBranch}',
               ),
+              CardStatisticItem(
+                title: 'Sucursal de trabajo',
+                content: dashboardState.branchName,
+              ),
             ],
           ),
-          SizedBox(
-            height: 300,
-            width: MediaQuery.sizeOf(context).width * .9,
-            child: LineChart(
-              LineChartData(
-                // lineBarsData: [
-                //   LineChartBarData(
-                //     spots: [
-                //       FlSpot(0, 0),
-                //       FlSpot(1, 1),
-                //       FlSpot(2, 2),
-                //     ],
-                //   ),
-                // ],
-                gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: true,
-                  drawHorizontalLine: true,
-                ),
-                titlesData: FlTitlesData(
-                  rightTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  topTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          // SizedBox(
+          //   height: 300,
+          //   width: MediaQuery.sizeOf(context).width * .9,
+          //   child: LineChart(
+          //     LineChartData(
+          //       // lineBarsData: [
+          //       //   LineChartBarData(
+          //       //     spots: [
+          //       //       FlSpot(0, 0),
+          //       //       FlSpot(1, 1),
+          //       //       FlSpot(2, 2),
+          //       //     ],
+          //       //   ),
+          //       // ],
+          //       gridData: FlGridData(
+          //         show: true,
+          //         drawVerticalLine: true,
+          //         drawHorizontalLine: true,
+          //       ),
+          //       titlesData: FlTitlesData(
+          //         rightTitles: const AxisTitles(
+          //           sideTitles: SideTitles(showTitles: false),
+          //         ),
+          //         topTitles: const AxisTitles(
+          //           sideTitles: SideTitles(showTitles: false),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
