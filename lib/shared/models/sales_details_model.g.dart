@@ -28,14 +28,20 @@ SalesDetailsModel _$SalesDetailsModelFromJson(Map<String, dynamic> json) =>
       mountPrice: (json['MONTURA PRECIO'] as num?)?.toDouble(),
       mountText: json['MONTURA TEXTO'] as String?,
       updatedDate: json['fecha_ventas_actualizada'] as String?,
+      folioSale: json['FOLIO VENTA'] as String?,
+      idOftalmico: json['ID OFTALMICO'] as String?,
+      idMount: json['ID MONTURA'] as String?,
+      mountColor: json['MONTURA COLOR'] as String?,
     );
 
 Map<String, dynamic> _$SalesDetailsModelToJson(SalesDetailsModel instance) =>
     <String, dynamic>{
       'ID': instance.id,
       'ID REMISION': instance.idRemision,
+      'FOLIO VENTA': instance.folioSale,
       'FECHA DE VENTA': instance.dateSale,
       'PACIENTE': instance.patient,
+      'ID OFTALMICO': instance.idOftalmico,
       'DESCRIPCION': instance.description,
       'DISEÑO': instance.design,
       'LINEA': instance.line,
@@ -45,9 +51,11 @@ Map<String, dynamic> _$SalesDetailsModelToJson(SalesDetailsModel instance) =>
       'TEXTO': instance.text,
       'CANTIDAD': instance.quantity,
       'PRECIO': instance.price,
+      'ID MONTURA': instance.idMount,
       'MONTURA': instance.mount,
       'MONTURA MARCA': instance.mountBrand,
       'MONTURA MODELO': instance.mountModel,
+      'MONTURA COLOR': instance.mountColor,
       'MONTURA CANTIDAD': instance.mountQuantity,
       'MONTURA PRECIO': instance.mountPrice,
       'MONTURA TEXTO': instance.mountText,

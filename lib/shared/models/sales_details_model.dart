@@ -13,11 +13,17 @@ class SalesDetailsModel with _$SalesDetailsModel {
   @JsonKey(name: 'ID REMISION', includeFromJson: true, includeToJson: true)
   final String? idRemision;
   @override
+  @JsonKey(name: 'FOLIO VENTA', includeFromJson: true, includeToJson: true)
+  final String? folioSale;
+  @override
   @JsonKey(name: 'FECHA DE VENTA', includeFromJson: true, includeToJson: true)
   final String? dateSale;
   @override
   @JsonKey(name: 'PACIENTE', includeFromJson: true, includeToJson: true)
   final String? patient;
+  @override
+  @JsonKey(name: 'ID OFTALMICO', includeFromJson: true, includeToJson: true)
+  final String? idOftalmico;
   @override
   @JsonKey(name: 'DESCRIPCION', includeFromJson: true, includeToJson: true)
   final String? description;
@@ -46,6 +52,9 @@ class SalesDetailsModel with _$SalesDetailsModel {
   @JsonKey(name: 'PRECIO', includeFromJson: true, includeToJson: true)
   final double? price;
   @override
+  @JsonKey(name: 'ID MONTURA', includeFromJson: true, includeToJson: true)
+  final String? idMount;
+  @override
   @JsonKey(name: 'MONTURA', includeFromJson: true, includeToJson: true)
   final String? mount;
   @override
@@ -54,6 +63,9 @@ class SalesDetailsModel with _$SalesDetailsModel {
   @override
   @JsonKey(name: 'MONTURA MODELO', includeFromJson: true, includeToJson: true)
   final String? mountModel;
+  @override
+  @JsonKey(name: 'MONTURA COLOR', includeFromJson: true, includeToJson: true)
+  final String? mountColor;
   @override
   @JsonKey(name: 'MONTURA CANTIDAD', includeFromJson: true, includeToJson: true)
   final String? mountQuantity;
@@ -93,6 +105,10 @@ class SalesDetailsModel with _$SalesDetailsModel {
     this.mountPrice,
     this.mountText,
     this.updatedDate,
+    this.folioSale,
+    this.idOftalmico,
+    this.idMount,
+    this.mountColor,
   });
 
   factory SalesDetailsModel.fromJson(Map<String, Object?> json) =>
