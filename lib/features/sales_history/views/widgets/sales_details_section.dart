@@ -37,7 +37,7 @@ class SalesDetailsSection extends ConsumerWidget {
                       (saleDetail) => ShadAccordionItem(
                         value: saleDetail.id.toString(),
                         title: Text(
-                          'Venta del ${saleDetail.dateSale ?? ''} por el monto de s/. ${saleDetail.price?.toStringAsFixed(2)}',
+                          'Venta del ${saleDetail.dateSale ?? ''} por el monto de s/. ${(saleDetail.price ?? 0) + (saleDetail.mountPrice ?? 0)}',
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
