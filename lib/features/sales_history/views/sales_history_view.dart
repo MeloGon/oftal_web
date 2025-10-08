@@ -21,7 +21,7 @@ class SalesHistoryView extends ConsumerWidget {
           ShadCard(
             width: MediaQuery.sizeOf(context).width * .9,
             child: ShadCard(
-              height: 400,
+              height: 700,
               child: Scrollbar(
                 thumbVisibility: true,
                 child: CustomScrollView(
