@@ -9,7 +9,7 @@ import 'package:oftal_web/shared/layouts/auth/auth_layout.dart';
 import 'package:oftal_web/shared/layouts/dashboard/dashboard_layout.dart';
 import 'package:oftal_web/shared/layouts/splash/splash_layout.dart';
 import 'package:oftal_web/shared/providers/providers.dart';
-import 'package:oftal_web/shared/views/dashboard_view.dart';
+import 'package:oftal_web/features/dashboard/views/dashboard_view.dart';
 import 'package:oftal_web/shared/views/no_page_found_view.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
