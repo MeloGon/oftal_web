@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/features/sell/viewmodels/sell_provider.dart';
 import 'package:oftal_web/features/sell/views/widgets/label_item_to_add_cart.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class ItemToAddCart extends StatelessWidget {
+class ItemToAddCart extends ConsumerWidget {
   const ItemToAddCart({super.key, required this.mount});
   final MountModel mount;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
       title: LabelItemToAddCart(
         title: 'Marca',
@@ -37,7 +39,9 @@ class ItemToAddCart extends StatelessWidget {
           ),
           ShadIconButton(
             icon: Icon(Icons.add_shopping_cart),
-            onPressed: () {},
+            onPressed: () {
+              ref.read(sellProvider.notifier).selectItemToSell(mount);
+            },
           ),
         ],
       ),

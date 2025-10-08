@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SalesModel {
 
- int get id; String? get branch; String? get date; String? get patient; String? get authorName; double? get total; double? get discount; double? get totalWithDiscount; double? get account; double? get rest; String? get folioSale;
+ int get id; String? get branch; String? get date; String? get patient; String? get authorName; double? get total; double? get discount; double? get totalWithDiscount; double? get account; double? get rest; String? get folioSale; String? get updatedDate;
 /// Create a copy of SalesModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $SalesModelCopyWith<SalesModel> get copyWith => _$SalesModelCopyWithImpl<SalesMo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SalesModel&&(identical(other.id, id) || other.id == id)&&(identical(other.branch, branch) || other.branch == branch)&&(identical(other.date, date) || other.date == date)&&(identical(other.patient, patient) || other.patient == patient)&&(identical(other.authorName, authorName) || other.authorName == authorName)&&(identical(other.total, total) || other.total == total)&&(identical(other.discount, discount) || other.discount == discount)&&(identical(other.totalWithDiscount, totalWithDiscount) || other.totalWithDiscount == totalWithDiscount)&&(identical(other.account, account) || other.account == account)&&(identical(other.rest, rest) || other.rest == rest)&&(identical(other.folioSale, folioSale) || other.folioSale == folioSale));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SalesModel&&(identical(other.id, id) || other.id == id)&&(identical(other.branch, branch) || other.branch == branch)&&(identical(other.date, date) || other.date == date)&&(identical(other.patient, patient) || other.patient == patient)&&(identical(other.authorName, authorName) || other.authorName == authorName)&&(identical(other.total, total) || other.total == total)&&(identical(other.discount, discount) || other.discount == discount)&&(identical(other.totalWithDiscount, totalWithDiscount) || other.totalWithDiscount == totalWithDiscount)&&(identical(other.account, account) || other.account == account)&&(identical(other.rest, rest) || other.rest == rest)&&(identical(other.folioSale, folioSale) || other.folioSale == folioSale)&&(identical(other.updatedDate, updatedDate) || other.updatedDate == updatedDate));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,branch,date,patient,authorName,total,discount,totalWithDiscount,account,rest,folioSale);
+int get hashCode => Object.hash(runtimeType,id,branch,date,patient,authorName,total,discount,totalWithDiscount,account,rest,folioSale,updatedDate);
 
 @override
 String toString() {
-  return 'SalesModel(id: $id, branch: $branch, date: $date, patient: $patient, authorName: $authorName, total: $total, discount: $discount, totalWithDiscount: $totalWithDiscount, account: $account, rest: $rest, folioSale: $folioSale)';
+  return 'SalesModel(id: $id, branch: $branch, date: $date, patient: $patient, authorName: $authorName, total: $total, discount: $discount, totalWithDiscount: $totalWithDiscount, account: $account, rest: $rest, folioSale: $folioSale, updatedDate: $updatedDate)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $SalesModelCopyWith<$Res>  {
   factory $SalesModelCopyWith(SalesModel value, $Res Function(SalesModel) _then) = _$SalesModelCopyWithImpl;
 @useResult
 $Res call({
- int id, String? branch, String? date, String? patient, String? authorName, double? total, double? discount, double? totalWithDiscount, double? account, double? rest, String? folioSale
+ int id, String? branch, String? date, String? patient, String? authorName, double? total, double? discount, double? totalWithDiscount, double? account, double? rest, String? folioSale, String? updatedDate
 });
 
 
@@ -63,7 +63,7 @@ class _$SalesModelCopyWithImpl<$Res>
 
 /// Create a copy of SalesModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? branch = freezed,Object? date = freezed,Object? patient = freezed,Object? authorName = freezed,Object? total = freezed,Object? discount = freezed,Object? totalWithDiscount = freezed,Object? account = freezed,Object? rest = freezed,Object? folioSale = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? branch = freezed,Object? date = freezed,Object? patient = freezed,Object? authorName = freezed,Object? total = freezed,Object? discount = freezed,Object? totalWithDiscount = freezed,Object? account = freezed,Object? rest = freezed,Object? folioSale = freezed,Object? updatedDate = freezed,}) {
   return _then(SalesModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,branch: freezed == branch ? _self.branch : branch // ignore: cast_nullable_to_non_nullable
@@ -76,6 +76,7 @@ as double?,totalWithDiscount: freezed == totalWithDiscount ? _self.totalWithDisc
 as double?,account: freezed == account ? _self.account : account // ignore: cast_nullable_to_non_nullable
 as double?,rest: freezed == rest ? _self.rest : rest // ignore: cast_nullable_to_non_nullable
 as double?,folioSale: freezed == folioSale ? _self.folioSale : folioSale // ignore: cast_nullable_to_non_nullable
+as String?,updatedDate: freezed == updatedDate ? _self.updatedDate : updatedDate // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

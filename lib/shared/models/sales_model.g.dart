@@ -18,6 +18,7 @@ SalesModel _$SalesModelFromJson(Map<String, dynamic> json) => SalesModel(
   account: (json['A CUENTA'] as num?)?.toDouble(),
   rest: (json['RESTA'] as num?)?.toDouble(),
   folioSale: json['FOLIO REMISION'] as String?,
+  updatedDate: json['fecha_actualizada'] as String?,
 );
 
 Map<String, dynamic> _$SalesModelToJson(SalesModel instance) =>
@@ -33,4 +34,5 @@ Map<String, dynamic> _$SalesModelToJson(SalesModel instance) =>
       'A CUENTA': instance.account,
       'RESTA': instance.rest,
       'FOLIO REMISION': instance.folioSale,
+      'fecha_actualizada': instance.updatedDate,
     };

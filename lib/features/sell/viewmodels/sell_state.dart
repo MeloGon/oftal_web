@@ -11,6 +11,11 @@ class SellState {
   final List<ReviewModel> reviews;
   final List<MountModel> mounts;
   SnackbarConfigModel? snackbarConfig;
+  OptionsToSellEnum? selectedOptionToSell;
+  final List<SalesDetailsModel> itemsToSell;
+  final String idRemisionAndFolioSale;
+  final DiscountReasonEnum? selectedDiscountReason;
+
   SellState({
     this.isLoading = false,
     this.errorMessage = '',
@@ -21,6 +26,10 @@ class SellState {
     this.reviews = const [],
     this.mounts = const [],
     this.snackbarConfig,
+    this.selectedOptionToSell,
+    this.itemsToSell = const [],
+    this.idRemisionAndFolioSale = '',
+    this.selectedDiscountReason,
   });
 
   SellState copyWith({
@@ -33,6 +42,10 @@ class SellState {
     List<ReviewModel>? reviews,
     List<MountModel>? mounts,
     SnackbarConfigModel? snackbarConfig,
+    OptionsToSellEnum? selectedOptionToSell,
+    List<SalesDetailsModel>? itemsToSell,
+    String? idRemisionAndFolioSale,
+    DiscountReasonEnum? selectedDiscountReason,
   }) {
     return SellState(
       isLoading: isLoading ?? this.isLoading,
@@ -44,6 +57,12 @@ class SellState {
       reviews: reviews ?? this.reviews,
       mounts: mounts ?? this.mounts,
       snackbarConfig: snackbarConfig ?? this.snackbarConfig,
+      selectedOptionToSell: selectedOptionToSell ?? this.selectedOptionToSell,
+      itemsToSell: itemsToSell ?? this.itemsToSell,
+      idRemisionAndFolioSale:
+          idRemisionAndFolioSale ?? this.idRemisionAndFolioSale,
+      selectedDiscountReason:
+          selectedDiscountReason ?? this.selectedDiscountReason,
     );
   }
 }

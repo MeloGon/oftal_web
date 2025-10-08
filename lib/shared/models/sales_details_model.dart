@@ -13,7 +13,7 @@ class SalesDetailsModel with _$SalesDetailsModel {
   @JsonKey(name: 'ID REMISION', includeFromJson: true, includeToJson: true)
   final String? idRemision;
   @override
-  @JsonKey(name: 'FOLIO VENTA', includeFromJson: true, includeToJson: true)
+  @JsonKey(name: 'FOLIO DE VENTA', includeFromJson: true, includeToJson: true)
   final String? folioSale;
   @override
   @JsonKey(name: 'FECHA DE VENTA', includeFromJson: true, includeToJson: true)
@@ -53,7 +53,7 @@ class SalesDetailsModel with _$SalesDetailsModel {
   final double? price;
   @override
   @JsonKey(name: 'ID MONTURA', includeFromJson: true, includeToJson: true)
-  final String? idMount;
+  final int? idMount;
   @override
   @JsonKey(name: 'MONTURA', includeFromJson: true, includeToJson: true)
   final String? mount;

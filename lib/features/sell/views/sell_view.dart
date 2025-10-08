@@ -155,6 +155,11 @@ class SellView extends ConsumerWidget {
                                     )
                                     .toList(),
                             onChanged: (value) {
+                              sellNotifier.selectOptionToSell(
+                                OptionsToSellEnum.values.firstWhere(
+                                  (e) => e.name == value,
+                                ),
+                              );
                               // addPatientNotifier.updateGender(value);
                             },
                             // controller: addPatientNotifier.genderController,
@@ -172,7 +177,14 @@ class SellView extends ConsumerWidget {
                               label: Text('Nombre del producto'),
                               controller:
                                   sellNotifier.searchItemToSellController,
-                              onSubmitted: (_) => sellNotifier.getMounts(),
+                              onSubmitted: (_) {
+                                if (sellState.selectedOptionToSell ==
+                                    OptionsToSellEnum.mount) {
+                                  sellNotifier.getMounts();
+                                } else {
+                                  // sellNotifier.getResin();
+                                }
+                              },
                             ),
                             if (sellState.mounts.isNotEmpty &&
                                 !sellState.isLoading)
@@ -213,6 +225,7 @@ class SellView extends ConsumerWidget {
             ShadCard(
               width: MediaQuery.sizeOf(context).width * .9,
               child: Column(
+                spacing: 20,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -220,7 +233,9 @@ class SellView extends ConsumerWidget {
                     style: ShadTheme.of(context).textTheme.h2,
                   ),
                   ShadCard(
+                    width: MediaQuery.sizeOf(context).width * .9,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         RichText(
                           text: TextSpan(
@@ -238,6 +253,138 @@ class SellView extends ConsumerWidget {
                             ],
                           ),
                         ),
+                        Text('Items a vender').paddingOnly(bottom: 20),
+                        // Enviar el item cuando se seleccione y solo crear un modelo detalle de ventas e ir llenando con lo que se pueda, se crea un detalle de venta por cada item
+                        // el venta corto es la union de los detalles de las ventas
+                        if (sellState.itemsToSell.isNotEmpty)
+                          ListView.separated(
+                            shrinkWrap: true,
+                            separatorBuilder:
+                                (context, index) => const Divider(),
+                            itemCount: sellState.itemsToSell.length,
+                            itemBuilder: (context, index) {
+                              return ShadCard(
+                                child: ListTile(
+                                  title: Text(
+                                    sellState.itemsToSell[index].mountBrand ??
+                                        '',
+                                  ),
+                                  subtitle: Text(
+                                    sellState.itemsToSell[index].mountModel ??
+                                        '',
+                                  ),
+                                  trailing: Column(
+                                    children: [
+                                      Text(
+                                        's/.${sellState.itemsToSell[index].mountPrice?.toStringAsFixed(2) ?? ''}',
+                                        style:
+                                            ShadTheme.of(
+                                              context,
+                                            ).textTheme.large,
+                                      ),
+                                      Text(
+                                        sellState
+                                                .itemsToSell[index]
+                                                .mountQuantity ??
+                                            '',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        SizedBox(height: 20),
+                        if (sellState.itemsToSell.isNotEmpty)
+                          Row(
+                            spacing: 10,
+                            children: [
+                              Text('Motivo de descuento'),
+                              ShadSelect<String>(
+                                placeholder: Text(AppStrings.select),
+                                selectedOptionBuilder:
+                                    (context, value) => Text(value),
+                                options:
+                                    DiscountReasonEnum.values
+                                        .map(
+                                          (e) => ShadOption(
+                                            value: e.name,
+                                            child: Text(e.name),
+                                          ),
+                                        )
+                                        .toList(),
+                                onChanged: (value) {
+                                  sellNotifier.selectDiscountReason(
+                                    DiscountReasonEnum.values.firstWhere(
+                                      (e) => e.name == value,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          spacing: 10,
+                          children: [
+                            Flexible(
+                              child: ShadInputFormField(
+                                readOnly: true,
+                                label: Text('Importe'), //la suma de todo
+                                controller: sellNotifier.importController,
+                              ),
+                            ),
+                            Flexible(
+                              child: ShadInputFormField(
+                                readOnly: sellState.itemsToSell.isEmpty,
+                                label: Text('Descuento'), //el descuento de todo
+                                controller: sellNotifier.discountController,
+                                onSubmitted:
+                                    (_) => sellNotifier.applyDiscount(),
+                              ),
+                            ),
+                            Flexible(
+                              child: ShadInputFormField(
+                                readOnly: true,
+                                label: Text(
+                                  'Total',
+                                ), //la suma de todo - el descuento
+                                controller: sellNotifier.totalController,
+                              ),
+                            ),
+                            Flexible(
+                              child: ShadInputFormField(
+                                readOnly: sellState.itemsToSell.isEmpty,
+                                label: Text('A cuenta'), //el dinero que se paga
+                                controller: sellNotifier.accountController,
+                                onSubmitted: (_) => sellNotifier.leaveAccount(),
+                              ),
+                            ),
+                            Flexible(
+                              child: ShadInputFormField(
+                                readOnly: true,
+                                label: Text('Resto'), //el dinero que se debe
+                                controller: sellNotifier.restController,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          spacing: 10,
+                          children: [
+                            ShadButton(
+                              size: ShadButtonSize.lg,
+                              onPressed: () => sellNotifier.createSale(),
+                              child: Text('Crear venta'),
+                            ),
+                            ShadButton.outline(
+                              size: ShadButtonSize.lg,
+                              onPressed: () => sellNotifier.cancelSale(),
+                              child: Text('Cancelar'),
+                            ),
+                          ],
+                        ).paddingOnly(top: 20),
                       ],
                     ),
                   ),

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SalesDetailsModel {
 
- int? get id; String? get idRemision; String? get folioSale; String? get dateSale; String? get patient; String? get idOftalmico; String? get description; String? get design; String? get line; String? get material; String? get technology; String? get serie; String? get text; String? get quantity; double? get price; String? get idMount; String? get mount; String? get mountBrand; String? get mountModel; String? get mountColor; String? get mountQuantity; double? get mountPrice; String? get mountText; String? get updatedDate;
+ int? get id; String? get idRemision; String? get folioSale; String? get dateSale; String? get patient; String? get idOftalmico; String? get description; String? get design; String? get line; String? get material; String? get technology; String? get serie; String? get text; String? get quantity; double? get price; int? get idMount; String? get mount; String? get mountBrand; String? get mountModel; String? get mountColor; String? get mountQuantity; double? get mountPrice; String? get mountText; String? get updatedDate;
 /// Create a copy of SalesDetailsModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -46,7 +46,7 @@ abstract mixin class $SalesDetailsModelCopyWith<$Res>  {
   factory $SalesDetailsModelCopyWith(SalesDetailsModel value, $Res Function(SalesDetailsModel) _then) = _$SalesDetailsModelCopyWithImpl;
 @useResult
 $Res call({
- int? id, String? idRemision, String? dateSale, String? patient, String? description, String? design, String? line, String? material, String? technology, String? serie, String? text, String? quantity, double? price, String? mount, String? mountBrand, String? mountModel, String? mountQuantity, double? mountPrice, String? mountText, String? updatedDate, String? folioSale, String? idOftalmico, String? idMount, String? mountColor
+ int? id, String? idRemision, String? dateSale, String? patient, String? description, String? design, String? line, String? material, String? technology, String? serie, String? text, String? quantity, double? price, String? mount, String? mountBrand, String? mountModel, String? mountQuantity, double? mountPrice, String? mountText, String? updatedDate, String? folioSale, String? idOftalmico, int? idMount, String? mountColor
 });
 
 
@@ -88,7 +88,7 @@ as String?,updatedDate: freezed == updatedDate ? _self.updatedDate : updatedDate
 as String?,folioSale: freezed == folioSale ? _self.folioSale : folioSale // ignore: cast_nullable_to_non_nullable
 as String?,idOftalmico: freezed == idOftalmico ? _self.idOftalmico : idOftalmico // ignore: cast_nullable_to_non_nullable
 as String?,idMount: freezed == idMount ? _self.idMount : idMount // ignore: cast_nullable_to_non_nullable
-as String?,mountColor: freezed == mountColor ? _self.mountColor : mountColor // ignore: cast_nullable_to_non_nullable
+as int?,mountColor: freezed == mountColor ? _self.mountColor : mountColor // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

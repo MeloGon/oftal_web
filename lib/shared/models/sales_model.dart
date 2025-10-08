@@ -43,6 +43,13 @@ class SalesModel with _$SalesModel {
   @override
   @JsonKey(name: 'FOLIO REMISION', includeFromJson: true, includeToJson: true)
   final String? folioSale;
+  @override
+  @JsonKey(
+    name: 'fecha_actualizada',
+    includeFromJson: true,
+    includeToJson: true,
+  )
+  final String? updatedDate;
 
   SalesModel({
     required this.id,
@@ -56,6 +63,7 @@ class SalesModel with _$SalesModel {
     required this.account,
     required this.rest,
     required this.folioSale,
+    required this.updatedDate,
   });
 
   factory SalesModel.fromJson(Map<String, Object?> json) =>
@@ -75,5 +83,6 @@ class SalesModel with _$SalesModel {
     account: 0,
     rest: 0,
     folioSale: '',
+    updatedDate: '',
   );
 }
