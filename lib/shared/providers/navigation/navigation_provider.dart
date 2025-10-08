@@ -1,4 +1,5 @@
 import 'package:oftal_web/shared/providers/navigation/navigation_state.dart';
+import 'package:oftal_web/shared/services/local_storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'navigation_provider.g.dart';
@@ -7,6 +8,9 @@ part 'navigation_provider.g.dart';
 class Navigation extends _$Navigation {
   @override
   NavigationState build() {
+    Future.microtask(() {
+      isAdmin();
+    });
     return NavigationState();
   }
 
@@ -24,5 +28,10 @@ class Navigation extends _$Navigation {
 
   void setCurrentPage(String page) {
     state = state.copyWith(currentPage: page);
+  }
+
+  Future<void> isAdmin() async {
+    final profile = await LocalStorage.getProfile();
+    state = state.copyWith(isAdmin: profile.role == 'admin');
   }
 }
