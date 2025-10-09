@@ -45,9 +45,6 @@ class MyApp extends ConsumerWidget {
         textTheme: ShadTextTheme.fromGoogleFont(GoogleFonts.sofiaSans),
         brightness: Brightness.light,
       ),
-      // builder: (_, child) {
-      //   return AuthLayout(child: child!);
-      // },
     );
   }
 }
