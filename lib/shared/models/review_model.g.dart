@@ -38,6 +38,7 @@ ReviewModel _$ReviewModelFromJson(Map<String, dynamic> json) => ReviewModel(
   avConRxOdCerca: json['AV CON RX OD CERCA'] as String?,
   avConRxOiCerca: json['AV CON RX OI CERCA'] as String?,
   optometricDiagnosis: json['DIAGNOSTICO OPTOMETRICO'] as String?,
+  dateReviewUpdated: json['fecha_revision_actualizada'] as String?,
 );
 
 Map<String, dynamic> _$ReviewModelToJson(ReviewModel instance) =>
@@ -73,4 +74,5 @@ Map<String, dynamic> _$ReviewModelToJson(ReviewModel instance) =>
       'AV CON RX OD CERCA': instance.avConRxOdCerca,
       'AV CON RX OI CERCA': instance.avConRxOiCerca,
       'DIAGNOSTICO OPTOMETRICO': instance.optometricDiagnosis,
+      'fecha_revision_actualizada': instance.dateReviewUpdated,
     };

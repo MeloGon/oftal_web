@@ -136,6 +136,13 @@ class ReviewModel with _$ReviewModel {
     includeToJson: true,
   )
   final String? optometricDiagnosis;
+  @override
+  @JsonKey(
+    name: 'fecha_revision_actualizada',
+    includeFromJson: true,
+    includeToJson: true,
+  )
+  final String? dateReviewUpdated;
 
   ReviewModel({
     required this.idReview,
@@ -169,6 +176,7 @@ class ReviewModel with _$ReviewModel {
     this.avConRxOdCerca,
     this.avConRxOiCerca,
     this.optometricDiagnosis,
+    this.dateReviewUpdated,
   });
 
   factory ReviewModel.fromJson(Map<String, Object?> json) =>
