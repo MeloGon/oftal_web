@@ -11,6 +11,8 @@ class AddPatientState {
   final PatientModel? patient;
   final GlobalKey<ShadFormState>? formKey;
   final SnackbarConfigModel? snackbarConfig;
+  final bool isAddViewMeasureDialogOpen;
+  final PatientModel? patientSelected;
 
   AddPatientState({
     this.isLoading = false,
@@ -21,6 +23,8 @@ class AddPatientState {
     this.patient,
     this.formKey,
     this.snackbarConfig,
+    this.isAddViewMeasureDialogOpen = false,
+    this.patientSelected,
   });
 
   AddPatientState copyWith({
@@ -32,6 +36,8 @@ class AddPatientState {
     PatientModel? patient,
     GlobalKey<ShadFormState>? formKey,
     SnackbarConfigModel? snackbarConfig,
+    bool? isAddViewMeasureDialogOpen,
+    PatientModel? patientSelected,
   }) {
     return AddPatientState(
       isLoading: isLoading ?? this.isLoading,
@@ -42,6 +48,9 @@ class AddPatientState {
       patient: patient ?? this.patient,
       formKey: formKey ?? this.formKey,
       snackbarConfig: snackbarConfig ?? this.snackbarConfig,
+      isAddViewMeasureDialogOpen:
+          isAddViewMeasureDialogOpen ?? this.isAddViewMeasureDialogOpen,
+      patientSelected: patientSelected ?? this.patientSelected,
     );
   }
 }

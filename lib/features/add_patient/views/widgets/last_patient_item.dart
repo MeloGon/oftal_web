@@ -39,6 +39,14 @@ class LastPatientItem extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ShadIconButton(
+            icon: Icon(Icons.add_circle_outline_sharp),
+            onPressed: () {
+              ref
+                  .read(addPatientProvider.notifier)
+                  .openAddViewMeasureDialog(patient);
+            },
+          ),
+          ShadIconButton(
             icon: Icon(LucideIcons.shoppingBasket300),
             onPressed: () {},
           ),

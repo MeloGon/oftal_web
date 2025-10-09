@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:oftal_web/core/constants/constants.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/add_patient/viewmodels/add_patient_provider.dart';
+import 'package:oftal_web/features/add_patient/views/widgets/add_view_measure_dialog.dart';
 import 'package:oftal_web/features/add_patient/views/widgets/last_patient_item.dart';
 import 'package:oftal_web/shared/extensions/widget_extension.dart';
 import 'package:oftal_web/shared/models/snackbar_config_model.dart';
 import 'package:oftal_web/shared/widgets/custom_snackbar.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
 class AddPatientView extends ConsumerWidget {
   const AddPatientView({super.key});
@@ -30,6 +31,51 @@ class AddPatientView extends ConsumerWidget {
         Future.microtask(
           () => ref.read(addPatientProvider.notifier).clearErrorMessage(),
         );
+      }
+    });
+
+    ref.listen(addPatientProvider, (previous, next) {
+      if (next.isAddViewMeasureDialogOpen &&
+          previous?.isAddViewMeasureDialogOpen !=
+              next.isAddViewMeasureDialogOpen) {
+        if (context.mounted) {
+          showShadDialog(
+            barrierDismissible: false,
+            context: context,
+            builder:
+                (context) => ShadDialog(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.sizeOf(context).width * .6,
+                    minWidth: 293,
+                  ),
+                  title: Text(
+                    'Datos del paciente: ${next.patientSelected?.name ?? 'N/A'}',
+                  ),
+                  description: Text(
+                    'Ingresa los datos de la medición',
+                  ),
+                  actions: [
+                    ShadButton(
+                      onPressed: () {
+                        ref.read(addPatientProvider.notifier).clearReviewForm();
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Cerrar'),
+                    ),
+                    ShadButton(
+                      onPressed: () {
+                        ref
+                            .read(addPatientProvider.notifier)
+                            .createReviewModel();
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Guardar'),
+                    ),
+                  ],
+                  child: AddViewMeasureDialog(),
+                ),
+          );
+        }
       }
     });
 
@@ -258,11 +304,7 @@ class AddPatientView extends ConsumerWidget {
               ShadButton.outline(
                 size: ShadButtonSize.lg,
                 backgroundColor: Colors.white,
-                onPressed: () {
-                  // Lógica específica para desktop
-                  // addPatientNotifier.clearForm();
-                  // Navigator.pop(context);
-                },
+                onPressed: () {},
                 child: Text(AppStrings.cancel),
               ),
               ShadButton(
