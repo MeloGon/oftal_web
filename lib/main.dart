@@ -38,7 +38,6 @@ class MyApp extends ConsumerWidget {
     ref.watch(authProvider);
 
     return ShadApp.router(
-      debugShowCheckedModeBanner: false,
       locale: const Locale('es', 'ES'),
       routerConfig: router,
       theme: ShadThemeData(
