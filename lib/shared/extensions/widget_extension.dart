@@ -794,6 +794,15 @@ extension StyledWidget on Widget {
         ),
         child: this,
       );
+
+  Widget box({
+    double? width,
+    double? height,
+  }) => SizedBox(
+    width: width,
+    height: height,
+    child: this,
+  );
 }
 
 /// Add margin property to widget
