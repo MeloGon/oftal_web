@@ -29,7 +29,7 @@ SalesDetailsModel _$SalesDetailsModelFromJson(Map<String, dynamic> json) =>
       mountText: json['MONTURA TEXTO'] as String?,
       updatedDate: json['fecha_ventas_actualizada'] as String?,
       folioSale: json['FOLIO DE VENTA'] as String?,
-      idOftalmico: json['ID OFTALMICO'] as String?,
+      idOftalmico: (json['ID OFTALMICO'] as num?)?.toInt(),
       idMount: (json['ID MONTURA'] as num?)?.toInt(),
       mountColor: json['MONTURA COLOR'] as String?,
     );

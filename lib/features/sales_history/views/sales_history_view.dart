@@ -24,6 +24,7 @@ class SalesHistoryView extends ConsumerWidget {
             child: Scrollbar(
               thumbVisibility: true,
               child: CustomScrollView(
+                primary: true,
                 slivers: [
                   SliverToBoxAdapter(
                     child: Text(

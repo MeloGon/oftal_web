@@ -23,7 +23,7 @@ class SalesDetailsModel with _$SalesDetailsModel {
   final String? patient;
   @override
   @JsonKey(name: 'ID OFTALMICO', includeFromJson: true, includeToJson: true)
-  final String? idOftalmico;
+  final int? idOftalmico;
   @override
   @JsonKey(name: 'DESCRIPCION', includeFromJson: true, includeToJson: true)
   final String? description;
