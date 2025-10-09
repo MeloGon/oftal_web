@@ -82,6 +82,21 @@ class Sell extends _$Sell {
 
   void selectOptionToSell(OptionsToSellEnum option) {
     state = state.copyWith(selectedOptionToSell: option);
+    clearProductsToChoose(option);
+  }
+
+  void clearProductsToChoose(OptionsToSellEnum option) {
+    switch (option) {
+      case OptionsToSellEnum.mount:
+        state = state.copyWith(resins: []);
+        break;
+      case OptionsToSellEnum.resin:
+        state = state.copyWith(mounts: []);
+        break;
+      case OptionsToSellEnum.others:
+        // state = state.copyWith(others: []);
+        break;
+    }
   }
 
   void selectItemToSell(dynamic item) {
@@ -118,14 +133,32 @@ class Sell extends _$Sell {
       );
       state = state.copyWith(itemsToSell: [...state.itemsToSell, itemToSell]);
     } else {
-      // state = state.copyWith(resinToSell: item as ResinModel);
+      final itemParsed = item as ResinModel;
+      final itemToSell = SalesDetailsModel(
+        id: _generateRandomId(17).toInt(),
+        idRemision: state.idRemisionAndFolioSale.toString(),
+        folioSale: state.idRemisionAndFolioSale.toString(),
+        idOftalmico: itemParsed.id,
+        description: itemParsed.description,
+        design: itemParsed.design,
+        line: itemParsed.line,
+        material: itemParsed.material,
+        technology: itemParsed.technology,
+        patient: state.selectedPatient?.name,
+        dateSale: DateFormat('dd-MMM-yyyy', 'es_ES').format(DateTime.now()),
+        text: itemParsed.text,
+        quantity: itemParsed.quantity.toString(),
+        price: itemParsed.price,
+        updatedDate: DateFormat('yyyy-MM-dd').format(DateTime.now()).toString(),
+      );
+      state = state.copyWith(itemsToSell: [...state.itemsToSell, itemToSell]);
     }
     importController.text =
         state.itemsToSell
             .fold(
               0.0,
               (previousValue, element) =>
-                  previousValue + (element.mountPrice ?? 0),
+                  previousValue + (element.mountPrice ?? element.price ?? 0.0),
             )
             .toString();
     discountController.text = '0';
@@ -134,7 +167,7 @@ class Sell extends _$Sell {
             .fold(
               0.0,
               (previousValue, element) =>
-                  previousValue + (element.mountPrice ?? 0),
+                  previousValue + (element.mountPrice ?? element.price ?? 0.0),
             )
             .toString();
     accountController.text = '0';
@@ -143,7 +176,7 @@ class Sell extends _$Sell {
             .fold(
               0.0,
               (previousValue, element) =>
-                  previousValue + (element.mountPrice ?? 0),
+                  previousValue + (element.mountPrice ?? element.price ?? 0.0),
             )
             .toString();
   }
@@ -302,6 +335,34 @@ class Sell extends _$Sell {
           );
       state = state.copyWith(
         mounts: response.map((json) => MountModel.fromJson(json)).toList(),
+      );
+    } catch (e) {
+      state = state.copyWith(
+        errorMessage: e.toString(),
+        isLoading: false,
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+      );
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> getResin() async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final response = await Supabase.instance.client
+          .from('resinas')
+          .select()
+          .textSearch(
+            '"texto"',
+            '%${searchItemToSellController.text}%',
+            type: TextSearchType.plain,
+          );
+      state = state.copyWith(
+        resins: response.map((json) => ResinModel.fromJson(json)).toList(),
       );
     } catch (e) {
       state = state.copyWith(

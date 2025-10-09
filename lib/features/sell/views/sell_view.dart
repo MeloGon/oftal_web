@@ -154,7 +154,6 @@ class SellView extends ConsumerWidget {
                           Text('Clasificación'),
                           ShadSelect<String>(
                             placeholder: Text(AppStrings.select),
-                            // initialValue: addPatientState.selectedGender,
                             selectedOptionBuilder:
                                 (context, value) => Text(value),
                             options:
@@ -193,15 +192,19 @@ class SellView extends ConsumerWidget {
                                 if (sellState.selectedOptionToSell ==
                                     OptionsToSellEnum.mount) {
                                   sellNotifier.getMounts();
-                                } else {
-                                  // sellNotifier.getResin();
                                 }
+                                if (sellState.selectedOptionToSell ==
+                                    OptionsToSellEnum.resin) {
+                                  sellNotifier.getResin();
+                                }
+                                if (sellState.selectedOptionToSell ==
+                                    OptionsToSellEnum.others) {}
                               },
                             ),
                             if (sellState.mounts.isNotEmpty &&
                                 !sellState.isLoading)
                               ShadCard(
-                                height: 300,
+                                height: 500,
                                 child: Scrollbar(
                                   thumbVisibility: true,
                                   child: CustomScrollView(
@@ -220,6 +223,33 @@ class SellView extends ConsumerWidget {
                                           return ItemToAddCart(mount: mount);
                                         },
                                         itemCount: sellState.mounts.length,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ).paddingOnly(top: 20),
+                            if (sellState.resins.isNotEmpty &&
+                                !sellState.isLoading)
+                              ShadCard(
+                                height: 500,
+                                child: Scrollbar(
+                                  thumbVisibility: true,
+                                  child: CustomScrollView(
+                                    primary: true,
+                                    slivers: [
+                                      SliverToBoxAdapter(
+                                        child: Text(
+                                          'Se encontraron (${sellState.resins.length}) resinas',
+                                        ),
+                                      ),
+                                      SliverList.separated(
+                                        separatorBuilder:
+                                            (context, index) => const Divider(),
+                                        itemBuilder: (context, index) {
+                                          final resin = sellState.resins[index];
+                                          return ItemToAddCart(resin: resin);
+                                        },
+                                        itemCount: sellState.resins.length,
                                       ),
                                     ],
                                   ),
@@ -279,16 +309,20 @@ class SellView extends ConsumerWidget {
                                 child: ListTile(
                                   title: Text(
                                     sellState.itemsToSell[index].mountBrand ??
+                                        sellState
+                                            .itemsToSell[index]
+                                            .description ??
                                         '',
                                   ),
                                   subtitle: Text(
                                     sellState.itemsToSell[index].mountModel ??
+                                        sellState.itemsToSell[index].design ??
                                         '',
                                   ),
                                   trailing: Column(
                                     children: [
                                       Text(
-                                        's/.${sellState.itemsToSell[index].mountPrice?.toStringAsFixed(2) ?? ''}',
+                                        's/.${sellState.itemsToSell[index].mountPrice?.toStringAsFixed(2) ?? sellState.itemsToSell[index].price?.toStringAsFixed(2) ?? ''}',
                                         style:
                                             ShadTheme.of(
                                               context,

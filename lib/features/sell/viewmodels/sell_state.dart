@@ -15,6 +15,7 @@ class SellState {
   final List<SalesDetailsModel> itemsToSell;
   final String idRemisionAndFolioSale;
   final DiscountReasonEnum? selectedDiscountReason;
+  final List<ResinModel> resins;
 
   SellState({
     this.isLoading = false,
@@ -30,6 +31,7 @@ class SellState {
     this.itemsToSell = const [],
     this.idRemisionAndFolioSale = '',
     this.selectedDiscountReason,
+    this.resins = const [],
   });
 
   SellState copyWith({
@@ -46,6 +48,7 @@ class SellState {
     List<SalesDetailsModel>? itemsToSell,
     String? idRemisionAndFolioSale,
     DiscountReasonEnum? selectedDiscountReason,
+    List<ResinModel>? resins,
   }) {
     return SellState(
       isLoading: isLoading ?? this.isLoading,
@@ -63,6 +66,7 @@ class SellState {
           idRemisionAndFolioSale ?? this.idRemisionAndFolioSale,
       selectedDiscountReason:
           selectedDiscountReason ?? this.selectedDiscountReason,
+      resins: resins ?? this.resins,
     );
   }
 }
