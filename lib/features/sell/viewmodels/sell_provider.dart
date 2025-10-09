@@ -1,12 +1,12 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide LocalStorage;
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_state.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' hide LocalStorage;
 import 'package:oftal_web/shared/services/local_storage.dart';
 
 part 'sell_provider.g.dart';
@@ -261,8 +261,19 @@ class Sell extends _$Sell {
             '"PACIENTE"',
             '%${state.selectedPatient?.name ?? ''}%',
           );
+      if (response.isNotEmpty) {
+        state = state.copyWith(
+          reviews: response.map((json) => ReviewModel.fromJson(json)).toList(),
+        );
+        return;
+      }
       state = state.copyWith(
-        reviews: response.map((json) => ReviewModel.fromJson(json)).toList(),
+        errorMessage: 'No se encontraron mediciones',
+        isLoading: false,
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Aviso',
+          type: SnackbarEnum.error,
+        ),
       );
     } catch (e) {
       state = state.copyWith(
@@ -304,5 +315,12 @@ class Sell extends _$Sell {
     } finally {
       state = state.copyWith(isLoading: false);
     }
+  }
+
+  void clearErrorMessage() {
+    state = state.copyWith(
+      errorMessage: '',
+      snackbarConfig: null,
+    );
   }
 }

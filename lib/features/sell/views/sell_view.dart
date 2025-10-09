@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:oftal_web/core/constants/constants.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_provider.dart';
@@ -8,7 +9,8 @@ import 'package:oftal_web/features/sell/views/widgets/item_to_add_cart.dart';
 import 'package:oftal_web/features/sell/views/widgets/item_to_sell.dart';
 import 'package:oftal_web/features/sell/views/widgets/reviews_dialog.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:oftal_web/shared/models/shared_models.dart';
+import 'package:oftal_web/shared/widgets/widgets.dart';
 
 class SellView extends ConsumerWidget {
   const SellView({super.key});
@@ -45,6 +47,16 @@ class SellView extends ConsumerWidget {
                 ),
           );
         }
+      }
+    });
+
+    ref.listen<SellState>(sellProvider, (previous, next) {
+      if (next.errorMessage.isNotEmpty &&
+          previous?.errorMessage != next.errorMessage) {
+        _showSnackbar(context, next.snackbarConfig, next.errorMessage);
+        Future.microtask(
+          () => ref.read(sellProvider.notifier).clearErrorMessage(),
+        );
       }
     });
 
@@ -396,4 +408,17 @@ class SellView extends ConsumerWidget {
       ),
     ).marginOnly(top: 50).paddingSymmetric(horizontal: 20);
   }
+}
+
+void _showSnackbar(
+  BuildContext context,
+  SnackbarConfigModel? snackbarConfig,
+  String errorMessage,
+) {
+  CustomSnackbar().show(
+    context,
+    snackbarConfig ??
+        SnackbarConfigModel(title: 'Error', type: SnackbarEnum.error),
+    errorMessage,
+  );
 }
