@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/features/sell/views/widgets/invoice_widget.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:oftal_web/core/constants/constants.dart';
 import 'package:oftal_web/core/enums/enums.dart';
@@ -293,6 +294,7 @@ class AddPatientView extends ConsumerWidget {
                     keyboardType: TextInputType.multiline,
                   ),
                 ),
+                PdfWebExample().box(width: 100, height: 100),
               ],
             ),
           ),
