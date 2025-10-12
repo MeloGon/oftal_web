@@ -69,6 +69,7 @@ class SearchPatient extends _$SearchPatient {
                   );
       state = state.copyWith(
         patients: response.map((json) => PatientModel.fromJson(json)).toList(),
+        isLoading: false,
       );
     } catch (e) {
       state = state.copyWith(
@@ -77,6 +78,7 @@ class SearchPatient extends _$SearchPatient {
           title: 'Error',
           type: SnackbarEnum.error,
         ),
+        isLoading: false,
       );
     } finally {
       state = state.copyWith(isLoading: false);
@@ -92,6 +94,7 @@ class SearchPatient extends _$SearchPatient {
           .ilike('"PACIENTE"', '%$patientName%');
       state = state.copyWith(
         reviews: response.map((json) => ReviewModel.fromJson(json)).toList(),
+        isLoading: false,
       );
     } catch (e) {
       state = state.copyWith(
@@ -100,6 +103,7 @@ class SearchPatient extends _$SearchPatient {
           title: 'Error',
           type: SnackbarEnum.error,
         ),
+        isLoading: false,
       );
     } finally {
       state = state.copyWith(isLoading: false);
@@ -132,6 +136,7 @@ class SearchPatient extends _$SearchPatient {
           title: 'Aviso',
           type: SnackbarEnum.success,
         ),
+        isLoading: false,
       );
     } catch (e) {
       state = state.copyWith(
@@ -140,9 +145,16 @@ class SearchPatient extends _$SearchPatient {
           title: 'Error',
           type: SnackbarEnum.error,
         ),
+        isLoading: false,
       );
     } finally {
       state = state.copyWith(isLoading: false);
     }
+  }
+
+  void clearIsLoading() {
+    state = state.copyWith(
+      isLoading: false,
+    );
   }
 }

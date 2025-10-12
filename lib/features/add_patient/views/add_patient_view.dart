@@ -14,6 +14,7 @@ class AddPatientView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final width = MediaQuery.sizeOf(context).width;
     final addPatientNotifier = ref.watch(addPatientProvider.notifier);
     final addPatientState = ref.watch(addPatientProvider);
 
@@ -40,7 +41,38 @@ class AddPatientView extends ConsumerWidget {
         spacing: 24,
         children: [
           ShadCard(
-            width: MediaQuery.sizeOf(context).width * .9,
+            width: width * .9,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 6,
+              children: [
+                Text(
+                  'Agregar paciente',
+                  style: ShadTheme.of(context).textTheme.h2,
+                ),
+                Text(
+                  'En este modulo puedes realizar opciones como:',
+                ),
+                Text(
+                  '\u2022 Agregar un nuevo paciente',
+                ),
+                Text(
+                  '\u2022 Recuerda ingresar todos los campos requeridos, en caso de no hacerlo te indicara cuáles son los campos requeridos',
+                ),
+                Text(
+                  '\u2022 Una vez agregado el paciente te saldra un mensaje de confirmacion',
+                ),
+                Text(
+                  '\u2022 Ya agregado el paciente puedes verlo desde el modulo de buscar paciente',
+                ),
+                Text(
+                  '\u2022 Recuerda aqui solo puedes agregar pacientes, si quieres ver medidas , agregar medidas o eliminar pacientes debes hacerlo desde el modulo de buscar paciente',
+                ),
+              ],
+            ),
+          ),
+          ShadCard(
+            width: width * .9,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -127,7 +159,7 @@ class AddPatientView extends ConsumerWidget {
             ),
           ),
           ShadCard(
-            width: MediaQuery.sizeOf(context).width * .9,
+            width: width * .9,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 8,

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:oftal_web/datatables/datatables.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_provider.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/add_review_dialog.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/review_details_dialog.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
+import 'package:oftal_web/shared/widgets/loading_dialog.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SearchPatientView extends ConsumerWidget {
@@ -17,19 +19,25 @@ class SearchPatientView extends ConsumerWidget {
     final searchPatientNotifier = ref.watch(searchPatientProvider.notifier);
 
     ref.listen(searchPatientProvider, (previous, next) {
-      if (next.reviews.isNotEmpty && previous?.reviews != next.reviews) {
-        if (context.mounted) {
-          ReviewDetailsDialog().show(context, next);
-        }
-      }
-    });
-
-    ref.listen(searchPatientProvider, (previous, next) {
       if (next.isAddViewMeasureDialogOpen &&
           previous?.isAddViewMeasureDialogOpen !=
               next.isAddViewMeasureDialogOpen) {
         if (context.mounted) {
           AddReviewDialog().show(context);
+        }
+      }
+      if (next.isLoading && (previous?.isLoading ?? false) == false) {
+        LoadingDialog().show(context);
+      }
+
+      if (!next.isLoading && (previous?.isLoading ?? false) == true) {
+        if (context.mounted) {
+          context.pop();
+          if (next.reviews.isNotEmpty && previous?.reviews != next.reviews) {
+            if (context.mounted) {
+              ReviewDetailsDialog().show(context, next);
+            }
+          }
         }
       }
     });
@@ -69,10 +77,17 @@ class SearchPatientView extends ConsumerWidget {
                 controller: searchPatientNotifier.searchController,
                 leading: Icon(LucideIcons.search),
                 onSubmitted: (_) => searchPatientNotifier.getPatients(),
-                trailing: ShadButton(
-                  height: 30,
-                  child: Icon(Icons.close),
-                ),
+                trailing:
+                    searchPatientNotifier.searchIsEmpty
+                        ? null
+                        : ShadButton(
+                          onPressed: () {
+                            searchPatientNotifier.searchController.clear();
+                            searchPatientNotifier.getPatients();
+                          },
+                          height: 30,
+                          child: Icon(Icons.close),
+                        ),
               ),
               if (searchPatientState.patients.isNotEmpty)
                 PaginatedDataTable(
@@ -95,7 +110,7 @@ class SearchPatientView extends ConsumerWidget {
                   onRowsPerPageChanged:
                       (value) =>
                           searchPatientNotifier.changeRowsPerPage(value ?? 7),
-                ).box(width: width * .9),
+                ).box(width: width * .9).paddingOnly(top: 20),
             ],
           ),
         ),
