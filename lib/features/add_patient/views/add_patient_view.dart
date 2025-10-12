@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:oftal_web/features/sell/views/widgets/invoice_widget.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:oftal_web/core/constants/constants.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/add_patient/viewmodels/add_patient_provider.dart';
-import 'package:oftal_web/features/add_patient/views/widgets/add_view_measure_dialog.dart';
-import 'package:oftal_web/features/add_patient/views/widgets/last_patient_item.dart';
+import 'package:oftal_web/features/sell/views/widgets/invoice_widget.dart';
 import 'package:oftal_web/shared/extensions/widget_extension.dart';
 import 'package:oftal_web/shared/models/snackbar_config_model.dart';
 import 'package:oftal_web/shared/widgets/custom_snackbar.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class AddPatientView extends ConsumerWidget {
   const AddPatientView({super.key});
@@ -32,51 +30,6 @@ class AddPatientView extends ConsumerWidget {
         Future.microtask(
           () => ref.read(addPatientProvider.notifier).clearErrorMessage(),
         );
-      }
-    });
-
-    ref.listen(addPatientProvider, (previous, next) {
-      if (next.isAddViewMeasureDialogOpen &&
-          previous?.isAddViewMeasureDialogOpen !=
-              next.isAddViewMeasureDialogOpen) {
-        if (context.mounted) {
-          showShadDialog(
-            barrierDismissible: false,
-            context: context,
-            builder:
-                (context) => ShadDialog(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.sizeOf(context).width * .6,
-                    minWidth: 293,
-                  ),
-                  title: Text(
-                    'Datos del paciente: ${next.patientSelected?.name ?? 'N/A'}',
-                  ),
-                  description: Text(
-                    'Ingresa los datos de la medición',
-                  ),
-                  actions: [
-                    ShadButton(
-                      onPressed: () {
-                        ref.read(addPatientProvider.notifier).clearReviewForm();
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Cerrar'),
-                    ),
-                    ShadButton(
-                      onPressed: () {
-                        ref
-                            .read(addPatientProvider.notifier)
-                            .createReviewModel();
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Guardar'),
-                    ),
-                  ],
-                  child: AddViewMeasureDialog(),
-                ),
-          );
-        }
       }
     });
 
@@ -320,51 +273,6 @@ class AddPatientView extends ConsumerWidget {
                 child: Text(AppStrings.save),
               ),
             ],
-          ),
-          ShadCard(
-            width: MediaQuery.sizeOf(context).width * .9,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppStrings.lastPatients,
-                  style: ShadTheme.of(context).textTheme.h4,
-                ),
-                const SizedBox(height: 16),
-                if (addPatientState.isLoading)
-                  const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                if (addPatientState.patients.isNotEmpty)
-                  Scrollbar(
-                    thumbVisibility: true,
-                    child: CustomScrollView(
-                      shrinkWrap: true,
-                      primary: true,
-                      slivers: [
-                        SliverList.separated(
-                          separatorBuilder: (context, index) => const Divider(),
-                          itemBuilder: (context, index) {
-                            final initials =
-                                addPatientState.patients[index].name.split(
-                                  ' ',
-                                )[0][0] +
-                                addPatientState.patients[index].name.split(
-                                  ' ',
-                                )[1][0];
-                            final patient = addPatientState.patients[index];
-                            return LastPatientItem(
-                              initials: initials,
-                              patient: patient,
-                            );
-                          },
-                          itemCount: addPatientState.patients.length,
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
           ),
         ],
       ).paddingSymmetric(horizontal: 16, vertical: 16),
