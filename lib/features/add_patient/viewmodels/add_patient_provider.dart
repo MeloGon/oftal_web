@@ -140,33 +140,6 @@ class AddPatient extends _$AddPatient {
     }
   }
 
-  Future<void> deletePatient(int id) async {
-    state = state.copyWith(isLoading: true);
-    try {
-      await Supabase.instance.client
-          .from('pacientes')
-          .delete()
-          .eq('ID PACIENTE', id);
-      state = state.copyWith(
-        errorMessage: 'Paciente eliminado correctamente',
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Aviso',
-          type: SnackbarEnum.success,
-        ),
-      );
-    } catch (e) {
-      state = state.copyWith(
-        errorMessage: e.toString(),
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Error',
-          type: SnackbarEnum.error,
-        ),
-      );
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
-  }
-
   void clearForm() {
     identificationController.clear();
     fullNameController.clear();

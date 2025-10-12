@@ -111,4 +111,38 @@ class SearchPatient extends _$SearchPatient {
       isAddViewMeasureDialogOpen: true,
     );
   }
+
+  void changeRowsPerPage(int value) {
+    state = state.copyWith(
+      rowsPerPage: value,
+    );
+  }
+
+  Future<void> deletePatient(int id) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      await Supabase.instance.client
+          .from('pacientes')
+          .delete()
+          .eq('ID PACIENTE', id);
+      getPatients();
+      state = state.copyWith(
+        errorMessage: 'Paciente eliminado correctamente',
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Aviso',
+          type: SnackbarEnum.success,
+        ),
+      );
+    } catch (e) {
+      state = state.copyWith(
+        errorMessage: e.toString(),
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+      );
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
 }

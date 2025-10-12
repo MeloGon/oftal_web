@@ -18,28 +18,33 @@ class PatientActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      spacing: 8,
+      spacing: 10,
       children: [
+        ShadTooltip(
+          builder: (context) => const Text('Ver mediciones'),
+          child: InkWell(
+            onTap: onViewMeasurements,
+            child: Icon(Icons.remove_red_eye_outlined, size: 20),
+          ),
+        ),
         ShadTooltip(
           builder: (context) => const Text('Agregar medición'),
           child: InkWell(
             onTap: onAddMeasurement,
             child: Icon(
               Icons.add_circle_outline_sharp,
+              size: 20,
             ),
           ),
         ),
         ShadTooltip(
-          builder: (context) => const Text('Ver mediciones'),
-          child: InkWell(
-            onTap: onViewMeasurements,
-            child: Icon(Icons.remove_red_eye_outlined),
-          ),
-        ),
-        ShadTooltip(
           builder: (context) => const Text('Eliminar paciente'),
-          child: Icon(
-            Icons.add_circle_outline_sharp,
+          child: InkWell(
+            onTap: onDeletePatient,
+            child: Icon(
+              Icons.delete_outline_outlined,
+              size: 20,
+            ),
           ),
         ),
       ],

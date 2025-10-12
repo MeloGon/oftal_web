@@ -7,7 +7,7 @@ class SearchPatientState {
   final SnackbarConfigModel? snackbarConfig;
   final List<ReviewModel> reviews;
   final bool isAddViewMeasureDialogOpen;
-  // final PatientModel? selectedPatient;
+  final int rowsPerPage;
 
   SearchPatientState({
     this.isLoading = false,
@@ -16,6 +16,7 @@ class SearchPatientState {
     this.snackbarConfig,
     this.reviews = const [],
     this.isAddViewMeasureDialogOpen = false,
+    this.rowsPerPage = 7,
   });
 
   SearchPatientState copyWith({
@@ -25,6 +26,7 @@ class SearchPatientState {
     SnackbarConfigModel? snackbarConfig,
     List<ReviewModel>? reviews,
     bool? isAddViewMeasureDialogOpen,
+    int? rowsPerPage,
   }) {
     return SearchPatientState(
       isLoading: isLoading ?? this.isLoading,
@@ -34,6 +36,7 @@ class SearchPatientState {
       reviews: reviews ?? this.reviews,
       isAddViewMeasureDialogOpen:
           isAddViewMeasureDialogOpen ?? this.isAddViewMeasureDialogOpen,
+      rowsPerPage: rowsPerPage ?? this.rowsPerPage,
     );
   }
 }

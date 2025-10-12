@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/datatables/datatables.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_provider.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/add_review_dialog.dart';
-import 'package:oftal_web/features/search_patient/views/widgets/patient_actions.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/review_details_dialog.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -75,7 +75,7 @@ class SearchPatientView extends ConsumerWidget {
                 ),
               ),
               if (searchPatientState.patients.isNotEmpty)
-                DataTable(
+                PaginatedDataTable(
                   headingRowHeight: 42,
                   dataRowMinHeight: 40,
                   columns: const [
@@ -85,36 +85,16 @@ class SearchPatientView extends ConsumerWidget {
                     DataColumn(label: Text('Teléfono')),
                     DataColumn(label: Text('Acciones')),
                   ],
-                  rows:
-                      searchPatientState.patients
-                          .map(
-                            (patient) => DataRow(
-                              cells: [
-                                DataCell(Text(patient.name)),
-                                DataCell(
-                                  ShadBadge(child: Text(patient.registerDate)),
-                                ),
-                                DataCell(Text(patient.branch)),
-                                DataCell(Text(patient.phone)),
-                                DataCell(
-                                  PatientActions(
-                                    patient: patient,
-                                    onAddMeasurement: () {
-                                      searchPatientNotifier
-                                          .openAddViewMeasureDialog();
-                                    },
-                                    onViewMeasurements: () {
-                                      ref
-                                          .read(searchPatientProvider.notifier)
-                                          .getReviews(patient.name);
-                                    },
-                                    onDeletePatient: () {},
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                          .toList(),
+                  source: PatientsDataSource(
+                    patients: searchPatientState.patients,
+                    context: context,
+                    ref: ref,
+                  ),
+                  availableRowsPerPage: [7, 10, 15, 20],
+                  rowsPerPage: searchPatientState.rowsPerPage,
+                  onRowsPerPageChanged:
+                      (value) =>
+                          searchPatientNotifier.changeRowsPerPage(value ?? 7),
                 ).box(width: width * .9),
             ],
           ),
