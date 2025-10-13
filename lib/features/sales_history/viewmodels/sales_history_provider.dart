@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:csv/csv.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:oftal_web/core/enums/enums.dart';
@@ -5,6 +8,7 @@ import 'package:oftal_web/features/sales_history/viewmodels/sales_history_state.
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:html' as html;
 
 part 'sales_history_provider.g.dart';
 
@@ -143,5 +147,24 @@ class SalesHistory extends _$SalesHistory {
     state = state.copyWith(selectedFilter: filter);
     searchController.clear();
     getSales();
+  }
+
+  void exportPatientsToCsv(List<SalesModel> sales) {
+    final rows = [
+      ['Nombre', 'Fecha'],
+      ...sales.map((p) => [p.patient, p.date]),
+    ];
+
+    final csv = const ListToCsvConverter().convert(rows);
+
+    // ↓ Crear y descargar el archivo en Web
+    final bytes = utf8.encode(csv);
+    final blob = html.Blob([bytes]);
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    final anchor =
+        html.AnchorElement(href: url)
+          ..setAttribute("download", "pacientes.csv")
+          ..click();
+    html.Url.revokeObjectUrl(url);
   }
 }

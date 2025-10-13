@@ -90,6 +90,10 @@ class SalesHistoryView extends ConsumerWidget {
               SalesDetailsSection(),
             ],
           ),
+        ShadButton(
+          onPressed: () => salesNotifier.exportPatientsToCsv(salesState.sales),
+          child: const Text('Exportar CSV'),
+        ),
       ],
     ).paddingSymmetric(horizontal: 20, vertical: 50);
   }
