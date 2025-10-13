@@ -8,10 +8,12 @@ class SalesHistoryActions extends StatelessWidget {
     required this.sale,
     required this.onViewDetails,
     required this.onDeleteSale,
+    required this.onPrintSale,
   });
   final SalesModel sale;
   final Function() onViewDetails;
   final Function() onDeleteSale;
+  final Function() onPrintSale;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +25,13 @@ class SalesHistoryActions extends StatelessWidget {
           child: InkWell(
             onTap: onViewDetails,
             child: Icon(Icons.remove_red_eye_outlined),
+          ),
+        ),
+        ShadTooltip(
+          builder: (context) => const Text('Imprimir'),
+          child: InkWell(
+            onTap: onPrintSale,
+            child: Icon(Icons.print_outlined),
           ),
         ),
         ShadTooltip(

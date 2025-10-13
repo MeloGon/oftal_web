@@ -42,6 +42,20 @@ class SalesHistoryDataSource extends DataTableSource {
                   .selectSaleForDetails(sale);
               ref.read(salesHistoryProvider.notifier).getSalesDetails();
             },
+            onPrintSale: () async {
+              ref
+                  .read(salesHistoryProvider.notifier)
+                  .selectSaleForDetails(sale);
+              await ref
+                  .read(salesHistoryProvider.notifier)
+                  .getSalesDetails()
+                  .then((value) async {
+                    await ref
+                        .read(salesHistoryProvider.notifier)
+                        .generatePdf(sale);
+                  });
+              ;
+            },
             onDeleteSale: () {
               ref.read(salesHistoryProvider.notifier).closeSaleDetails();
               // ref.read(salesHistoryProvider.notifier).deleteSale();
