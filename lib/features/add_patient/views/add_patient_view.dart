@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:oftal_web/core/constants/constants.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/add_patient/viewmodels/add_patient_provider.dart';
-import 'package:oftal_web/features/add_patient/views/widgets/add_view_measure_dialog.dart';
-import 'package:oftal_web/features/add_patient/views/widgets/last_patient_item.dart';
+import 'package:oftal_web/features/sell/views/widgets/invoice_widget.dart';
 import 'package:oftal_web/shared/extensions/widget_extension.dart';
 import 'package:oftal_web/shared/models/snackbar_config_model.dart';
 import 'package:oftal_web/shared/widgets/custom_snackbar.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class AddPatientView extends ConsumerWidget {
   const AddPatientView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final width = MediaQuery.sizeOf(context).width;
     final addPatientNotifier = ref.watch(addPatientProvider.notifier);
     final addPatientState = ref.watch(addPatientProvider);
 
@@ -34,51 +34,6 @@ class AddPatientView extends ConsumerWidget {
       }
     });
 
-    ref.listen(addPatientProvider, (previous, next) {
-      if (next.isAddViewMeasureDialogOpen &&
-          previous?.isAddViewMeasureDialogOpen !=
-              next.isAddViewMeasureDialogOpen) {
-        if (context.mounted) {
-          showShadDialog(
-            barrierDismissible: false,
-            context: context,
-            builder:
-                (context) => ShadDialog(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.sizeOf(context).width * .6,
-                    minWidth: 293,
-                  ),
-                  title: Text(
-                    'Datos del paciente: ${next.patientSelected?.name ?? 'N/A'}',
-                  ),
-                  description: Text(
-                    'Ingresa los datos de la medición',
-                  ),
-                  actions: [
-                    ShadButton(
-                      onPressed: () {
-                        ref.read(addPatientProvider.notifier).clearReviewForm();
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Cerrar'),
-                    ),
-                    ShadButton(
-                      onPressed: () {
-                        ref
-                            .read(addPatientProvider.notifier)
-                            .createReviewModel();
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Guardar'),
-                    ),
-                  ],
-                  child: AddViewMeasureDialog(),
-                ),
-          );
-        }
-      }
-    });
-
     return ShadForm(
       key: addPatientState.formKey,
       autovalidateMode: ShadAutovalidateMode.onUserInteraction,
@@ -86,7 +41,38 @@ class AddPatientView extends ConsumerWidget {
         spacing: 24,
         children: [
           ShadCard(
-            width: MediaQuery.sizeOf(context).width * .9,
+            width: width * .9,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 6,
+              children: [
+                Text(
+                  'Agregar paciente',
+                  style: ShadTheme.of(context).textTheme.h2,
+                ),
+                Text(
+                  'En este modulo puedes realizar opciones como:',
+                ),
+                Text(
+                  '\u2022 Agregar un nuevo paciente',
+                ),
+                Text(
+                  '\u2022 Recuerda ingresar todos los campos requeridos, en caso de no hacerlo te indicara cuáles son los campos requeridos',
+                ),
+                Text(
+                  '\u2022 Una vez agregado el paciente te saldra un mensaje de confirmacion',
+                ),
+                Text(
+                  '\u2022 Ya agregado el paciente puedes verlo desde el modulo de buscar paciente',
+                ),
+                Text(
+                  '\u2022 Recuerda aqui solo puedes agregar pacientes, si quieres ver medidas , agregar medidas o eliminar pacientes debes hacerlo desde el modulo de buscar paciente',
+                ),
+              ],
+            ),
+          ),
+          ShadCard(
+            width: width * .9,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -173,7 +159,7 @@ class AddPatientView extends ConsumerWidget {
             ),
           ),
           ShadCard(
-            width: MediaQuery.sizeOf(context).width * .9,
+            width: width * .9,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 8,
@@ -293,6 +279,7 @@ class AddPatientView extends ConsumerWidget {
                     keyboardType: TextInputType.multiline,
                   ),
                 ),
+                PdfWebExample().box(width: 100, height: 100),
               ],
             ),
           ),
@@ -318,51 +305,6 @@ class AddPatientView extends ConsumerWidget {
                 child: Text(AppStrings.save),
               ),
             ],
-          ),
-          ShadCard(
-            width: MediaQuery.sizeOf(context).width * .9,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppStrings.lastPatients,
-                  style: ShadTheme.of(context).textTheme.h4,
-                ),
-                const SizedBox(height: 16),
-                if (addPatientState.isLoading)
-                  const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                if (addPatientState.patients.isNotEmpty)
-                  Scrollbar(
-                    thumbVisibility: true,
-                    child: CustomScrollView(
-                      shrinkWrap: true,
-                      primary: true,
-                      slivers: [
-                        SliverList.separated(
-                          separatorBuilder: (context, index) => const Divider(),
-                          itemBuilder: (context, index) {
-                            final initials =
-                                addPatientState.patients[index].name.split(
-                                  ' ',
-                                )[0][0] +
-                                addPatientState.patients[index].name.split(
-                                  ' ',
-                                )[1][0];
-                            final patient = addPatientState.patients[index];
-                            return LastPatientItem(
-                              initials: initials,
-                              patient: patient,
-                            );
-                          },
-                          itemCount: addPatientState.patients.length,
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
           ),
         ],
       ).paddingSymmetric(horizontal: 16, vertical: 16),

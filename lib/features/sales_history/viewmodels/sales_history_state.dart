@@ -1,3 +1,4 @@
+import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 
 class SalesHistoryState {
@@ -7,6 +8,8 @@ class SalesHistoryState {
   final List<SalesDetailsModel> saleDetails;
   SnackbarConfigModel? snackbarConfig;
   final String errorMessage;
+  final int rowsPerPage;
+  final FilterToSalesHistory? selectedFilter;
 
   SalesHistoryState({
     this.isLoading = false,
@@ -15,6 +18,8 @@ class SalesHistoryState {
     this.saleDetails = const [],
     this.snackbarConfig,
     this.errorMessage = '',
+    this.rowsPerPage = 10,
+    this.selectedFilter,
   });
 
   SalesHistoryState copyWith({
@@ -24,6 +29,8 @@ class SalesHistoryState {
     List<SalesDetailsModel>? saleDetails,
     SnackbarConfigModel? snackbarConfig,
     String? errorMessage,
+    int? rowsPerPage,
+    FilterToSalesHistory? selectedFilter,
   }) {
     return SalesHistoryState(
       isLoading: isLoading ?? this.isLoading,
@@ -33,6 +40,8 @@ class SalesHistoryState {
       saleDetails: saleDetails ?? this.saleDetails,
       snackbarConfig: snackbarConfig ?? this.snackbarConfig,
       errorMessage: errorMessage ?? this.errorMessage,
+      rowsPerPage: rowsPerPage ?? this.rowsPerPage,
+      selectedFilter: selectedFilter ?? this.selectedFilter,
     );
   }
 }

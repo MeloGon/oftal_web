@@ -1,15 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:oftal_web/features/add_patient/viewmodels/add_patient_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/features/search_patient/viewmodels/search_patient_provider.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
-class AddViewMeasureDialog extends ConsumerWidget {
-  const AddViewMeasureDialog({super.key});
+class AddReviewDialog {
+  Future<void> show(BuildContext context) async {
+    return showShadDialog(
+      context: context,
+
+      builder:
+          (context) => ShadDialog(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.sizeOf(context).width * .6,
+              minWidth: 293,
+            ),
+            title: Text('Agregar Medición'),
+            description: Text('Ingresa los datos de la medición'),
+            actions: [
+              ShadButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Guardar'),
+              ),
+              ShadButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Cerrar'),
+              ),
+            ],
+            child: AddReviewWidget(),
+          ),
+    );
+  }
+}
+
+class AddReviewWidget extends ConsumerWidget {
+  const AddReviewWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final addPatientNotifier = ref.read(addPatientProvider.notifier);
-
+    final searchPatientNotifier = ref.read(searchPatientProvider.notifier);
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.8,
       height: MediaQuery.of(context).size.height * 0.8,
@@ -22,19 +50,19 @@ class AddViewMeasureDialog extends ConsumerWidget {
             _buildSectionTitle(context, 'Información General'),
             _buildInputField(
               'Motivo de Consulta',
-              addPatientNotifier.reasonConsultController,
+              searchPatientNotifier.reasonConsultController,
             ),
             _buildInputField(
               'Historia Clínica',
-              addPatientNotifier.clinicHistoryController,
+              searchPatientNotifier.clinicHistoryController,
             ),
             _buildInputField(
               'Tipo de Graduación',
-              addPatientNotifier.graduationTypeController,
+              searchPatientNotifier.graduationTypeController,
             ),
             _buildInputField(
               'Diagnóstico Optométrico',
-              addPatientNotifier.optometricDiagnosisController,
+              searchPatientNotifier.optometricDiagnosisController,
             ),
 
             // Ojo Derecho (OD)
@@ -44,28 +72,28 @@ class AddViewMeasureDialog extends ConsumerWidget {
                 Expanded(
                   child: _buildInputField(
                     'ESF',
-                    addPatientNotifier.odEsfController,
+                    searchPatientNotifier.odEsfController,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _buildInputField(
                     'CIL',
-                    addPatientNotifier.odCilController,
+                    searchPatientNotifier.odCilController,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _buildInputField(
                     'EJE',
-                    addPatientNotifier.odEjeController,
+                    searchPatientNotifier.odEjeController,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _buildInputField(
                     'AV',
-                    addPatientNotifier.odAvController,
+                    searchPatientNotifier.odAvController,
                   ),
                 ),
               ],
@@ -75,14 +103,14 @@ class AddViewMeasureDialog extends ConsumerWidget {
                 Expanded(
                   child: _buildInputField(
                     'CB LC',
-                    addPatientNotifier.odCbLcController,
+                    searchPatientNotifier.odCbLcController,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _buildInputField(
                     'DIAM LC',
-                    addPatientNotifier.odDiamLcController,
+                    searchPatientNotifier.odDiamLcController,
                   ),
                 ),
               ],
@@ -92,14 +120,14 @@ class AddViewMeasureDialog extends ConsumerWidget {
                 Expanded(
                   child: _buildInputField(
                     'AV SIN RX LEJOS',
-                    addPatientNotifier.avSinRxOdLejosController,
+                    searchPatientNotifier.avSinRxOdLejosController,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _buildInputField(
                     'CV LEJOS',
-                    addPatientNotifier.cvOdLejosController,
+                    searchPatientNotifier.cvOdLejosController,
                   ),
                 ),
               ],
@@ -109,14 +137,14 @@ class AddViewMeasureDialog extends ConsumerWidget {
                 Expanded(
                   child: _buildInputField(
                     'AV SIN RX CERCA',
-                    addPatientNotifier.avSinRxOdCercaController,
+                    searchPatientNotifier.avSinRxOdCercaController,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _buildInputField(
                     'AV CON RX CERCA',
-                    addPatientNotifier.avConRxOdCercaController,
+                    searchPatientNotifier.avConRxOdCercaController,
                   ),
                 ),
               ],
@@ -129,28 +157,28 @@ class AddViewMeasureDialog extends ConsumerWidget {
                 Expanded(
                   child: _buildInputField(
                     'ESF',
-                    addPatientNotifier.oiEsfController,
+                    searchPatientNotifier.oiEsfController,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _buildInputField(
                     'CIL',
-                    addPatientNotifier.oiCilController,
+                    searchPatientNotifier.oiCilController,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _buildInputField(
                     'EJE',
-                    addPatientNotifier.oiEjeController,
+                    searchPatientNotifier.oiEjeController,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _buildInputField(
                     'AV',
-                    addPatientNotifier.oiAvController,
+                    searchPatientNotifier.oiAvController,
                   ),
                 ),
               ],
@@ -160,14 +188,14 @@ class AddViewMeasureDialog extends ConsumerWidget {
                 Expanded(
                   child: _buildInputField(
                     'CB LC',
-                    addPatientNotifier.oiCbLcController,
+                    searchPatientNotifier.oiCbLcController,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _buildInputField(
                     'DIAM LC',
-                    addPatientNotifier.oiDiamLcController,
+                    searchPatientNotifier.oiDiamLcController,
                   ),
                 ),
               ],
@@ -177,14 +205,14 @@ class AddViewMeasureDialog extends ConsumerWidget {
                 Expanded(
                   child: _buildInputField(
                     'AV SIN RX LEJOS',
-                    addPatientNotifier.avSinRxOiLejosController,
+                    searchPatientNotifier.avSinRxOiLejosController,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _buildInputField(
                     'CV LEJOS',
-                    addPatientNotifier.cvOiLejosController,
+                    searchPatientNotifier.cvOiLejosController,
                   ),
                 ),
               ],
@@ -194,14 +222,14 @@ class AddViewMeasureDialog extends ConsumerWidget {
                 Expanded(
                   child: _buildInputField(
                     'AV SIN RX CERCA',
-                    addPatientNotifier.avSinRxOiCercaController,
+                    searchPatientNotifier.avSinRxOiCercaController,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _buildInputField(
                     'AV CON RX CERCA',
-                    addPatientNotifier.avConRxOiCercaController,
+                    searchPatientNotifier.avConRxOiCercaController,
                   ),
                 ),
               ],
@@ -209,11 +237,11 @@ class AddViewMeasureDialog extends ConsumerWidget {
 
             // Campos Adicionales
             _buildSectionTitle(context, 'Campos Adicionales'),
-            _buildInputField('ADD', addPatientNotifier.addController),
-            _buildInputField('DIP', addPatientNotifier.dipController),
+            _buildInputField('ADD', searchPatientNotifier.addController),
+            _buildInputField('DIP', searchPatientNotifier.dipController),
             _buildInputField(
               'Observaciones',
-              addPatientNotifier.observationReviewController,
+              searchPatientNotifier.observationReviewController,
               maxLines: 3,
             ),
           ],

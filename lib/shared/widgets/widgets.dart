@@ -6,3 +6,4 @@ export 'navbar.dart';
 export 'logo.dart';
 export 'responsive.dart';
 export 'custom_snackbar.dart';
+export 'loading_dialog.dart';

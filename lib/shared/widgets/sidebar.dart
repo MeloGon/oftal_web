@@ -23,12 +23,19 @@ class Sidebar extends ConsumerWidget {
           Logo(),
           TextSeparator(text: 'Opciones'),
           MenuItem(
-            text: 'Nuevo paciente',
+            text: 'Agregar paciente',
             icon: Icons.add_reaction_outlined,
             onPressed: () {
               ref.read(appRouterProvider).go(RouterName.addPatient);
             },
             isActive: navigationState.currentPage == RouterName.addPatient,
+          ),
+          MenuItem(
+            text: 'Buscar paciente',
+            icon: Icons.search_outlined,
+            onPressed: () {
+              ref.read(appRouterProvider).go(RouterName.searchPatient);
+            },
           ),
           MenuItem(
             text: 'Vender',

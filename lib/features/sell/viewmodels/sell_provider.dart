@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -8,6 +9,8 @@ import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_state.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/services/local_storage.dart';
+import 'dart:html' as html;
+import 'package:pdf/widgets.dart' as pw;
 
 part 'sell_provider.g.dart';
 
@@ -383,5 +386,45 @@ class Sell extends _$Sell {
       errorMessage: '',
       snackbarConfig: null,
     );
+  }
+
+  Future<void> generatePdf(String nombre, String fecha) async {
+    final pdf = pw.Document();
+    pdf.addPage(
+      pw.Page(
+        build:
+            (pw.Context context) => pw.Center(
+              child: pw.Column(
+                mainAxisAlignment: pw.MainAxisAlignment.center,
+                children: [
+                  pw.Text(
+                    'Nombre: ${state.selectedPatient?.name}',
+                    style: pw.TextStyle(fontSize: 20),
+                  ),
+                  pw.SizedBox(height: 10),
+                  pw.Text(
+                    'Fecha: ${DateFormat('dd-MMM-yyyy', 'es_ES').format(DateTime.now())}',
+                    style: pw.TextStyle(fontSize: 18),
+                  ),
+                ],
+              ),
+            ),
+      ),
+    );
+
+    // 3️⃣ Convertir a bytes
+    final Uint8List bytes = await pdf.save();
+
+    // 4️⃣ Crear un blob y descargarlo
+    final blob = html.Blob([bytes], 'application/pdf');
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    final anchor =
+        html.AnchorElement(href: url)
+          ..setAttribute(
+            'download',
+            'recibo${state.itemsToSell[0].folioSale}.pdf',
+          )
+          ..click();
+    html.Url.revokeObjectUrl(url);
   }
 }

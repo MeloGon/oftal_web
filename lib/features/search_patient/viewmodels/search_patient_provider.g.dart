@@ -1,27 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'sales_history_provider.dart';
+part of 'search_patient_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$salesHistoryHash() => r'47633cc17502eb3b7d109c6fe3abf59204127afd';
+String _$searchPatientHash() => r'0d9f1f827979cfd9be3f3b777036c88a883d50f4';
 
-/// See also [SalesHistory].
-@ProviderFor(SalesHistory)
-final salesHistoryProvider =
-    NotifierProvider<SalesHistory, SalesHistoryState>.internal(
-      SalesHistory.new,
-      name: r'salesHistoryProvider',
+/// See also [SearchPatient].
+@ProviderFor(SearchPatient)
+final searchPatientProvider =
+    AutoDisposeNotifierProvider<SearchPatient, SearchPatientState>.internal(
+      SearchPatient.new,
+      name: r'searchPatientProvider',
       debugGetCreateSourceHash:
           const bool.fromEnvironment('dart.vm.product')
               ? null
-              : _$salesHistoryHash,
+              : _$searchPatientHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
-typedef _$SalesHistory = Notifier<SalesHistoryState>;
+typedef _$SearchPatient = AutoDisposeNotifier<SearchPatientState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

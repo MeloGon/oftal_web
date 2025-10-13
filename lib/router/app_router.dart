@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:oftal_web/features/search_patient/views/search_patient_view.dart';
 import 'package:oftal_web/features/sell/views/sell_view.dart';
 import 'package:oftal_web/features/sales_history/views/sales_history_view.dart';
 import 'package:oftal_web/features/views.dart';
@@ -72,6 +73,20 @@ GoRouter appRouter(Ref ref) {
           GoRoute(
             path: RouterName.dashboard,
             pageBuilder: (context, state) => _fadeRoute(const DashboardView()),
+          ),
+          GoRoute(
+            path: RouterName.searchPatient,
+            pageBuilder:
+                (context, state) => _fadeRoute(const SearchPatientView()),
+            redirect: (context, state) {
+              if (state.matchedLocation == RouterName.searchPatient) {
+                ref
+                    .read(navigationProvider.notifier)
+                    .setCurrentPage(RouterName.searchPatient);
+                return RouterName.searchPatient;
+              }
+              return null;
+            },
           ),
           GoRoute(
             path: RouterName.addPatient,

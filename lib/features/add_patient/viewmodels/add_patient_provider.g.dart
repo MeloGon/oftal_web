@@ -6,7 +6,7 @@ part of 'add_patient_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$addPatientHash() => r'7ed7cbbd841e3c7dfb465139a8e733bdbc201364';
+String _$addPatientHash() => r'04a0a6284d034221efa188a6fca93caf56af1d1e';
 
 /// See also [AddPatient].
 @ProviderFor(AddPatient)
