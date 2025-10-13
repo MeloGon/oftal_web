@@ -16,6 +16,7 @@ ResinModel _$ResinModelFromJson(Map<String, dynamic> json) => ResinModel(
   text: json['texto'] as String?,
   quantity: (json['cantidad'] as num?)?.toInt(),
   price: (json['precio'] as num?)?.toDouble(),
+  priceInternal: (json['precio_interno'] as num?)?.toDouble(),
 );
 
 Map<String, dynamic> _$ResinModelToJson(ResinModel instance) =>
@@ -29,4 +30,5 @@ Map<String, dynamic> _$ResinModelToJson(ResinModel instance) =>
       'texto': instance.text,
       'cantidad': instance.quantity,
       'precio': instance.price,
+      'precio_interno': instance.priceInternal,
     };
