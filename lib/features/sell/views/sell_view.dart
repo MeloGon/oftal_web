@@ -11,11 +11,28 @@ import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class SellView extends ConsumerWidget {
+class SellView extends ConsumerStatefulWidget {
   const SellView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SellView> createState() => _SellViewState();
+}
+
+class _SellViewState extends ConsumerState<SellView> {
+  final _patientsScrollController = ScrollController();
+  final _mountsScrollController = ScrollController();
+  final _resinsScrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _patientsScrollController.dispose();
+    _mountsScrollController.dispose();
+    _resinsScrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final sellNotifier = ref.watch(sellProvider.notifier);
     final sellState = ref.watch(sellProvider);
 
@@ -42,13 +59,42 @@ class SellView extends ConsumerWidget {
         spacing: 20,
         children: [
           ShadCard(
+            width: MediaQuery.sizeOf(context).width * .9,
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 6,
               children: [
                 Text(
                   'Vender',
                   style: ShadTheme.of(context).textTheme.h2,
-                ).alignment(Alignment.centerLeft).paddingOnly(bottom: 20),
+                ),
+                Text(
+                  'Para realizar una venta, debes de seguir los siguientes pasos:',
+                ),
+                Text(
+                  '\u2022 Buscar un paciente por su nombre completo o un aproximado (Ingresa en el campo de busqueda el nombre del paciente)',
+                ),
+                Text(
+                  '\u2022 Seleccionar el paciente a vender (Selecciona el paciente de la lista de pacientes en la columna de acciones)',
+                ),
+                Text(
+                  '\u2022 Buscar los productos a vender (Ingresa en el campo de busqueda el nombre del producto)',
+                ),
+                Text(
+                  '\u2022 Seleccionar los productos a vender (Selecciona el producto de la lista de productos en la columna de acciones)',
+                ),
+                Text('\u2022 Crear la nota de venta'),
+                Text(
+                  '\u2022 Ingresar el importe, descuento y a cuenta en caso hubiera',
+                ),
+                Text('\u2022 Realiza la venta'),
+              ],
+            ),
+          ),
+          ShadCard(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 ShadInput(
                   placeholder: Text('Ingrese el nombre del paciente'),
                   leading: Icon(LucideIcons.search),
@@ -63,27 +109,32 @@ class SellView extends ConsumerWidget {
                   onSubmitted: (_) => sellNotifier.searchPatient(),
                 ),
                 if (sellState.patients.isNotEmpty && !sellState.isLoading)
-                  PaginatedDataTable(
-                    headingRowHeight: 42,
-                    dataRowMinHeight: 40,
-                    columns: const [
-                      DataColumn(label: Text('Nombre')),
-                      DataColumn(label: Text('Fecha de registro')),
-                      DataColumn(label: Text('Sucursal')),
-                      DataColumn(label: Text('Teléfono')),
-                      DataColumn(label: Text('Acciones')),
-                    ],
-                    source: PatientsDataSource(
-                      patients: sellState.patients,
-                      context: context,
-                      isForSell: true,
-                      ref: ref,
-                    ),
-                    availableRowsPerPage: [5, 10, 20, 50],
-                    rowsPerPage: sellState.rowsPerPage,
-                    onRowsPerPageChanged:
-                        (value) => sellNotifier.changeRowsPerPage(value ?? 5),
-                  ).box(width: MediaQuery.sizeOf(context).width * .9),
+                  Scrollbar(
+                    controller: _patientsScrollController,
+                    thumbVisibility: true,
+                    child: PaginatedDataTable(
+                      controller: _patientsScrollController,
+                      headingRowHeight: 42,
+                      dataRowMinHeight: 40,
+                      columns: const [
+                        DataColumn(label: Text('Nombre')),
+                        DataColumn(label: Text('Fecha de registro')),
+                        DataColumn(label: Text('Sucursal')),
+                        DataColumn(label: Text('Teléfono')),
+                        DataColumn(label: Text('Acciones')),
+                      ],
+                      source: PatientsDataSource(
+                        patients: sellState.patients,
+                        context: context,
+                        isForSell: true,
+                        ref: ref,
+                      ),
+                      availableRowsPerPage: [5, 10, 20, 50],
+                      rowsPerPage: sellState.rowsPerPage,
+                      onRowsPerPageChanged:
+                          (value) => sellNotifier.changeRowsPerPage(value ?? 5),
+                    ).box(width: MediaQuery.sizeOf(context).width * .9),
+                  ),
 
                 if (sellState.patients.isEmpty && !sellState.isLoading)
                   ShadCard(
@@ -169,57 +220,67 @@ class SellView extends ConsumerWidget {
                             ),
                             if (sellState.mounts.isNotEmpty &&
                                 !sellState.isLoading)
-                              PaginatedDataTable(
-                                headingRowHeight: 42,
-                                dataRowMinHeight: 40,
-                                columns: const [
-                                  DataColumn(label: Text('Marca')),
-                                  DataColumn(label: Text('Modelo')),
-                                  DataColumn(label: Text('Color')),
-                                  DataColumn(label: Text('Descripción')),
-                                  DataColumn(label: Text('Optica')),
-                                  DataColumn(label: Text('Precio')),
-                                  DataColumn(label: Text('Acciones')),
-                                ],
-                                source: MountsDataSource(
-                                  mounts: sellState.mounts,
-                                  context: context,
-                                  ref: ref,
+                              Scrollbar(
+                                controller: _mountsScrollController,
+                                thumbVisibility: true,
+                                child: PaginatedDataTable(
+                                  controller: _mountsScrollController,
+                                  headingRowHeight: 42,
+                                  dataRowMinHeight: 40,
+                                  columns: const [
+                                    DataColumn(label: Text('Marca')),
+                                    DataColumn(label: Text('Modelo')),
+                                    DataColumn(label: Text('Color')),
+                                    DataColumn(label: Text('Descripción')),
+                                    DataColumn(label: Text('Optica')),
+                                    DataColumn(label: Text('Precio')),
+                                    DataColumn(label: Text('Acciones')),
+                                  ],
+                                  source: MountsDataSource(
+                                    mounts: sellState.mounts,
+                                    context: context,
+                                    ref: ref,
+                                  ),
+                                  availableRowsPerPage: [5, 10, 20, 50],
+                                  rowsPerPage: sellState.rowsPerPage,
+                                  onRowsPerPageChanged:
+                                      (value) => sellNotifier.changeRowsPerPage(
+                                        value ?? 5,
+                                      ),
+                                ).box(
+                                  width: MediaQuery.sizeOf(context).width * .9,
                                 ),
-                                availableRowsPerPage: [5, 10, 20, 50],
-                                rowsPerPage: sellState.rowsPerPage,
-                                onRowsPerPageChanged:
-                                    (value) => sellNotifier.changeRowsPerPage(
-                                      value ?? 5,
-                                    ),
-                              ).box(
-                                width: MediaQuery.sizeOf(context).width * .9,
                               ),
 
                             if (sellState.resins.isNotEmpty &&
                                 !sellState.isLoading)
-                              PaginatedDataTable(
-                                headingRowHeight: 42,
-                                dataRowMinHeight: 40,
-                                columns: const [
-                                  DataColumn(label: Text('Marca')),
-                                  DataColumn(label: Text('Descripción')),
-                                  DataColumn(label: Text('Precio')),
-                                  DataColumn(label: Text('Acciones')),
-                                ],
-                                source: ResinDataSource(
-                                  resins: sellState.resins,
-                                  context: context,
-                                  ref: ref,
+                              Scrollbar(
+                                controller: _resinsScrollController,
+                                thumbVisibility: true,
+                                child: PaginatedDataTable(
+                                  controller: _resinsScrollController,
+                                  headingRowHeight: 42,
+                                  dataRowMinHeight: 40,
+                                  columns: const [
+                                    DataColumn(label: Text('Marca')),
+                                    DataColumn(label: Text('Descripción')),
+                                    DataColumn(label: Text('Precio')),
+                                    DataColumn(label: Text('Acciones')),
+                                  ],
+                                  source: ResinDataSource(
+                                    resins: sellState.resins,
+                                    context: context,
+                                    ref: ref,
+                                  ),
+                                  availableRowsPerPage: [5, 10, 20, 50],
+                                  rowsPerPage: sellState.rowsPerPage,
+                                  onRowsPerPageChanged:
+                                      (value) => sellNotifier.changeRowsPerPage(
+                                        value ?? 5,
+                                      ),
+                                ).box(
+                                  width: MediaQuery.sizeOf(context).width * .9,
                                 ),
-                                availableRowsPerPage: [5, 10, 20, 50],
-                                rowsPerPage: sellState.rowsPerPage,
-                                onRowsPerPageChanged:
-                                    (value) => sellNotifier.changeRowsPerPage(
-                                      value ?? 5,
-                                    ),
-                              ).box(
-                                width: MediaQuery.sizeOf(context).width * .9,
                               ),
                           ],
                         ),
@@ -243,6 +304,7 @@ class SellView extends ConsumerWidget {
                   ShadCard(
                     width: MediaQuery.sizeOf(context).width * .9,
                     child: Column(
+                      spacing: 10,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         RichText(
@@ -306,11 +368,17 @@ class SellView extends ConsumerWidget {
                                           ),
                                         ],
                                       ),
-                                      InkWell(
-                                        child: ShadTooltip(
-                                          builder:
-                                              (context) =>
-                                                  const Text('Eliminar'),
+                                      ShadTooltip(
+                                        builder:
+                                            (context) => const Text(
+                                              'Quitar de la lista',
+                                            ),
+                                        child: InkWell(
+                                          onTap:
+                                              () =>
+                                                  sellNotifier.removeItemToSell(
+                                                    index,
+                                                  ),
                                           child: Icon(
                                             Icons.delete_outline,
                                             size: 20,
@@ -424,7 +492,7 @@ class SellView extends ConsumerWidget {
           ],
         ],
       ),
-    ).marginOnly(top: 50).paddingSymmetric(horizontal: 20);
+    ).marginOnly(top: 20).paddingSymmetric(horizontal: 20);
   }
 }
 
