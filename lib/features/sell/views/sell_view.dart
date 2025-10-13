@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:go_router/go_router.dart';
 import 'package:oftal_web/core/constants/constants.dart';
 import 'package:oftal_web/core/enums/enums.dart';
+import 'package:oftal_web/datatables/datatables.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_provider.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_state.dart';
-import 'package:oftal_web/features/sell/views/widgets/item_to_add_cart.dart';
-import 'package:oftal_web/features/sell/views/widgets/item_to_sell.dart';
-import 'package:oftal_web/features/sell/views/widgets/reviews_dialog.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SellView extends ConsumerWidget {
   const SellView({super.key});
@@ -21,42 +20,20 @@ class SellView extends ConsumerWidget {
     final sellState = ref.watch(sellProvider);
 
     ref.listen<SellState>(sellProvider, (previous, next) {
-      if (next.reviews.isNotEmpty && previous?.reviews != next.reviews) {
-        if (context.mounted) {
-          showShadDialog(
-            context: context,
-            builder:
-                (context) => ShadDialog(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.sizeOf(context).width * .6,
-                    minWidth: 293,
-                  ),
-                  title: Text(
-                    'Datos del paciente: ${next.selectedPatient?.name ?? 'N/A'}',
-                  ),
-                  description: Text(
-                    'Se encontraron ${next.reviews.length} mediciones, escrollea para ver las mediciones',
-                  ),
-                  actions: [
-                    ShadButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Text('Cerrar'),
-                    ),
-                  ],
-                  child: ReviewsDialog(state: next, reviews: next.reviews),
-                ),
-          );
-        }
-      }
-    });
-
-    ref.listen<SellState>(sellProvider, (previous, next) {
       if (next.errorMessage.isNotEmpty &&
           previous?.errorMessage != next.errorMessage) {
         _showSnackbar(context, next.snackbarConfig, next.errorMessage);
         Future.microtask(
           () => ref.read(sellProvider.notifier).clearErrorMessage(),
         );
+      }
+      if (next.isLoading && (previous?.isLoading ?? false) == false) {
+        LoadingDialog().show(context);
+      }
+      if (!next.isLoading && (previous?.isLoading ?? false) == true) {
+        if (context.mounted) {
+          context.pop();
+        }
       }
     });
 
@@ -85,38 +62,29 @@ class SellView extends ConsumerWidget {
                   ),
                   onSubmitted: (_) => sellNotifier.searchPatient(),
                 ),
-                if (sellState.isLoading)
-                  const Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                    ),
-                  ).paddingOnly(top: 20),
                 if (sellState.patients.isNotEmpty && !sellState.isLoading)
-                  ShadCard(
-                    height: 300,
-                    child: Scrollbar(
-                      thumbVisibility: true,
-                      child: CustomScrollView(
-                        primary: true,
-                        slivers: [
-                          SliverToBoxAdapter(
-                            child: Text(
-                              'Se encontraron (${sellState.patients.length}) resultados, escrollea para ver los pacientes',
-                            ),
-                          ),
-                          SliverList.separated(
-                            separatorBuilder:
-                                (context, index) => const Divider(),
-                            itemBuilder: (context, index) {
-                              final patient = sellState.patients[index];
-                              return ItemToSell(patient: patient);
-                            },
-                            itemCount: sellState.patients.length,
-                          ),
-                        ],
-                      ),
+                  PaginatedDataTable(
+                    headingRowHeight: 42,
+                    dataRowMinHeight: 40,
+                    columns: const [
+                      DataColumn(label: Text('Nombre')),
+                      DataColumn(label: Text('Fecha de registro')),
+                      DataColumn(label: Text('Sucursal')),
+                      DataColumn(label: Text('Teléfono')),
+                      DataColumn(label: Text('Acciones')),
+                    ],
+                    source: PatientsDataSource(
+                      patients: sellState.patients,
+                      context: context,
+                      isForSell: true,
+                      ref: ref,
                     ),
-                  ).paddingOnly(top: 20),
+                    availableRowsPerPage: [5, 10, 20, 50],
+                    rowsPerPage: sellState.rowsPerPage,
+                    onRowsPerPageChanged:
+                        (value) => sellNotifier.changeRowsPerPage(value ?? 5),
+                  ).box(width: MediaQuery.sizeOf(context).width * .9),
+
                 if (sellState.patients.isEmpty && !sellState.isLoading)
                   ShadCard(
                     height: 70,
@@ -171,9 +139,7 @@ class SellView extends ConsumerWidget {
                                   (e) => e.name == value,
                                 ),
                               );
-                              // addPatientNotifier.updateGender(value);
                             },
-                            // controller: addPatientNotifier.genderController,
                           ),
                         ],
                       ),
@@ -203,58 +169,58 @@ class SellView extends ConsumerWidget {
                             ),
                             if (sellState.mounts.isNotEmpty &&
                                 !sellState.isLoading)
-                              ShadCard(
-                                height: 500,
-                                child: Scrollbar(
-                                  thumbVisibility: true,
-                                  child: CustomScrollView(
-                                    primary: true,
-                                    slivers: [
-                                      SliverToBoxAdapter(
-                                        child: Text(
-                                          'Se encontraron (${sellState.mounts.length}) lineas',
-                                        ),
-                                      ),
-                                      SliverList.separated(
-                                        separatorBuilder:
-                                            (context, index) => const Divider(),
-                                        itemBuilder: (context, index) {
-                                          final mount = sellState.mounts[index];
-                                          return ItemToAddCart(mount: mount);
-                                        },
-                                        itemCount: sellState.mounts.length,
-                                      ),
-                                    ],
-                                  ),
+                              PaginatedDataTable(
+                                headingRowHeight: 42,
+                                dataRowMinHeight: 40,
+                                columns: const [
+                                  DataColumn(label: Text('Marca')),
+                                  DataColumn(label: Text('Modelo')),
+                                  DataColumn(label: Text('Color')),
+                                  DataColumn(label: Text('Descripción')),
+                                  DataColumn(label: Text('Optica')),
+                                  DataColumn(label: Text('Precio')),
+                                  DataColumn(label: Text('Acciones')),
+                                ],
+                                source: MountsDataSource(
+                                  mounts: sellState.mounts,
+                                  context: context,
+                                  ref: ref,
                                 ),
-                              ).paddingOnly(top: 20),
+                                availableRowsPerPage: [5, 10, 20, 50],
+                                rowsPerPage: sellState.rowsPerPage,
+                                onRowsPerPageChanged:
+                                    (value) => sellNotifier.changeRowsPerPage(
+                                      value ?? 5,
+                                    ),
+                              ).box(
+                                width: MediaQuery.sizeOf(context).width * .9,
+                              ),
+
                             if (sellState.resins.isNotEmpty &&
                                 !sellState.isLoading)
-                              ShadCard(
-                                height: 500,
-                                child: Scrollbar(
-                                  thumbVisibility: true,
-                                  child: CustomScrollView(
-                                    primary: true,
-                                    slivers: [
-                                      SliverToBoxAdapter(
-                                        child: Text(
-                                          'Se encontraron (${sellState.resins.length}) resinas',
-                                        ),
-                                      ),
-                                      SliverList.separated(
-                                        separatorBuilder:
-                                            (context, index) => const Divider(),
-                                        itemBuilder: (context, index) {
-                                          final resin = sellState.resins[index];
-                                          return ItemToAddCart(resin: resin);
-                                        },
-                                        itemCount: sellState.resins.length,
-                                      ),
-                                    ],
-                                  ),
+                              PaginatedDataTable(
+                                headingRowHeight: 42,
+                                dataRowMinHeight: 40,
+                                columns: const [
+                                  DataColumn(label: Text('Marca')),
+                                  DataColumn(label: Text('Descripción')),
+                                  DataColumn(label: Text('Precio')),
+                                  DataColumn(label: Text('Acciones')),
+                                ],
+                                source: ResinDataSource(
+                                  resins: sellState.resins,
+                                  context: context,
+                                  ref: ref,
                                 ),
-                              ).paddingOnly(top: 20),
+                                availableRowsPerPage: [5, 10, 20, 50],
+                                rowsPerPage: sellState.rowsPerPage,
+                                onRowsPerPageChanged:
+                                    (value) => sellNotifier.changeRowsPerPage(
+                                      value ?? 5,
+                                    ),
+                              ).box(
+                                width: MediaQuery.sizeOf(context).width * .9,
+                              ),
                           ],
                         ),
                       ),
@@ -319,20 +285,38 @@ class SellView extends ConsumerWidget {
                                         sellState.itemsToSell[index].design ??
                                         '',
                                   ),
-                                  trailing: Column(
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    spacing: 20,
                                     children: [
-                                      Text(
-                                        's/.${sellState.itemsToSell[index].mountPrice?.toStringAsFixed(2) ?? sellState.itemsToSell[index].price?.toStringAsFixed(2) ?? ''}',
-                                        style:
-                                            ShadTheme.of(
-                                              context,
-                                            ).textTheme.large,
+                                      Column(
+                                        children: [
+                                          Text(
+                                            's/.${sellState.itemsToSell[index].mountPrice?.toStringAsFixed(2) ?? sellState.itemsToSell[index].price?.toStringAsFixed(2) ?? ''}',
+                                            style:
+                                                ShadTheme.of(
+                                                  context,
+                                                ).textTheme.large,
+                                          ),
+                                          Text(
+                                            sellState
+                                                    .itemsToSell[index]
+                                                    .mountQuantity ??
+                                                '',
+                                          ),
+                                        ],
                                       ),
-                                      Text(
-                                        sellState
-                                                .itemsToSell[index]
-                                                .mountQuantity ??
-                                            '',
+                                      InkWell(
+                                        child: ShadTooltip(
+                                          builder:
+                                              (context) =>
+                                                  const Text('Eliminar'),
+                                          child: Icon(
+                                            Icons.delete_outline,
+                                            size: 20,
+                                            color: Colors.red,
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
