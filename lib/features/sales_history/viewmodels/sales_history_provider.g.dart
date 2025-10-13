@@ -6,7 +6,7 @@ part of 'sales_history_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$salesHistoryHash() => r'6c993a73804912a494c3a180b90ec49b9a382e52';
+String _$salesHistoryHash() => r'789fa40cd10c333f8b4f8ce09f54eac3da75a1b2';
 
 /// See also [SalesHistory].
 @ProviderFor(SalesHistory)

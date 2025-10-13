@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:oftal_web/features/sales_history/views/widgets/sales_details_section.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:oftal_web/datatables/datatables.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
-import 'package:oftal_web/features/sales_history/views/widgets/label_sales_item.dart';
+import 'package:oftal_web/features/sales_history/views/widgets/filter_history_sales.dart';
+import 'package:oftal_web/features/sales_history/views/widgets/sales_details_section.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SalesHistoryView extends ConsumerWidget {
   const SalesHistoryView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final width = MediaQuery.sizeOf(context).width;
     final salesState = ref.watch(salesHistoryProvider);
     final salesNotifier = ref.watch(salesHistoryProvider.notifier);
     return Column(
@@ -18,101 +20,63 @@ class SalesHistoryView extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ShadCard(
-          width: MediaQuery.sizeOf(context).width * .9,
-          child: ShadCard(
-            height: 700,
-            child: Scrollbar(
-              thumbVisibility: true,
-              child: CustomScrollView(
-                primary: true,
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Text(
-                      'Ventas realizadas',
-                      style: ShadTheme.of(context).textTheme.h2,
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: ShadInputFormField(
-                      controller: salesNotifier.searchController,
-                      placeholder: Text('Ingresa el nombre del paciente'),
-                      onSubmitted: (_) => salesNotifier.getSales(),
-                      trailing: ShadButton(
-                        onPressed: () {
-                          salesNotifier.searchController.clear();
-                          salesNotifier.getSales();
-                        },
-                        child: Icon(Icons.close),
-                      ),
-                    ).paddingOnly(
-                      top: 10,
-                      bottom: 20,
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: Text(
-                      'Se encontraron (${salesState.sales.length}) resultados, escrollea para ver las ventas',
-                    ),
-                  ),
-                  if (salesState.isLoading)
-                    SliverToBoxAdapter(
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                        ),
-                      ),
-                    ),
-                  (salesState.sales.isNotEmpty && !salesState.isLoading)
-                      ? SliverList.separated(
-                        separatorBuilder: (context, index) => const Divider(),
-                        itemBuilder: (context, index) {
-                          final sale = salesState.sales[index];
-                          return ListTile(
-                            title: LabelSalesItem(
-                              title: 'Paciente',
-                              content: sale.patient.toString(),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                LabelSalesItem(
-                                  title: 'Fecha',
-                                  content: sale.date.toString(),
-                                ),
-                                LabelSalesItem(
-                                  title: 'Vendedor',
-                                  content: sale.authorName.toString(),
-                                ),
-                              ],
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              spacing: 10,
-                              children: [
-                                Text(
-                                  'S/. ${sale.total?.toStringAsFixed(2)}',
-                                  style: ShadTheme.of(context).textTheme.large,
-                                ),
-                                ShadIconButton(
-                                  icon: Icon(LucideIcons.eye300),
-                                  onPressed: () {
-                                    salesNotifier.selectSaleForDetails(sale);
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                        itemCount: salesState.sales.length,
-                      )
-                      : SliverToBoxAdapter(
-                        child: Text(
-                          'No se encontraron ventas',
-                        ),
-                      ),
-                ],
+          width: width * .9,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 6,
+            children: [
+              Text(
+                'Ventas realizadas',
+                style: ShadTheme.of(context).textTheme.h2,
               ),
-            ),
+              Text(
+                'En este modulo puedes realizar opciones como:',
+              ),
+              Text(
+                '\u2022 Ver las ventas realizadas',
+              ),
+              Text(
+                '\u2022 Filtrar las ventas realizadas por folio, paciente o fecha',
+              ),
+              Text(
+                '\u2022 Ver los detalles de una venta',
+              ),
+            ],
+          ),
+        ),
+        ShadCard(
+          width: MediaQuery.sizeOf(context).width * .9,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FilterHistorySales(),
+              Scrollbar(
+                thumbVisibility: true,
+                child: PaginatedDataTable(
+                  primary: true,
+                  columns: const [
+                    DataColumn(label: Text('Folio')),
+                    DataColumn(label: Text('Paciente')),
+                    DataColumn(label: Text('Fecha')),
+                    DataColumn(label: Text('Vendedor')),
+                    DataColumn(label: Text('A cuenta')),
+                    DataColumn(label: Text('Resto')),
+                    DataColumn(label: Text('Descuento')),
+                    DataColumn(label: Text('Total')),
+                    DataColumn(label: Text('Total con descuento')),
+                    DataColumn(label: Text('Sucursal')),
+                  ],
+                  source: SalesHistoryDataSource(
+                    sales: salesState.sales,
+                    context: context,
+                  ),
+                  availableRowsPerPage: [10, 20, 50],
+                  rowsPerPage: salesState.rowsPerPage,
+                  onRowsPerPageChanged:
+                      (value) => salesNotifier.changeRowsPerPage(value ?? 10),
+                ).box(width: width * .9).paddingOnly(top: 20),
+              ),
+            ],
           ).paddingOnly(top: 20),
         ),
         if (ref.watch(salesHistoryProvider).saleSelectedForDetails?.id !=
