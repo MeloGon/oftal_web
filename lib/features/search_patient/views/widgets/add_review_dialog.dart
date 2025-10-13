@@ -4,17 +4,23 @@ import 'package:oftal_web/features/search_patient/viewmodels/search_patient_prov
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class AddReviewDialog {
-  Future<void> show(BuildContext context) async {
+  Future<void> show(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     return showShadDialog(
+      barrierDismissible: false,
       context: context,
-
       builder:
           (context) => ShadDialog(
+            closeIcon: SizedBox(),
             constraints: BoxConstraints(
               maxWidth: MediaQuery.sizeOf(context).width * .6,
               minWidth: 293,
             ),
-            title: Text('Agregar Medición'),
+            title: Text(
+              'Agregar Medición para ${ref.read(searchPatientProvider).patientName}',
+            ),
             description: Text('Ingresa los datos de la medición'),
             actions: [
               ShadButton(
@@ -22,7 +28,12 @@ class AddReviewDialog {
                 child: Text('Guardar'),
               ),
               ShadButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () {
+                  ref
+                      .read(searchPatientProvider.notifier)
+                      .closeAddViewMeasureDialog();
+                  Navigator.of(context).pop();
+                },
                 child: Text('Cerrar'),
               ),
             ],

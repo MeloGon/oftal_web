@@ -23,7 +23,16 @@ class SearchPatientView extends ConsumerWidget {
           previous?.isAddViewMeasureDialogOpen !=
               next.isAddViewMeasureDialogOpen) {
         if (context.mounted) {
-          AddReviewDialog().show(context);
+          AddReviewDialog()
+              .show(
+                context,
+                ref,
+              )
+              .then((value) {
+                ref
+                    .read(searchPatientProvider.notifier)
+                    .closeAddViewMeasureDialog();
+              });
         }
       }
       if (next.isLoading && (previous?.isLoading ?? false) == false) {

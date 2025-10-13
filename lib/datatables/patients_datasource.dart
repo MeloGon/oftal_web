@@ -36,7 +36,7 @@ class PatientsDataSource extends DataTableSource {
             onAddMeasurement: () {
               ref
                   .read(searchPatientProvider.notifier)
-                  .openAddViewMeasureDialog();
+                  .openAddViewMeasureDialog(patient.name);
             },
             onViewMeasurements: () {
               ref.read(searchPatientProvider.notifier).getReviews(patient.name);

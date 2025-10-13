@@ -110,9 +110,17 @@ class SearchPatient extends _$SearchPatient {
     }
   }
 
-  void openAddViewMeasureDialog() {
+  void openAddViewMeasureDialog(String patientName) {
     state = state.copyWith(
       isAddViewMeasureDialogOpen: true,
+      patientName: patientName,
+    );
+  }
+
+  void closeAddViewMeasureDialog() {
+    state = state.copyWith(
+      isAddViewMeasureDialogOpen: false,
+      patientName: '',
     );
   }
 
