@@ -121,9 +121,11 @@ class SalesHistory extends _$SalesHistory {
       state = state.copyWith(
         saleDetails:
             response.map((json) => SalesDetailsModel.fromJson(json)).toList(),
+        isLoading: false,
       );
     } catch (e) {
       state = state.copyWith(
+        isLoading: false,
         errorMessage: e.toString(),
         snackbarConfig: SnackbarConfigModel(
           title: 'Error',

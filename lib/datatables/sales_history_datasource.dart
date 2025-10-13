@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
+import 'package:oftal_web/features/sales_history/views/widgets/sales_history_actions.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 
 class SalesHistoryDataSource extends DataTableSource {
   final List<SalesModel> sales;
   final BuildContext context;
-  // final WidgetRef ref;
+  final WidgetRef ref;
 
   SalesHistoryDataSource({
     required this.sales,
     required this.context,
-    // required this.ref,
+    required this.ref,
   });
 
   @override
@@ -30,6 +33,21 @@ class SalesHistoryDataSource extends DataTableSource {
         DataCell(Text(sale.total?.toCurrency() ?? '0')),
         DataCell(Text(sale.totalWithDiscount?.toCurrency() ?? '0')),
         DataCell(Text(sale.branch.toString())),
+        DataCell(
+          SalesHistoryActions(
+            sale: sale,
+            onViewDetails: () {
+              ref
+                  .read(salesHistoryProvider.notifier)
+                  .selectSaleForDetails(sale);
+              ref.read(salesHistoryProvider.notifier).getSalesDetails();
+            },
+            onDeleteSale: () {
+              ref.read(salesHistoryProvider.notifier).closeSaleDetails();
+              // ref.read(salesHistoryProvider.notifier).deleteSale();
+            },
+          ),
+        ),
       ],
     );
   }
