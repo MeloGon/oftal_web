@@ -8,6 +8,7 @@ class SearchPatientState {
   final List<ReviewModel> reviews;
   final bool isAddViewMeasureDialogOpen;
   final int rowsPerPage;
+  final String patientName;
 
   SearchPatientState({
     this.isLoading = false,
@@ -17,6 +18,7 @@ class SearchPatientState {
     this.reviews = const [],
     this.isAddViewMeasureDialogOpen = false,
     this.rowsPerPage = 7,
+    this.patientName = '',
   });
 
   SearchPatientState copyWith({
@@ -27,6 +29,7 @@ class SearchPatientState {
     List<ReviewModel>? reviews,
     bool? isAddViewMeasureDialogOpen,
     int? rowsPerPage,
+    String? patientName,
   }) {
     return SearchPatientState(
       isLoading: isLoading ?? this.isLoading,
@@ -37,6 +40,7 @@ class SearchPatientState {
       isAddViewMeasureDialogOpen:
           isAddViewMeasureDialogOpen ?? this.isAddViewMeasureDialogOpen,
       rowsPerPage: rowsPerPage ?? this.rowsPerPage,
+      patientName: patientName ?? this.patientName,
     );
   }
 }

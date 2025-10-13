@@ -52,6 +52,7 @@ class Sell extends _$Sell {
 
       state = state.copyWith(
         patients: response.map((json) => PatientModel.fromJson(json)).toList(),
+        isLoading: false,
       );
     } catch (e) {
       state = state.copyWith(
@@ -182,6 +183,14 @@ class Sell extends _$Sell {
                   previousValue + (element.mountPrice ?? element.price ?? 0.0),
             )
             .toString();
+
+    state = state.copyWith(
+      snackbarConfig: SnackbarConfigModel(
+        title: 'Aviso',
+        type: SnackbarEnum.success,
+      ),
+      errorMessage: 'Item añadido correctamente',
+    );
   }
 
   void applyDiscount() {
@@ -209,12 +218,6 @@ class Sell extends _$Sell {
       await Supabase.instance.client
           .from('ventas')
           .insert(state.itemsToSell.map((e) => e.toJson()).toList());
-      state = state.copyWith(
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Venta realizada correctamente',
-          type: SnackbarEnum.success,
-        ),
-      );
       _createShortSale();
     } catch (e) {
       state = state.copyWith(
@@ -232,7 +235,6 @@ class Sell extends _$Sell {
 
   Future<void> _createShortSale() async {
     final customerData = await LocalStorage.getProfile();
-    state = state.copyWith(isLoading: true);
     try {
       await Supabase.instance.client
           .from('ventas cortas')
@@ -258,6 +260,14 @@ class Sell extends _$Sell {
               folioSale: state.itemsToSell[0].folioSale,
             ).toJson(),
           );
+      state = state.copyWith(
+        isLoading: false,
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Aviso',
+          type: SnackbarEnum.success,
+        ),
+        errorMessage: 'Venta realizada correctamente',
+      );
     } catch (e) {
       state = state.copyWith(
         errorMessage: e.toString(),
@@ -265,9 +275,12 @@ class Sell extends _$Sell {
           title: 'Error',
           type: SnackbarEnum.error,
         ),
+        isLoading: false,
       );
     } finally {
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(
+        isLoading: false,
+      );
     }
   }
 
@@ -426,5 +439,39 @@ class Sell extends _$Sell {
           )
           ..click();
     html.Url.revokeObjectUrl(url);
+  }
+
+  void changeRowsPerPage(int value) {
+    state = state.copyWith(rowsPerPage: value);
+  }
+
+  void removeItemToSell(int index) {
+    state = state.copyWith(
+      itemsToSell: List.from(state.itemsToSell)..removeAt(index),
+      snackbarConfig: SnackbarConfigModel(
+        title: 'Aviso',
+        type: SnackbarEnum.success,
+      ),
+      errorMessage: 'Item eliminado de la nota de venta',
+    );
+    importController.text =
+        state.itemsToSell
+            .fold(
+              0.0,
+              (previousValue, element) =>
+                  previousValue + (element.mountPrice ?? element.price ?? 0.0),
+            )
+            .toString();
+    discountController.text = '0';
+    totalController.text =
+        state.itemsToSell
+            .fold(
+              0.0,
+              (previousValue, element) =>
+                  previousValue + (element.mountPrice ?? element.price ?? 0.0),
+            )
+            .toString();
+    accountController.text = '0';
+    restController.text = '0';
   }
 }

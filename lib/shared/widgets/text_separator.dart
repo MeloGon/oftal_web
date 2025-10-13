@@ -10,7 +10,7 @@ class TextSeparator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      margin: const EdgeInsets.only(bottom: 5),
+      margin: const EdgeInsets.only(bottom: 5, top: 5),
       child: Text(
         text,
         style: GoogleFonts.poppins(

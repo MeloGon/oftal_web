@@ -16,6 +16,7 @@ class SellState {
   final String idRemisionAndFolioSale;
   final DiscountReasonEnum? selectedDiscountReason;
   final List<ResinModel> resins;
+  final int rowsPerPage;
 
   SellState({
     this.isLoading = false,
@@ -32,6 +33,7 @@ class SellState {
     this.idRemisionAndFolioSale = '',
     this.selectedDiscountReason,
     this.resins = const [],
+    this.rowsPerPage = 5,
   });
 
   SellState copyWith({
@@ -49,6 +51,7 @@ class SellState {
     String? idRemisionAndFolioSale,
     DiscountReasonEnum? selectedDiscountReason,
     List<ResinModel>? resins,
+    int? rowsPerPage,
   }) {
     return SellState(
       isLoading: isLoading ?? this.isLoading,
@@ -67,6 +70,7 @@ class SellState {
       selectedDiscountReason:
           selectedDiscountReason ?? this.selectedDiscountReason,
       resins: resins ?? this.resins,
+      rowsPerPage: rowsPerPage ?? this.rowsPerPage,
     );
   }
 }

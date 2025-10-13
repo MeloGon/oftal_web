@@ -14,7 +14,7 @@ class Logo extends StatelessWidget {
           Icon(Icons.bubble_chart_outlined, color: Color(0xff7A6BF5)),
           SizedBox(width: 10),
           Text(
-            'Admin',
+            'OFTALWEB',
             style: GoogleFonts.montserratAlternates(
               fontSize: 20,
               fontWeight: FontWeight.w200,

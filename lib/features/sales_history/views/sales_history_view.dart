@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:oftal_web/datatables/datatables.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/filter_history_sales.dart';
-import 'package:oftal_web/features/sales_history/views/widgets/sales_details_section.dart';
+import 'package:oftal_web/features/sales_history/views/widgets/sales_details_dialog.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
+import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SalesHistoryView extends ConsumerWidget {
@@ -15,6 +17,25 @@ class SalesHistoryView extends ConsumerWidget {
     final width = MediaQuery.sizeOf(context).width;
     final salesState = ref.watch(salesHistoryProvider);
     final salesNotifier = ref.watch(salesHistoryProvider.notifier);
+
+    ref.listen(salesHistoryProvider, (previous, next) {
+      if (next.isLoading && (previous?.isLoading ?? false) == false) {
+        LoadingDialog().show(context);
+      }
+      if (!next.isLoading && (previous?.isLoading ?? false) == true) {
+        if (context.mounted) {
+          context.pop();
+          if (next.saleSelectedForDetails != null) {
+            SalesDetailsDialog().show(
+              context,
+              next.saleDetails,
+              next.saleSelectedForDetails!,
+            );
+          }
+        }
+      }
+    });
+
     return Column(
       spacing: 20,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,10 +86,12 @@ class SalesHistoryView extends ConsumerWidget {
                     DataColumn(label: Text('Total')),
                     DataColumn(label: Text('Total con descuento')),
                     DataColumn(label: Text('Sucursal')),
+                    DataColumn(label: Text('Acciones')),
                   ],
                   source: SalesHistoryDataSource(
                     sales: salesState.sales,
                     context: context,
+                    ref: ref,
                   ),
                   availableRowsPerPage: [10, 20, 50],
                   rowsPerPage: salesState.rowsPerPage,
@@ -79,17 +102,6 @@ class SalesHistoryView extends ConsumerWidget {
             ],
           ).paddingOnly(top: 20),
         ),
-        if (ref.watch(salesHistoryProvider).saleSelectedForDetails?.id !=
-                null &&
-            ref.watch(salesHistoryProvider).saleSelectedForDetails?.id != 0 &&
-            !ref.watch(salesHistoryProvider).isLoading)
-          Wrap(
-            spacing: 20,
-            runSpacing: 20,
-            children: [
-              SalesDetailsSection(),
-            ],
-          ),
         ShadButton(
           onPressed: () => salesNotifier.exportPatientsToCsv(salesState.sales),
           child: const Text('Exportar CSV'),
