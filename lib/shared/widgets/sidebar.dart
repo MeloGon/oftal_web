@@ -17,8 +17,8 @@ class Sidebar extends ConsumerWidget {
       width: 230,
       height: double.infinity,
       decoration: buildBoxDecoration(),
-      child: ListView(
-        physics: ClampingScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Logo(),
           TextSeparator(text: 'Opciones'),
@@ -61,6 +61,7 @@ class Sidebar extends ConsumerWidget {
               },
               isActive: navigationState.currentPage == RouterName.settings,
             ),
+          Spacer(),
           MenuItem(
             text: 'Logout',
             icon: Icons.login_outlined,
@@ -68,7 +69,7 @@ class Sidebar extends ConsumerWidget {
               ref.read(authProvider.notifier).logout();
               ref.read(appRouterProvider).go(RouterName.login);
             },
-          ),
+          ).paddingOnly(bottom: 20),
         ],
       ),
     ).paddingOnly(top: 10, bottom: 10, left: 7, right: 7);

@@ -43,7 +43,7 @@ class DashboardLayout extends ConsumerWidget {
               duration: const Duration(milliseconds: 250),
               curve: Curves.easeInOut,
               transform: Matrix4.translationValues(
-                navigationState.isMenuOpen ? 0 : -210,
+                navigationState.isMenuOpen ? 0 : -240,
                 0,
                 0,
               ),
