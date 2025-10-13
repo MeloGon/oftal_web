@@ -33,6 +33,9 @@ class ResinModel with _$ResinModel {
   @override
   @JsonKey(name: 'precio', includeFromJson: true, includeToJson: true)
   final double? price;
+  @override
+  @JsonKey(name: 'precio_interno', includeFromJson: true, includeToJson: true)
+  final double? priceInternal;
 
   ResinModel({
     required this.id,
@@ -44,6 +47,7 @@ class ResinModel with _$ResinModel {
     required this.text,
     required this.quantity,
     required this.price,
+    required this.priceInternal,
   });
 
   factory ResinModel.fromJson(Map<String, Object?> json) =>

@@ -18,6 +18,7 @@ class Settings extends _$Settings {
   final materialController = TextEditingController();
   final technologyController = TextEditingController();
   final priceController = TextEditingController();
+  final priceInternalController = TextEditingController();
   final quantityController = TextEditingController();
   @override
   SettingsState build() {
@@ -28,6 +29,7 @@ class Settings extends _$Settings {
       materialController.dispose();
       technologyController.dispose();
       priceController.dispose();
+      priceInternalController.dispose();
       quantityController.dispose();
     });
     return SettingsState();
@@ -54,9 +56,10 @@ class Settings extends _$Settings {
       technology: technologyController.text,
 
       text:
-          '$descriptionController.text $designController.text $lineController.text $materialController.text $technologyController.text',
+          '${descriptionController.text} ${designController.text} ${lineController.text} ${materialController.text} ${technologyController.text}',
       quantity: int.parse(quantityController.text),
       price: double.parse(priceController.text),
+      priceInternal: double.parse(priceInternalController.text),
     );
   }
 
@@ -71,9 +74,10 @@ class Settings extends _$Settings {
           );
       state = state.copyWith(
         snackbarConfig: SnackbarConfigModel(
-          title: 'Resina creada correctamente',
+          title: 'Aviso',
           type: SnackbarEnum.success,
         ),
+        errorMessage: 'Resina creada correctamente',
       );
       clearAddResinForm();
     } catch (e) {
@@ -98,6 +102,7 @@ class Settings extends _$Settings {
     technologyController.clear();
     priceController.clear();
     quantityController.clear();
+    priceInternalController.clear();
   }
 
   void clearErrorMessage() {

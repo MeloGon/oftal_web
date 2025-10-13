@@ -78,12 +78,19 @@ class SettingsView extends ConsumerWidget {
                       runSpacing: 10,
                       children: [
                         ShadInputFormField(
-                          label: Text('Precio'),
+                          label: Text('Precio para publico'),
                           controller: settingsNotifier.priceController,
+                          placeholder: Text('Ej: 20.70 o 20'),
+                        ).box(width: 150),
+                        ShadInputFormField(
+                          label: Text('Precio interno'),
+                          controller: settingsNotifier.priceInternalController,
+                          placeholder: Text('Ej: 20.70 o 20'),
                         ).box(width: 100),
                         ShadInputFormField(
                           label: Text('Cantidad'),
                           controller: settingsNotifier.quantityController,
+                          placeholder: Text('Ej: 10'),
                         ).box(width: 100),
                       ],
                     ),
