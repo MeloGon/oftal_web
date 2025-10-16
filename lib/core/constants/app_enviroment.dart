@@ -7,7 +7,7 @@ class AppEnviroment {
   static String get url {
     const url = String.fromEnvironment('SUPABASE_URL');
     print('🔍 URL from build env: ${url.isNotEmpty ? "FOUND" : "NOT FOUND"}');
-    return url.isNotEmpty ? url : 'No url';
+    return url.isNotEmpty ? url : 'https://gutgxjgfjbodznzjiqtm.supabase.co';
   }
 
   static String get anonKey {
@@ -15,6 +15,8 @@ class AppEnviroment {
     print(
       '🔍 ANONKEY from build env: ${anonKey.isNotEmpty ? "FOUND" : "NOT FOUND"}',
     );
-    return anonKey.isNotEmpty ? anonKey : 'No anon key';
+    return anonKey.isNotEmpty
+        ? anonKey
+        : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1dGd4amdmamJvZHpuemppcXRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0MjMyMjYsImV4cCI6MjA2OTk5OTIyNn0.FnPBtKjorYWm9gNC8TZwH-OFvPhj9VtYhtu_EWRqVPk';
   }
 }

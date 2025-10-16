@@ -1,3 +1,7 @@
+**/*.g.dart
+**/*.freezed.dart
+**/*.riverpod.dart
+
 .env
 # Miscellaneous
 *.class
