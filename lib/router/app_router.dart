@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:oftal_web/features/search_patient/views/search_patient_view.dart';
 import 'package:oftal_web/features/sell/views/sell_view.dart';
 import 'package:oftal_web/features/sales_history/views/sales_history_view.dart';
+import 'package:oftal_web/features/settings/views/mounts/mounts_view.dart';
+import 'package:oftal_web/features/settings/views/resins/resins_view.dart';
 import 'package:oftal_web/features/views.dart';
 import 'package:oftal_web/router/router_name.dart';
 import 'package:oftal_web/shared/layouts/auth/auth_layout.dart';
@@ -105,14 +107,24 @@ GoRouter appRouter(Ref ref) {
             path: RouterName.settings,
             pageBuilder: (context, state) => _fadeRoute(const SettingsView()),
             redirect: (context, state) {
-              if (state.matchedLocation == RouterName.settings) {
+              if (state.matchedLocation.startsWith(RouterName.settings)) {
                 ref
                     .read(navigationProvider.notifier)
                     .setCurrentPage(RouterName.settings);
-                return RouterName.settings;
+                return null;
               }
               return null;
             },
+            routes: [
+              GoRoute(
+                path: 'resins',
+                pageBuilder: (context, state) => _fadeRoute(const ResinsView()),
+              ),
+              GoRoute(
+                path: 'mounts',
+                pageBuilder: (context, state) => _fadeRoute(const MountsView()),
+              ),
+            ],
           ),
           GoRoute(
             path: RouterName.sell,

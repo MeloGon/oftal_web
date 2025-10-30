@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/settings/viewmodels/settings_provider.dart';
+import 'package:oftal_web/router/app_router.dart';
+import 'package:oftal_web/router/router_name.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
@@ -13,7 +15,7 @@ class SettingsView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // final settingsState = ref.watch(settingsProvider);
-    final settingsNotifier = ref.watch(settingsProvider.notifier);
+    // final settingsNotifier = ref.watch(settingsProvider.notifier);
 
     ref.listen(settingsProvider, (previous, next) {
       if (next.errorMessage.isNotEmpty &&
@@ -26,101 +28,144 @@ class SettingsView extends ConsumerWidget {
     });
     return ShadCard(
       width: MediaQuery.sizeOf(context).width * .9,
-      child: Column(
-        children: [
-          ShadAccordion<int>(
-            children: [
-              ShadAccordionItem(
-                value: 1,
-                title: Text(
-                  'Añadir resina',
-                  style: ShadTheme.of(context).textTheme.h4,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 8,
-                  children: [
-                    ShadInputFormField(
-                      label: Text('Descripción'),
-                      controller: settingsNotifier.descriptionController,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 10,
+          children: [
+            Text(
+              'Seleccione una de las opciones:',
+              style: ShadTheme.of(context).textTheme.h2,
+            ),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              // mainAxisSize: MainAxisSize.min,
+              children: [
+                // ShadAccordion<int>(
+                //   children: [
+                //     ShadAccordionItem(
+                //       value: 1,
+                //       title: Text(
+                //         'Añadir resina',
+                //         style: ShadTheme.of(context).textTheme.h4,
+                //       ),
+                //       child: Column(
+                //         crossAxisAlignment: CrossAxisAlignment.start,
+                //         spacing: 8,
+                //         children: [
+                //           ShadInputFormField(
+                //             label: Text('Descripción'),
+                //             controller: settingsNotifier.descriptionController,
+                //           ),
+                //           Row(
+                //             spacing: 20,
+                //             mainAxisSize: MainAxisSize.max,
+                //             children: [
+                //               ShadInputFormField(
+                //                 label: Text('Diseño'),
+                //                 controller: settingsNotifier.designController,
+                //               ).box(width: MediaQuery.sizeOf(context).width * .35),
+                //               ShadInputFormField(
+                //                 label: Text('Linea'),
+                //                 controller: settingsNotifier.lineController,
+                //               ).box(width: MediaQuery.sizeOf(context).width * .35),
+                //             ],
+                //           ).box(width: MediaQuery.sizeOf(context).width * .9),
+                //           Row(
+                //             spacing: 20,
+                //             mainAxisSize: MainAxisSize.max,
+                //             children: [
+                //               ShadInputFormField(
+                //                 label: Text('Material'),
+                //                 controller: settingsNotifier.materialController,
+                //               ).box(width: MediaQuery.sizeOf(context).width * .35),
+                //               ShadInputFormField(
+                //                 label: Text('Tecnología'),
+                //                 controller: settingsNotifier.technologyController,
+                //               ).box(width: MediaQuery.sizeOf(context).width * .35),
+                //             ],
+                //           ).box(width: MediaQuery.sizeOf(context).width * .9),
+                //           Wrap(
+                //             direction: Axis.horizontal,
+                //             spacing: 20,
+                //             runSpacing: 10,
+                //             children: [
+                //               ShadInputFormField(
+                //                 label: Text('Precio para publico'),
+                //                 controller: settingsNotifier.priceController,
+                //                 placeholder: Text('Ej: 20.70 o 20'),
+                //               ).box(width: 150),
+                //               ShadInputFormField(
+                //                 label: Text('Precio interno'),
+                //                 controller: settingsNotifier.priceInternalController,
+                //                 placeholder: Text('Ej: 20.70 o 20'),
+                //               ).box(width: 100),
+                //               ShadInputFormField(
+                //                 label: Text('Cantidad'),
+                //                 controller: settingsNotifier.quantityController,
+                //                 placeholder: Text('Ej: 10'),
+                //               ).box(width: 100),
+                //             ],
+                //           ),
+                //           Row(
+                //             spacing: 10,
+                //             mainAxisAlignment: MainAxisAlignment.center,
+                //             mainAxisSize: MainAxisSize.max,
+                //             children: [
+                //               ShadButton(
+                //                 width: 100,
+                //                 onPressed:
+                //                     ref.read(settingsProvider.notifier).addResin,
+                //                 child: Text('Añadir'),
+                //               ).expanded(),
+                //               ShadButton.outline(
+                //                 width: 100,
+                //                 onPressed:
+                //                     ref
+                //                         .read(settingsProvider.notifier)
+                //                         .clearAddResinForm,
+                //                 child: Text('Cancelar'),
+                //               ).expanded(),
+                //             ],
+                //           ).paddingOnly(top: 10),
+                //         ],
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                InkWell(
+                  onTap: () {
+                    ref.read(appRouterProvider).go(RouterName.resins);
+                  },
+                  child: ShadCard(
+                    rowMainAxisAlignment: MainAxisAlignment.center,
+                    width: 150,
+                    child: Column(
+                      children: [
+                        Text('Resinas'),
+                      ],
                     ),
-                    Row(
-                      spacing: 20,
-                      mainAxisSize: MainAxisSize.max,
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    ref.read(appRouterProvider).go(RouterName.mounts);
+                  },
+                  child: ShadCard(
+                    rowMainAxisAlignment: MainAxisAlignment.center,
+                    width: 150,
+                    child: Column(
                       children: [
-                        ShadInputFormField(
-                          label: Text('Diseño'),
-                          controller: settingsNotifier.designController,
-                        ).box(width: MediaQuery.sizeOf(context).width * .35),
-                        ShadInputFormField(
-                          label: Text('Linea'),
-                          controller: settingsNotifier.lineController,
-                        ).box(width: MediaQuery.sizeOf(context).width * .35),
-                      ],
-                    ).box(width: MediaQuery.sizeOf(context).width * .9),
-                    Row(
-                      spacing: 20,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        ShadInputFormField(
-                          label: Text('Material'),
-                          controller: settingsNotifier.materialController,
-                        ).box(width: MediaQuery.sizeOf(context).width * .35),
-                        ShadInputFormField(
-                          label: Text('Tecnología'),
-                          controller: settingsNotifier.technologyController,
-                        ).box(width: MediaQuery.sizeOf(context).width * .35),
-                      ],
-                    ).box(width: MediaQuery.sizeOf(context).width * .9),
-                    Wrap(
-                      direction: Axis.horizontal,
-                      spacing: 20,
-                      runSpacing: 10,
-                      children: [
-                        ShadInputFormField(
-                          label: Text('Precio para publico'),
-                          controller: settingsNotifier.priceController,
-                          placeholder: Text('Ej: 20.70 o 20'),
-                        ).box(width: 150),
-                        ShadInputFormField(
-                          label: Text('Precio interno'),
-                          controller: settingsNotifier.priceInternalController,
-                          placeholder: Text('Ej: 20.70 o 20'),
-                        ).box(width: 100),
-                        ShadInputFormField(
-                          label: Text('Cantidad'),
-                          controller: settingsNotifier.quantityController,
-                          placeholder: Text('Ej: 10'),
-                        ).box(width: 100),
+                        Text('Monturas'),
                       ],
                     ),
-                    Row(
-                      spacing: 10,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        ShadButton(
-                          width: 100,
-                          onPressed:
-                              ref.read(settingsProvider.notifier).addResin,
-                          child: Text('Añadir'),
-                        ).expanded(),
-                        ShadButton.outline(
-                          width: 100,
-                          onPressed:
-                              ref
-                                  .read(settingsProvider.notifier)
-                                  .clearAddResinForm,
-                          child: Text('Cancelar'),
-                        ).expanded(),
-                      ],
-                    ).paddingOnly(top: 10),
-                  ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     ).paddingSymmetric(horizontal: 20, vertical: 10);
   }
