@@ -99,27 +99,31 @@ class SearchPatientView extends ConsumerWidget {
                         ),
               ),
               if (searchPatientState.patients.isNotEmpty)
-                PaginatedDataTable(
-                  headingRowHeight: 42,
-                  dataRowMinHeight: 40,
-                  columns: const [
-                    DataColumn(label: Text('Nombre')),
-                    DataColumn(label: Text('Fecha de registro')),
-                    DataColumn(label: Text('Sucursal')),
-                    DataColumn(label: Text('Teléfono')),
-                    DataColumn(label: Text('Acciones')),
-                  ],
-                  source: PatientsDataSource(
-                    patients: searchPatientState.patients,
-                    context: context,
-                    ref: ref,
-                  ),
-                  availableRowsPerPage: [7, 10, 15, 20],
-                  rowsPerPage: searchPatientState.rowsPerPage,
-                  onRowsPerPageChanged:
-                      (value) =>
-                          searchPatientNotifier.changeRowsPerPage(value ?? 7),
-                ).box(width: width * .9).paddingOnly(top: 20),
+                Scrollbar(
+                  thumbVisibility: true,
+                  child: PaginatedDataTable(
+                    primary: true,
+                    headingRowHeight: 42,
+                    dataRowMinHeight: 40,
+                    columns: const [
+                      DataColumn(label: Text('Nombre')),
+                      DataColumn(label: Text('Fecha de registro')),
+                      DataColumn(label: Text('Sucursal')),
+                      DataColumn(label: Text('Teléfono')),
+                      DataColumn(label: Text('Acciones')),
+                    ],
+                    source: PatientsDataSource(
+                      patients: searchPatientState.patients,
+                      context: context,
+                      ref: ref,
+                    ),
+                    availableRowsPerPage: [7, 10, 15, 20],
+                    rowsPerPage: searchPatientState.rowsPerPage,
+                    onRowsPerPageChanged:
+                        (value) =>
+                            searchPatientNotifier.changeRowsPerPage(value ?? 7),
+                  ).box(width: width * .9).paddingOnly(top: 20),
+                ),
             ],
           ),
         ),

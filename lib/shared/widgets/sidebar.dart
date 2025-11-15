@@ -63,7 +63,7 @@ class Sidebar extends ConsumerWidget {
             ),
           Spacer(),
           MenuItem(
-            text: 'Logout',
+            text: 'Cerrar sesión',
             icon: Icons.login_outlined,
             onPressed: () {
               ref.read(authProvider.notifier).logout();

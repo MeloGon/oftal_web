@@ -107,6 +107,6 @@ class SalesHistoryView extends ConsumerWidget {
           child: const Text('Exportar CSV'),
         ),
       ],
-    ).paddingSymmetric(horizontal: 20, vertical: 50);
+    ).paddingSymmetric(horizontal: 20, vertical: 20);
   }
 }
