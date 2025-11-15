@@ -4,11 +4,13 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 class ResinInventoryActions extends StatelessWidget {
   final ResinModel resin;
-  // final Function() onAddToCart;
+  final Function() onDeleteResin;
+  final Function() onEditResin;
   const ResinInventoryActions({
     super.key,
     required this.resin,
-    // required this.onAddToCart,
+    required this.onDeleteResin,
+    required this.onEditResin,
   });
 
   @override
@@ -17,16 +19,16 @@ class ResinInventoryActions extends StatelessWidget {
       spacing: 10,
       children: [
         ShadTooltip(
-          builder: (context) => const Text('Agregar al carrito'),
+          builder: (context) => const Text('Editar'),
           child: InkWell(
-            // onTap: onAddToCart,
+            onTap: onEditResin,
             child: Icon(Icons.edit_outlined, size: 20),
           ),
         ),
         ShadTooltip(
           builder: (context) => const Text('Eliminar'),
           child: InkWell(
-            // onTap: onDeleteResin,
+            onTap: onDeleteResin,
             child: Icon(Icons.delete_outlined, size: 20),
           ),
         ),

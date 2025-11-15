@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/features/settings/viewmodels/resins/resins_provider.dart';
 import 'package:oftal_web/features/settings/views/resins/widgets/resins_inventory_actions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 
@@ -36,7 +37,6 @@ class ResinInventoryDataSource extends DataTableSource {
           DataCell(Text('')),
           DataCell(Text('')),
           DataCell(Text('')),
-          DataCell(Text('')),
         ],
       );
     }
@@ -55,9 +55,12 @@ class ResinInventoryDataSource extends DataTableSource {
         DataCell(
           ResinInventoryActions(
             resin: resin,
-            // onAddToCart: () {
-            //   ref.read(sellProvider.notifier).selectItemToSell(resin);
-            // },
+            onDeleteResin: () {
+              ref.read(resinsProvider.notifier).deleteResin(resin.id);
+            },
+            onEditResin: () {
+              ref.read(resinsProvider.notifier).editResin(resin);
+            },
           ),
         ),
       ],

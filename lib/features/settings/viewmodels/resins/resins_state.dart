@@ -1,3 +1,4 @@
+import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 
 class ResinsState {
@@ -9,16 +10,20 @@ class ResinsState {
   final int offset;
   final bool hasMore;
   final SnackbarConfigModel? snackbarConfig;
+  final bool isAddResinDialogOpen;
+  final ResinModel? selectedResin;
 
   ResinsState({
     this.isLoading = false,
     this.errorMessage = '',
     this.resins = const [],
-    this.rowsPerPage = 5,
+    this.rowsPerPage = 10,
     this.totalCount = 0,
     this.offset = 0,
     this.hasMore = true,
     this.snackbarConfig,
+    this.isAddResinDialogOpen = false,
+    this.selectedResin,
   });
 
   ResinsState copyWith({
@@ -30,6 +35,8 @@ class ResinsState {
     int? offset,
     bool? hasMore,
     SnackbarConfigModel? snackbarConfig,
+    bool? isAddResinDialogOpen,
+    ResinModel? selectedResin,
   }) {
     return ResinsState(
       isLoading: isLoading ?? this.isLoading,
@@ -40,6 +47,8 @@ class ResinsState {
       offset: offset ?? this.offset,
       hasMore: hasMore ?? this.hasMore,
       snackbarConfig: snackbarConfig ?? this.snackbarConfig,
+      isAddResinDialogOpen: isAddResinDialogOpen ?? this.isAddResinDialogOpen,
+      selectedResin: selectedResin ?? this.selectedResin,
     );
   }
 }
