@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide LocalStorage;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -23,8 +24,31 @@ class Sell extends _$Sell {
   final totalController = TextEditingController();
   final accountController = TextEditingController();
   final restController = TextEditingController();
+  final dateController = TextEditingController();
+
+  final mask = MaskTextInputFormatter(
+    mask: '##-##-####',
+    filter: {
+      '#': RegExp(r'[0-9]'),
+    },
+  );
+
   @override
   SellState build() {
+    dateController.text = DateFormat(
+      'dd-MM-yyyy',
+      'es_ES',
+    ).format(DateTime.now());
+    ref.onDispose(() {
+      searchController.dispose();
+      searchItemToSellController.dispose();
+      importController.dispose();
+      discountController.dispose();
+      totalController.dispose();
+      accountController.dispose();
+      restController.dispose();
+      dateController.dispose();
+    });
     return SellState();
   }
 
@@ -118,12 +142,20 @@ class Sell extends _$Sell {
         folioSale:
             state.idRemisionAndFolioSale
                 .toString(), //se crea random pero es igual para todos los items en una sola compra
-        dateSale: DateFormat(
-          'dd-MMM-yyyy',
-          'es_ES',
-        ).format(
-          DateTime.now(),
-        ), // ver que se cree en formato normal diai-mes-año
+        // dateSale: DateFormat(
+        //   'dd-MMM-yyyy',
+        //   'es_ES',
+        // ).format(
+        //   DateTime.now(),
+        // ), // ver que se cree en formato normal diai-mes-año
+        // dateSale: DateFormat(
+        //   'dd-MMM-yyyy',
+        //   'es_ES',
+        // ).format(DateTime.parse(dateController.text)),
+        dateSale:
+            DateFormat('dd-MMM-yy')
+                .format(DateFormat('dd-MM-yyyy').parse(dateController.text))
+                .toString(),
         patient: state.selectedPatient?.name,
         idMount: itemParsed.id,
         // mount: itemParsed.model, //acetato, oftalmico, ver como va esto despues
@@ -133,7 +165,14 @@ class Sell extends _$Sell {
         mountQuantity: itemParsed.stock.toString(),
         mountPrice: itemParsed.price,
         mountText: itemParsed.description,
-        updatedDate: DateFormat('yyyy-MM-dd').format(DateTime.now()).toString(),
+        // updatedDate:
+        //     DateFormat(
+        //       'yyyy-MM-dd',
+        //     ).format(DateTime.parse(dateController.text)).toString(),
+        updatedDate:
+            DateFormat('yyyy-MM-dd')
+                .format(DateFormat('dd-MM-yyyy').parse(dateController.text))
+                .toString(),
       );
       state = state.copyWith(itemsToSell: [...state.itemsToSell, itemToSell]);
     } else {
@@ -149,11 +188,27 @@ class Sell extends _$Sell {
         material: itemParsed.material,
         technology: itemParsed.technology,
         patient: state.selectedPatient?.name,
-        dateSale: DateFormat('dd-MMM-yyyy', 'es_ES').format(DateTime.now()),
+        // dateSale: DateFormat('dd-MMM-yyyy', 'es_ES').format(DateTime.now()),
+        // dateSale: DateFormat(
+        //   'dd-MMM-yyyy',
+        //   'es_ES',
+        // ).format(DateTime.parse(dateController.text)),
+        dateSale:
+            DateFormat('dd-MMM-yy')
+                .format(DateFormat('dd-MM-yyyy').parse(dateController.text))
+                .toString(),
         text: itemParsed.text,
         quantity: itemParsed.quantity.toString(),
         price: itemParsed.price,
-        updatedDate: DateFormat('yyyy-MM-dd').format(DateTime.now()).toString(),
+        // updatedDate: DateFormat('yyyy-MM-dd').format(DateTime.now()).toString(),
+        // updatedDate:
+        //     DateFormat(
+        //       'yyyy-MM-dd',
+        //     ).format(DateTime.parse(dateController.text)).toString(),
+        updatedDate:
+            DateFormat('yyyy-MM-dd')
+                .format(DateFormat('dd-MM-yyyy').parse(dateController.text))
+                .toString(),
       );
       state = state.copyWith(itemsToSell: [...state.itemsToSell, itemToSell]);
     }
@@ -212,6 +267,7 @@ class Sell extends _$Sell {
 
   Future<void> createSale() async {
     state = state.copyWith(isLoading: true);
+    _checkDate();
     try {
       print('VENTA ${state.itemsToSell[0].folioSale}');
 
@@ -233,6 +289,29 @@ class Sell extends _$Sell {
     }
   }
 
+  void _checkDate() {
+    final updatedDate =
+        state.itemsToSell
+            .map(
+              (item) => item.copyWith(
+                updatedDate:
+                    DateFormat('yyyy-MM-dd')
+                        .format(
+                          DateFormat('dd-MM-yyyy').parse(dateController.text),
+                        )
+                        .toString(),
+                dateSale:
+                    DateFormat('dd-MMM-yy')
+                        .format(
+                          DateFormat('dd-MM-yyyy').parse(dateController.text),
+                        )
+                        .toString(),
+              ),
+            )
+            .toList();
+    state = state.copyWith(itemsToSell: updatedDate);
+  }
+
   Future<void> _createShortSale() async {
     final customerData = await LocalStorage.getProfile();
     try {
@@ -242,14 +321,18 @@ class Sell extends _$Sell {
             SalesModel(
               id: int.parse(state.itemsToSell[0].idRemision ?? '0'),
               branch: state.selectedPatient?.branch,
-              date: DateFormat(
-                'dd-MMM-yyyy',
-                'es_ES',
-              ).format(
-                DateTime.now(),
-              ),
+              date:
+                  DateFormat('dd-MMM-yy')
+                      .format(
+                        DateFormat('dd-MM-yyyy').parse(dateController.text),
+                      )
+                      .toString(),
               updatedDate:
-                  DateFormat('yyyy-MM-dd').format(DateTime.now()).toString(),
+                  DateFormat('yyyy-MM-dd')
+                      .format(
+                        DateFormat('dd-MM-yyyy').parse(dateController.text),
+                      )
+                      .toString(),
               patient: state.selectedPatient?.name,
               authorName: customerData.name,
               total: double.parse(importController.text),

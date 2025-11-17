@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SellState {
   final bool isLoading;
@@ -17,6 +19,7 @@ class SellState {
   final DiscountReasonEnum? selectedDiscountReason;
   final List<ResinModel> resins;
   final int rowsPerPage;
+  final GlobalKey<ShadFormState>? formKey;
 
   SellState({
     this.isLoading = false,
@@ -34,6 +37,7 @@ class SellState {
     this.selectedDiscountReason,
     this.resins = const [],
     this.rowsPerPage = 5,
+    this.formKey,
   });
 
   SellState copyWith({
@@ -52,6 +56,7 @@ class SellState {
     DiscountReasonEnum? selectedDiscountReason,
     List<ResinModel>? resins,
     int? rowsPerPage,
+    GlobalKey<ShadFormState>? formKey,
   }) {
     return SellState(
       isLoading: isLoading ?? this.isLoading,
@@ -71,6 +76,7 @@ class SellState {
           selectedDiscountReason ?? this.selectedDiscountReason,
       resins: resins ?? this.resins,
       rowsPerPage: rowsPerPage ?? this.rowsPerPage,
+      formKey: formKey ?? this.formKey,
     );
   }
 }

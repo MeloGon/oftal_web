@@ -51,6 +51,7 @@ class Sidebar extends ConsumerWidget {
             onPressed: () {
               ref.read(appRouterProvider).go(RouterName.salesHistory);
             },
+            isActive: navigationState.currentPage == RouterName.salesHistory,
           ),
           if (ref.read(navigationProvider).isAdmin)
             MenuItem(
