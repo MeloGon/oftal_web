@@ -333,4 +333,48 @@ class SalesHistory extends _$SalesHistory {
           ..click();
     html.Url.revokeObjectUrl(url);
   }
+
+  Future<void> deleteSale(SalesModel sale) async {
+    state = state.copyWith(isLoading: true);
+    if (sale.folioSale == null) return;
+    try {
+      await Supabase.instance.client
+          .from('ventas cortas')
+          .delete()
+          .eq('FOLIO REMISION', sale.folioSale!);
+
+      await Supabase.instance.client
+          .from('ventas')
+          .delete()
+          .eq('ID REMISION', sale.folioSale!);
+
+      state = state.copyWith(
+        isLoading: false,
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Aviso',
+          type: SnackbarEnum.success,
+        ),
+        errorMessage: 'Venta eliminada correctamente',
+      );
+      await getSales();
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: e.toString(),
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+      );
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  void clearErrorMessage() {
+    state = state.copyWith(
+      errorMessage: '',
+      snackbarConfig: null,
+    );
+  }
 }

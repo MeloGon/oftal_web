@@ -319,21 +319,43 @@ class _SellViewState extends ConsumerState<SellView> {
                       spacing: 10,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Paciente: ',
+                        Row(
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Paciente: ',
+                                  ),
+                                  TextSpan(
+                                    text: '  ',
+                                  ),
+                                  TextSpan(
+                                    text: sellState.selectedPatient?.name ?? '',
+                                    style: ShadTheme.of(context).textTheme.h4,
+                                  ),
+                                ],
                               ),
-                              TextSpan(
-                                text: '  ',
-                              ),
-                              TextSpan(
-                                text: sellState.selectedPatient?.name ?? '',
-                                style: ShadTheme.of(context).textTheme.h4,
-                              ),
-                            ],
-                          ),
+                            ),
+                            Spacer(),
+                            ShadForm(
+                              key: sellState.formKey,
+                              autovalidateMode:
+                                  ShadAutovalidateMode.onUserInteraction,
+                              child: ShadInputFormField(
+                                label: Text('Fecha'),
+                                inputFormatters: [sellNotifier.mask],
+                                controller: sellNotifier.dateController,
+                                validator:
+                                    (v) =>
+                                        RegExp(
+                                              r'^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(19|20)\d{2}$',
+                                            ).hasMatch(v)
+                                            ? null
+                                            : 'Ingresa una fecha valida',
+                              ).box(width: 170),
+                            ),
+                          ],
                         ),
                         Text('Items a vender').paddingOnly(bottom: 20),
                         // Enviar el item cuando se seleccione y solo crear un modelo detalle de ventas e ir llenando con lo que se pueda, se crea un detalle de venta por cada item

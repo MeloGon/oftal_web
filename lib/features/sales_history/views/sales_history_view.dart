@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/datatables/datatables.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/filter_history_sales.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/sales_details_dialog.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
+import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -33,6 +35,13 @@ class SalesHistoryView extends ConsumerWidget {
             );
           }
         }
+      }
+      if (next.errorMessage.isNotEmpty &&
+          previous?.errorMessage != next.errorMessage) {
+        _showSnackbar(context, next.snackbarConfig, next.errorMessage);
+        Future.microtask(
+          () => ref.read(salesHistoryProvider.notifier).clearErrorMessage(),
+        );
       }
     });
 
@@ -109,4 +118,17 @@ class SalesHistoryView extends ConsumerWidget {
       ],
     ).paddingSymmetric(horizontal: 20, vertical: 20);
   }
+}
+
+void _showSnackbar(
+  BuildContext context,
+  SnackbarConfigModel? snackbarConfig,
+  String errorMessage,
+) {
+  CustomSnackbar().show(
+    context,
+    snackbarConfig ??
+        SnackbarConfigModel(title: 'Error', type: SnackbarEnum.error),
+    errorMessage,
+  );
 }
