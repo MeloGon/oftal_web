@@ -20,14 +20,20 @@ class SellView extends ConsumerStatefulWidget {
 
 class _SellViewState extends ConsumerState<SellView> {
   final _patientsScrollController = ScrollController();
+  final _patientsHorizontalScrollController = ScrollController();
   final _mountsScrollController = ScrollController();
+  final _mountsHorizontalScrollController = ScrollController();
   final _resinsScrollController = ScrollController();
+  final _resinsHorizontalScrollController = ScrollController();
 
   @override
   void dispose() {
     _patientsScrollController.dispose();
+    _patientsHorizontalScrollController.dispose();
     _mountsScrollController.dispose();
+    _mountsHorizontalScrollController.dispose();
     _resinsScrollController.dispose();
+    _resinsHorizontalScrollController.dispose();
     super.dispose();
   }
 
@@ -124,28 +130,43 @@ class _SellViewState extends ConsumerState<SellView> {
                   Scrollbar(
                     controller: _patientsScrollController,
                     thumbVisibility: true,
-                    child: PaginatedDataTable(
-                      controller: _patientsScrollController,
-                      headingRowHeight: 42,
-                      dataRowMinHeight: 40,
-                      columns: const [
-                        DataColumn(label: Text('Nombre')),
-                        DataColumn(label: Text('Fecha de registro')),
-                        DataColumn(label: Text('Sucursal')),
-                        DataColumn(label: Text('Teléfono')),
-                        DataColumn(label: Text('Acciones')),
-                      ],
-                      source: PatientsDataSource(
-                        patients: sellState.patients,
-                        context: context,
-                        isForSell: true,
-                        ref: ref,
+                    interactive: true,
+                    child: Scrollbar(
+                      controller: _patientsHorizontalScrollController,
+                      thumbVisibility: true,
+                      interactive: true,
+                      scrollbarOrientation: ScrollbarOrientation.bottom,
+                      child: SingleChildScrollView(
+                        controller: _patientsHorizontalScrollController,
+                        scrollDirection: Axis.horizontal,
+                        child: SingleChildScrollView(
+                          controller: _patientsScrollController,
+                          scrollDirection: Axis.vertical,
+                          child: PaginatedDataTable(
+                            headingRowHeight: 42,
+                            dataRowMinHeight: 40,
+                            columns: const [
+                              DataColumn(label: Text('Nombre')),
+                              DataColumn(label: Text('Fecha de registro')),
+                              DataColumn(label: Text('Sucursal')),
+                              DataColumn(label: Text('Teléfono')),
+                              DataColumn(label: Text('Acciones')),
+                            ],
+                            source: PatientsDataSource(
+                              patients: sellState.patients,
+                              context: context,
+                              isForSell: true,
+                              ref: ref,
+                            ),
+                            availableRowsPerPage: [5, 10, 20, 50],
+                            rowsPerPage: sellState.rowsPerPage,
+                            onRowsPerPageChanged:
+                                (value) =>
+                                    sellNotifier.changeRowsPerPage(value ?? 5),
+                          ).box(width: MediaQuery.sizeOf(context).width * .9),
+                        ),
                       ),
-                      availableRowsPerPage: [5, 10, 20, 50],
-                      rowsPerPage: sellState.rowsPerPage,
-                      onRowsPerPageChanged:
-                          (value) => sellNotifier.changeRowsPerPage(value ?? 5),
-                    ).box(width: MediaQuery.sizeOf(context).width * .9),
+                    ),
                   ),
 
                 if (sellState.patients.isEmpty && !sellState.isLoading)
@@ -235,32 +256,53 @@ class _SellViewState extends ConsumerState<SellView> {
                               Scrollbar(
                                 controller: _mountsScrollController,
                                 thumbVisibility: true,
-                                child: PaginatedDataTable(
-                                  controller: _mountsScrollController,
-                                  headingRowHeight: 42,
-                                  dataRowMinHeight: 40,
-                                  columns: const [
-                                    DataColumn(label: Text('Marca')),
-                                    DataColumn(label: Text('Modelo')),
-                                    DataColumn(label: Text('Color')),
-                                    DataColumn(label: Text('Descripción')),
-                                    DataColumn(label: Text('Optica')),
-                                    DataColumn(label: Text('Precio')),
-                                    DataColumn(label: Text('Acciones')),
-                                  ],
-                                  source: MountsDataSource(
-                                    mounts: sellState.mounts,
-                                    context: context,
-                                    ref: ref,
-                                  ),
-                                  availableRowsPerPage: [5, 10, 20, 50],
-                                  rowsPerPage: sellState.rowsPerPage,
-                                  onRowsPerPageChanged:
-                                      (value) => sellNotifier.changeRowsPerPage(
-                                        value ?? 5,
+                                interactive: true,
+                                child: Scrollbar(
+                                  controller: _mountsHorizontalScrollController,
+                                  thumbVisibility: true,
+                                  interactive: true,
+                                  scrollbarOrientation:
+                                      ScrollbarOrientation.bottom,
+                                  child: SingleChildScrollView(
+                                    controller:
+                                        _mountsHorizontalScrollController,
+                                    scrollDirection: Axis.horizontal,
+                                    child: SingleChildScrollView(
+                                      controller: _mountsScrollController,
+                                      scrollDirection: Axis.vertical,
+                                      child: PaginatedDataTable(
+                                        headingRowHeight: 42,
+                                        dataRowMinHeight: 40,
+                                        columns: const [
+                                          DataColumn(label: Text('Marca')),
+                                          DataColumn(label: Text('Modelo')),
+                                          DataColumn(label: Text('Color')),
+                                          DataColumn(
+                                            label: Text('Descripción'),
+                                          ),
+                                          DataColumn(label: Text('Optica')),
+                                          DataColumn(label: Text('Precio')),
+                                          DataColumn(label: Text('Acciones')),
+                                        ],
+                                        source: MountsDataSource(
+                                          mounts: sellState.mounts,
+                                          context: context,
+                                          ref: ref,
+                                        ),
+                                        availableRowsPerPage: [5, 10, 20, 50],
+                                        rowsPerPage: sellState.rowsPerPage,
+                                        onRowsPerPageChanged:
+                                            (value) =>
+                                                sellNotifier.changeRowsPerPage(
+                                                  value ?? 5,
+                                                ),
+                                      ).box(
+                                        width:
+                                            MediaQuery.sizeOf(context).width *
+                                            .9,
                                       ),
-                                ).box(
-                                  width: MediaQuery.sizeOf(context).width * .9,
+                                    ),
+                                  ),
                                 ),
                               ),
 
@@ -269,29 +311,50 @@ class _SellViewState extends ConsumerState<SellView> {
                               Scrollbar(
                                 controller: _resinsScrollController,
                                 thumbVisibility: true,
-                                child: PaginatedDataTable(
-                                  controller: _resinsScrollController,
-                                  headingRowHeight: 42,
-                                  dataRowMinHeight: 40,
-                                  columns: const [
-                                    DataColumn(label: Text('Marca')),
-                                    DataColumn(label: Text('Descripción')),
-                                    DataColumn(label: Text('Precio')),
-                                    DataColumn(label: Text('Acciones')),
-                                  ],
-                                  source: ResinDataSource(
-                                    resins: sellState.resins,
-                                    context: context,
-                                    ref: ref,
-                                  ),
-                                  availableRowsPerPage: [5, 10, 20, 50],
-                                  rowsPerPage: sellState.rowsPerPage,
-                                  onRowsPerPageChanged:
-                                      (value) => sellNotifier.changeRowsPerPage(
-                                        value ?? 5,
+                                interactive: true,
+                                child: Scrollbar(
+                                  controller: _resinsHorizontalScrollController,
+                                  thumbVisibility: true,
+                                  interactive: true,
+                                  scrollbarOrientation:
+                                      ScrollbarOrientation.bottom,
+                                  child: SingleChildScrollView(
+                                    controller:
+                                        _resinsHorizontalScrollController,
+                                    scrollDirection: Axis.horizontal,
+                                    child: SingleChildScrollView(
+                                      controller: _resinsScrollController,
+                                      scrollDirection: Axis.vertical,
+                                      child: PaginatedDataTable(
+                                        headingRowHeight: 42,
+                                        dataRowMinHeight: 40,
+                                        columns: const [
+                                          DataColumn(label: Text('Marca')),
+                                          DataColumn(
+                                            label: Text('Descripción'),
+                                          ),
+                                          DataColumn(label: Text('Precio')),
+                                          DataColumn(label: Text('Acciones')),
+                                        ],
+                                        source: ResinDataSource(
+                                          resins: sellState.resins,
+                                          context: context,
+                                          ref: ref,
+                                        ),
+                                        availableRowsPerPage: [5, 10, 20, 50],
+                                        rowsPerPage: sellState.rowsPerPage,
+                                        onRowsPerPageChanged:
+                                            (value) =>
+                                                sellNotifier.changeRowsPerPage(
+                                                  value ?? 5,
+                                                ),
+                                      ).box(
+                                        width:
+                                            MediaQuery.sizeOf(context).width *
+                                            .9,
                                       ),
-                                ).box(
-                                  width: MediaQuery.sizeOf(context).width * .9,
+                                    ),
+                                  ),
                                 ),
                               ),
                           ],
