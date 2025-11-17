@@ -1,4 +1,3 @@
-import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 
 class ResinsState {

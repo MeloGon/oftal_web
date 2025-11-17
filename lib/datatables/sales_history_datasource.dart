@@ -54,7 +54,6 @@ class SalesHistoryDataSource extends DataTableSource {
                         .read(salesHistoryProvider.notifier)
                         .generatePdf(sale);
                   });
-              ;
             },
             onDeleteSale: () {
               ref.read(salesHistoryProvider.notifier).closeSaleDetails();
