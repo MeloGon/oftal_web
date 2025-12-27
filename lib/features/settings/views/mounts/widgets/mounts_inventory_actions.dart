@@ -4,11 +4,13 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 class MountsInventoryActions extends StatelessWidget {
   final MountModel mount;
-  // final Function() onAddToCart;
+  final Function() onDeleteMount;
+  final Function() onEditMount;
   const MountsInventoryActions({
     super.key,
     required this.mount,
-    // required this.onAddToCart,
+    required this.onDeleteMount,
+    required this.onEditMount,
   });
 
   @override
@@ -19,14 +21,14 @@ class MountsInventoryActions extends StatelessWidget {
         ShadTooltip(
           builder: (context) => const Text('Editar'),
           child: InkWell(
-            // onTap: onAddToCart,
+            onTap: onEditMount,
             child: Icon(Icons.edit_outlined, size: 20),
           ),
         ),
         ShadTooltip(
           builder: (context) => const Text('Eliminar'),
           child: InkWell(
-            // onTap: onDeleteResin,
+            onTap: onDeleteMount,
             child: Icon(Icons.delete_outlined, size: 20),
           ),
         ),
