@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/datatables/mounts_inventory_datasource.dart';
 import 'package:oftal_web/features/settings/viewmodels/mounts/mounts_provider.dart';
+import 'package:oftal_web/features/settings/views/mounts/widgets/add_mount_dialog.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
+import 'package:oftal_web/shared/models/shared_models.dart';
+import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class MountsView extends ConsumerWidget {
@@ -14,6 +18,25 @@ class MountsView extends ConsumerWidget {
     final width = MediaQuery.sizeOf(context).width;
     final mountsState = ref.watch(mountsProvider);
     final mountsNotifier = ref.read(mountsProvider.notifier);
+
+    ref.listen(mountsProvider, (previous, next) {
+      if (next.isAddMountDialogOpen &&
+          previous?.isAddMountDialogOpen != next.isAddMountDialogOpen) {
+        if (context.mounted) {
+          AddMountDialog().show(context, ref).then((value) {
+            ref.read(mountsProvider.notifier).closeAddMountDialog();
+          });
+        }
+      }
+
+      if (next.errorMessage.isNotEmpty &&
+          previous?.errorMessage != next.errorMessage) {
+        _showSnackbar(context, next.snackbarConfig, next.errorMessage);
+        Future.microtask(
+          () => ref.read(mountsProvider.notifier).clearErrorMessage(),
+        );
+      }
+    });
 
     return ShadCard(
       width: width * .9,
@@ -31,6 +54,9 @@ class MountsView extends ConsumerWidget {
                 Spacer(),
                 ShadButton(
                   child: Text('Añadir montura'),
+                  onPressed: () {
+                    mountsNotifier.openAddMountDialog();
+                  },
                 ),
               ],
             ),
@@ -93,4 +119,17 @@ class MountsView extends ConsumerWidget {
       ),
     ).paddingSymmetric(horizontal: 20, vertical: 10);
   }
+}
+
+void _showSnackbar(
+  BuildContext context,
+  SnackbarConfigModel? snackbarConfig,
+  String errorMessage,
+) {
+  CustomSnackbar().show(
+    context,
+    snackbarConfig ??
+        SnackbarConfigModel(title: 'Error', type: SnackbarEnum.error),
+    errorMessage,
+  );
 }

@@ -9,6 +9,8 @@ class MountsState {
   final int offset; // índice inicial de la página actual
   final bool hasMore; // si el servidor tiene más filas por cargar
   final SnackbarConfigModel? snackbarConfig;
+  final bool isAddMountDialogOpen;
+  final MountModel? selectedMount;
 
   MountsState({
     this.isLoading = false,
@@ -19,6 +21,8 @@ class MountsState {
     this.offset = 0,
     this.hasMore = true,
     this.snackbarConfig,
+    this.isAddMountDialogOpen = false,
+    this.selectedMount,
   });
 
   MountsState copyWith({
@@ -30,6 +34,8 @@ class MountsState {
     int? offset,
     bool? hasMore,
     SnackbarConfigModel? snackbarConfig,
+    bool? isAddMountDialogOpen,
+    MountModel? selectedMount,
   }) {
     return MountsState(
       isLoading: isLoading ?? this.isLoading,
@@ -40,6 +46,8 @@ class MountsState {
       offset: offset ?? this.offset,
       hasMore: hasMore ?? this.hasMore,
       snackbarConfig: snackbarConfig ?? this.snackbarConfig,
+      isAddMountDialogOpen: isAddMountDialogOpen ?? this.isAddMountDialogOpen,
+      selectedMount: selectedMount ?? this.selectedMount,
     );
   }
 }

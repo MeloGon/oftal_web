@@ -15,7 +15,8 @@ class SellState {
   SnackbarConfigModel? snackbarConfig;
   OptionsToSellEnum? selectedOptionToSell;
   final List<SalesDetailsModel> itemsToSell;
-  final String idRemisionAndFolioSale;
+  final String idRemision;
+  final String idFolio;
   final DiscountReasonEnum? selectedDiscountReason;
   final List<ResinModel> resins;
   final int rowsPerPage;
@@ -33,7 +34,8 @@ class SellState {
     this.snackbarConfig,
     this.selectedOptionToSell,
     this.itemsToSell = const [],
-    this.idRemisionAndFolioSale = '',
+    this.idRemision = '',
+    this.idFolio = '',
     this.selectedDiscountReason,
     this.resins = const [],
     this.rowsPerPage = 5,
@@ -52,7 +54,8 @@ class SellState {
     SnackbarConfigModel? snackbarConfig,
     OptionsToSellEnum? selectedOptionToSell,
     List<SalesDetailsModel>? itemsToSell,
-    String? idRemisionAndFolioSale,
+    String? idRemision,
+    String? idFolio,
     DiscountReasonEnum? selectedDiscountReason,
     List<ResinModel>? resins,
     int? rowsPerPage,
@@ -70,8 +73,8 @@ class SellState {
       snackbarConfig: snackbarConfig ?? this.snackbarConfig,
       selectedOptionToSell: selectedOptionToSell ?? this.selectedOptionToSell,
       itemsToSell: itemsToSell ?? this.itemsToSell,
-      idRemisionAndFolioSale:
-          idRemisionAndFolioSale ?? this.idRemisionAndFolioSale,
+      idRemision: idRemision ?? this.idRemision,
+      idFolio: idFolio ?? this.idFolio,
       selectedDiscountReason:
           selectedDiscountReason ?? this.selectedDiscountReason,
       resins: resins ?? this.resins,

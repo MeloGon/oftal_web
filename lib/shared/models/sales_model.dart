@@ -8,7 +8,7 @@ part 'sales_model.g.dart';
 class SalesModel with _$SalesModel {
   @override
   @JsonKey(name: 'ID REMISION', includeFromJson: true, includeToJson: true)
-  final int id;
+  final String? id;
   @override
   @JsonKey(name: 'SUCURSAL', includeFromJson: true, includeToJson: true)
   final String? branch;
@@ -72,7 +72,7 @@ class SalesModel with _$SalesModel {
   Map<String, dynamic> toJson() => _$SalesModelToJson(this);
 
   static SalesModel empty() => SalesModel(
-    id: 0,
+    id: '',
     branch: '',
     date: '',
     patient: '',

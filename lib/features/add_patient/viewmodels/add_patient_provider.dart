@@ -1,9 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:oftal_web/core/enums/snackbar_enum.dart';
 import 'package:oftal_web/features/add_patient/viewmodels/add_patient_state.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
+import 'package:oftal_web/shared/utils/random_id_generator.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -33,7 +32,7 @@ class AddPatient extends _$AddPatient {
 
   @override
   AddPatientState build() {
-    uniqueIdController.text = _generateRandomId(17).toString();
+    uniqueIdController.text = generateRandomId(16).toString();
     registerDateController.text = DateFormat(
       'dd-MMM-yyyy',
       'es_ES',
@@ -55,16 +54,6 @@ class AddPatient extends _$AddPatient {
     });
 
     return AddPatientState(formKey: GlobalKey<ShadFormState>());
-  }
-
-  BigInt _generateRandomId(int length) {
-    final random = Random.secure();
-    final buffer = StringBuffer();
-    buffer.write(random.nextInt(9) + 1);
-    for (int i = 1; i < length; i++) {
-      buffer.write(random.nextInt(10));
-    }
-    return BigInt.parse(buffer.toString());
   }
 
   Future<void> initializeBranch() async {
