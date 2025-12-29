@@ -1,9 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/settings/viewmodels/mounts/mounts_state.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
+import 'package:oftal_web/shared/utils/random_id_generator.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -40,16 +39,6 @@ class Mounts extends _$Mounts {
       await fetchPage(offset: 0, limit: rowsPerPage);
     });
     return MountsState();
-  }
-
-  BigInt _generateRandomId(int length) {
-    final random = Random.secure();
-    final buffer = StringBuffer();
-    buffer.write(random.nextInt(9) + 1);
-    for (int i = 1; i < length; i++) {
-      buffer.write(random.nextInt(10));
-    }
-    return BigInt.parse(buffer.toString());
   }
 
   Future<void> fetchPage({required int offset, required int limit}) async {
@@ -162,7 +151,7 @@ class Mounts extends _$Mounts {
   }
 
   MountModel _createMount({bool isForEdit = false}) {
-    final id = _generateRandomId(17).toInt();
+    final id = generateRandomId(17).toInt();
     return MountModel(
       id: (isForEdit) ? state.selectedMount?.id ?? 0 : id,
       brand: brandController.text,

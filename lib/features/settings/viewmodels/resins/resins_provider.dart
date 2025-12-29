@@ -1,9 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/settings/viewmodels/resins/resins_state.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
+import 'package:oftal_web/shared/utils/random_id_generator.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -40,16 +39,6 @@ class Resins extends _$Resins {
     return ResinsState();
   }
 
-  BigInt _generateRandomId(int length) {
-    final random = Random.secure();
-    final buffer = StringBuffer();
-    buffer.write(random.nextInt(9) + 1);
-    for (int i = 1; i < length; i++) {
-      buffer.write(random.nextInt(10));
-    }
-    return BigInt.parse(buffer.toString());
-  }
-
   Future<void> fetchPage({required int offset, required int limit}) async {
     state = state.copyWith(isLoading: true);
     try {
@@ -83,7 +72,7 @@ class Resins extends _$Resins {
   }
 
   ResinModel _createResin({bool isForEdit = false}) {
-    final id = _generateRandomId(17).toInt();
+    final id = generateRandomId(17).toInt();
     return ResinModel(
       id: (isForEdit) ? state.selectedResin?.id ?? 0 : id,
       description: descriptionController.text,

@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -10,6 +9,7 @@ import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_state.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/services/local_storage.dart';
+import 'package:oftal_web/shared/utils/random_id_generator.dart';
 import 'dart:html' as html;
 import 'package:pdf/widgets.dart' as pw;
 
@@ -52,16 +52,6 @@ class Sell extends _$Sell {
     return SellState();
   }
 
-  BigInt _generateRandomId(int length) {
-    final random = Random.secure();
-    final buffer = StringBuffer();
-    buffer.write(random.nextInt(9) + 1);
-    for (int i = 1; i < length; i++) {
-      buffer.write(random.nextInt(10));
-    }
-    return BigInt.parse(buffer.toString());
-  }
-
   Future<void> searchPatient() async {
     state = state.copyWith(isLoading: true);
     try {
@@ -96,7 +86,8 @@ class Sell extends _$Sell {
   void selectPatient(PatientModel patient) {
     state = state.copyWith(
       selectedPatient: patient,
-      idRemisionAndFolioSale: _generateRandomId(17).toString(),
+      idRemision: generateRandomId(17).toString(),
+      idFolio: generateRandomId(6).toString(),
     );
   }
 
@@ -133,14 +124,14 @@ class Sell extends _$Sell {
       final itemParsed = item as MountModel;
       final itemToSell = SalesDetailsModel(
         id:
-            _generateRandomId(
+            generateRandomId(
               17,
             ).toInt(), //se crea random distinto por cada item a no ser que sean montura y lunas afiliadas
         idRemision:
-            state.idRemisionAndFolioSale
+            state.idRemision
                 .toString(), //se crea random el mismo para todos los items en una sola compra
         folioSale:
-            state.idRemisionAndFolioSale
+            state.idFolio
                 .toString(), //se crea random pero es igual para todos los items en una sola compra
         // dateSale: DateFormat(
         //   'dd-MMM-yyyy',
@@ -178,9 +169,9 @@ class Sell extends _$Sell {
     } else {
       final itemParsed = item as ResinModel;
       final itemToSell = SalesDetailsModel(
-        id: _generateRandomId(17).toInt(),
-        idRemision: state.idRemisionAndFolioSale.toString(),
-        folioSale: state.idRemisionAndFolioSale.toString(),
+        id: generateRandomId(17).toInt(),
+        idRemision: state.idRemision.toString(),
+        folioSale: state.idFolio.toString(),
         idOftalmico: itemParsed.id,
         description: itemParsed.description,
         design: itemParsed.design,
@@ -319,7 +310,8 @@ class Sell extends _$Sell {
           .from('ventas cortas')
           .insert(
             SalesModel(
-              id: int.parse(state.itemsToSell[0].idRemision ?? '0'),
+              // id: int.parse(state.itemsToSell[0].idRemision ?? '0'),
+              id: state.idRemision,
               branch: state.selectedPatient?.branch,
               date:
                   DateFormat('dd-MMM-yy')
