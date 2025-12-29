@@ -94,7 +94,7 @@ class Mounts extends _$Mounts {
           : await Supabase.instance.client
               .from('armazones')
               .update(mount.toJson())
-              .eq('ID ARMAZONES', mount.id);
+              .eq('ID ARMAZON', mount.id);
       state = state.copyWith(
         snackbarConfig: SnackbarConfigModel(
           title: 'Aviso',
