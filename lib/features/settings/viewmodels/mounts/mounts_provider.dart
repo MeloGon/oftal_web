@@ -48,6 +48,7 @@ class Mounts extends _$Mounts {
       final response = await Supabase.instance.client
           .from('armazones')
           .select()
+          .order('CREADO EL', ascending: false)
           .range(offset, end);
       final items = response.map((json) => MountModel.fromJson(json)).toList();
       final bool hasMore = items.length == limit;

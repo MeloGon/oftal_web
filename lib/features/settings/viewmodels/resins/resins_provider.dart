@@ -46,6 +46,7 @@ class Resins extends _$Resins {
       final response = await Supabase.instance.client
           .from('resinas')
           .select()
+          .order('CREADO EL', ascending: false)
           .range(offset, end);
       final items = response.map((json) => ResinModel.fromJson(json)).toList();
       final bool hasMore = items.length == limit;
