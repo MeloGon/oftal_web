@@ -16,12 +16,9 @@ class MountActions extends StatelessWidget {
     return Row(
       spacing: 10,
       children: [
-        ShadTooltip(
-          builder: (context) => const Text('Agregar al carrito'),
-          child: InkWell(
-            onTap: onAddToCart,
-            child: Icon(Icons.add_shopping_cart, size: 20),
-          ),
+        InkWell(
+          onTap: onAddToCart,
+          child: Icon(Icons.add_shopping_cart, size: 20),
         ),
       ],
     );

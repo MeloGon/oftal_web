@@ -116,11 +116,23 @@ class _SellViewState extends ConsumerState<SellView> {
                     child: PaginatedDataTable2(
                       headingRowHeight: 42,
                       columns: const [
-                        DataColumn2(label: Text('Nombre')),
-                        DataColumn2(label: Text('Fecha de registro')),
-                        DataColumn2(label: Text('Sucursal')),
-                        DataColumn2(label: Text('Teléfono')),
-                        DataColumn2(label: Text('Acciones')),
+                        DataColumn2(label: Text('Nombre'), size: ColumnSize.L),
+                        DataColumn2(
+                          label: Text('Fecha de registro'),
+                          size: ColumnSize.L,
+                        ),
+                        DataColumn2(
+                          label: Text('Sucursal'),
+                          size: ColumnSize.L,
+                        ),
+                        DataColumn2(
+                          label: Text('Teléfono'),
+                          size: ColumnSize.M,
+                        ),
+                        DataColumn2(
+                          label: Text('Acciones'),
+                          size: ColumnSize.L,
+                        ),
                       ],
                       source: PatientsDataSource(
                         patients: sellState.patients,
@@ -385,22 +397,15 @@ class _SellViewState extends ConsumerState<SellView> {
                                           ),
                                         ],
                                       ),
-                                      ShadTooltip(
-                                        builder:
-                                            (context) => const Text(
-                                              'Quitar de la lista',
+                                      InkWell(
+                                        onTap:
+                                            () => sellNotifier.removeItemToSell(
+                                              index,
                                             ),
-                                        child: InkWell(
-                                          onTap:
-                                              () =>
-                                                  sellNotifier.removeItemToSell(
-                                                    index,
-                                                  ),
-                                          child: Icon(
-                                            Icons.delete_outline,
-                                            size: 20,
-                                            color: Colors.red,
-                                          ),
+                                        child: Icon(
+                                          Icons.delete_outline,
+                                          size: 20,
+                                          color: Colors.red,
                                         ),
                                       ),
                                     ],

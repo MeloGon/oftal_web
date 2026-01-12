@@ -15,7 +15,7 @@ import 'package:pdf/widgets.dart' as pw;
 
 part 'sell_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class Sell extends _$Sell {
   final searchController = TextEditingController();
   final searchItemToSellController = TextEditingController();
@@ -86,6 +86,18 @@ class Sell extends _$Sell {
   void selectPatient(PatientModel patient) {
     state = state.copyWith(
       selectedPatient: patient,
+      idRemision: generateRandomId(17).toString(),
+      idFolio: generateRandomId(6).toString(),
+    );
+  }
+
+  void selectPatientAndOption(
+    PatientModel patient,
+    SellItemOptionsEnum itemOption,
+  ) {
+    state = state.copyWith(
+      selectedPatient: patient,
+      selectedItemOption: itemOption,
       idRemision: generateRandomId(17).toString(),
       idFolio: generateRandomId(6).toString(),
     );

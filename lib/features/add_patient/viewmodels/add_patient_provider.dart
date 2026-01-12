@@ -40,6 +40,7 @@ class AddPatient extends _$AddPatient {
 
     Future.microtask(() {
       initializeBranch();
+      _getLastPatients();
     });
 
     ref.onDispose(() {
@@ -109,6 +110,7 @@ class AddPatient extends _$AddPatient {
           .insert(patient.toJson())
           .select();
 
+      await _getLastPatients();
       state = state.copyWith(
         errorMessage: 'Paciente creado correctamente',
         snackbarConfig: SnackbarConfigModel(
@@ -153,5 +155,25 @@ class AddPatient extends _$AddPatient {
       errorMessage: '',
       snackbarConfig: null,
     );
+  }
+
+  Future<void> _getLastPatients() async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final response = await Supabase.instance.client
+          .from('pacientes')
+          .select()
+          .limit(5)
+          .order('fecha_registro_actualizada', ascending: false);
+      state = state.copyWith(
+        lastPatients:
+            response.map((json) => PatientModel.fromJson(json)).toList(),
+        isLoading: false,
+      );
+    } catch (e) {
+      state = state.copyWith(errorMessage: e.toString());
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
   }
 }

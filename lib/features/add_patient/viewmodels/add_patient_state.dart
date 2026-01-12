@@ -7,7 +7,7 @@ class AddPatientState {
   final String errorMessage;
   final String? selectedGender;
   final String? selectedBranch;
-
+  final List<PatientModel> lastPatients;
   final GlobalKey<ShadFormState>? formKey;
   final SnackbarConfigModel? snackbarConfig;
 
@@ -16,6 +16,7 @@ class AddPatientState {
     this.errorMessage = '',
     this.selectedGender,
     this.selectedBranch,
+    this.lastPatients = const [],
     this.formKey,
     this.snackbarConfig,
   });
@@ -25,6 +26,7 @@ class AddPatientState {
     String? errorMessage,
     String? selectedGender,
     String? selectedBranch,
+    List<PatientModel>? lastPatients,
     GlobalKey<ShadFormState>? formKey,
     SnackbarConfigModel? snackbarConfig,
   }) {
@@ -33,6 +35,7 @@ class AddPatientState {
       errorMessage: errorMessage ?? this.errorMessage,
       selectedGender: selectedGender ?? this.selectedGender,
       selectedBranch: selectedBranch ?? this.selectedBranch,
+      lastPatients: lastPatients ?? this.lastPatients,
       formKey: formKey ?? this.formKey,
       snackbarConfig: snackbarConfig ?? this.snackbarConfig,
     );

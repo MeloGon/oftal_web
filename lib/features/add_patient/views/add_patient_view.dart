@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/constants/constants.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/add_patient/viewmodels/add_patient_provider.dart';
-import 'package:oftal_web/features/sell/views/widgets/invoice_widget.dart';
+import 'package:oftal_web/features/sell/viewmodels/sell_provider.dart';
+import 'package:oftal_web/router/app_router.dart';
+import 'package:oftal_web/router/router_name.dart';
+// import 'package:oftal_web/features/sell/views/widgets/invoice_widget.dart';
 import 'package:oftal_web/shared/extensions/widget_extension.dart';
 import 'package:oftal_web/shared/models/snackbar_config_model.dart';
 import 'package:oftal_web/shared/widgets/custom_snackbar.dart';
@@ -279,11 +282,10 @@ class AddPatientView extends ConsumerWidget {
                     keyboardType: TextInputType.multiline,
                   ),
                 ),
-                PdfWebExample().box(width: 100, height: 100),
+                // PdfWebExample().box(width: 100, height: 100),
               ],
             ),
           ),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             spacing: 12,
@@ -306,6 +308,49 @@ class AddPatientView extends ConsumerWidget {
               ),
             ],
           ),
+          if (addPatientState.lastPatients.isNotEmpty)
+            ShadCard(
+              width: width * .9,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 10,
+                children: [
+                  Text(
+                    AppStrings.lastPatients,
+                    style: ShadTheme.of(context).textTheme.h4,
+                  ),
+                  ListView.separated(
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: addPatientState.lastPatients.length,
+                    shrinkWrap: true,
+                    separatorBuilder: (context, index) => const Divider(),
+                    itemBuilder: (context, index) {
+                      final patient = addPatientState.lastPatients[index];
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            patient.name,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              ref
+                                  .read(sellProvider.notifier)
+                                  .selectPatientAndOption(
+                                    patient,
+                                    SellItemOptionsEnum.sell,
+                                  );
+                              ref.read(appRouterProvider).go(RouterName.sell);
+                            },
+                            child: Icon(Icons.shopping_bag_rounded),
+                          ),
+                        ],
+                      ).paddingSymmetric(vertical: 2);
+                    },
+                  ),
+                ],
+              ),
+            ),
         ],
       ).paddingSymmetric(horizontal: 16, vertical: 16),
     );

@@ -18,19 +18,13 @@ class MountsInventoryActions extends StatelessWidget {
     return Row(
       spacing: 10,
       children: [
-        ShadTooltip(
-          builder: (context) => const Text('Editar'),
-          child: InkWell(
-            onTap: onEditMount,
-            child: Icon(Icons.edit_outlined, size: 20),
-          ),
+        InkWell(
+          onTap: onEditMount,
+          child: Icon(Icons.edit_outlined, size: 20),
         ),
-        ShadTooltip(
-          builder: (context) => const Text('Eliminar'),
-          child: InkWell(
-            onTap: onDeleteMount,
-            child: Icon(Icons.delete_outlined, size: 20),
-          ),
+        InkWell(
+          onTap: onDeleteMount,
+          child: Icon(Icons.delete_outlined, size: 20),
         ),
       ],
     );

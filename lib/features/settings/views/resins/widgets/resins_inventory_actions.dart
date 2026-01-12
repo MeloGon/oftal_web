@@ -18,19 +18,13 @@ class ResinInventoryActions extends StatelessWidget {
     return Row(
       spacing: 10,
       children: [
-        ShadTooltip(
-          builder: (context) => const Text('Editar'),
-          child: InkWell(
-            onTap: onEditResin,
-            child: Icon(Icons.edit_outlined, size: 20),
-          ),
+        InkWell(
+          onTap: onEditResin,
+          child: Icon(Icons.edit_outlined, size: 20),
         ),
-        ShadTooltip(
-          builder: (context) => const Text('Eliminar'),
-          child: InkWell(
-            onTap: onDeleteResin,
-            child: Icon(Icons.delete_outlined, size: 20),
-          ),
+        InkWell(
+          onTap: onDeleteResin,
+          child: Icon(Icons.delete_outlined, size: 20),
         ),
       ],
     );

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SalesHistoryActions extends StatelessWidget {
   const SalesHistoryActions({
@@ -20,26 +19,17 @@ class SalesHistoryActions extends StatelessWidget {
     return Row(
       spacing: 10,
       children: [
-        ShadTooltip(
-          builder: (context) => const Text('Ver detalles'),
-          child: InkWell(
-            onTap: onViewDetails,
-            child: Icon(Icons.remove_red_eye_outlined),
-          ),
+        InkWell(
+          onTap: onViewDetails,
+          child: Icon(Icons.remove_red_eye_outlined),
         ),
-        ShadTooltip(
-          builder: (context) => const Text('Imprimir'),
-          child: InkWell(
-            onTap: onPrintSale,
-            child: Icon(Icons.print_outlined),
-          ),
+        InkWell(
+          onTap: onPrintSale,
+          child: Icon(Icons.print_outlined),
         ),
-        ShadTooltip(
-          builder: (context) => const Text('Eliminar'),
-          child: InkWell(
-            onTap: onDeleteSale,
-            child: Icon(Icons.delete_outlined),
-          ),
+        InkWell(
+          onTap: onDeleteSale,
+          child: Icon(Icons.delete_outlined),
         ),
       ],
     );
