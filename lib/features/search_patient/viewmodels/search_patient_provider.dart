@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_state.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
+import 'package:oftal_web/shared/utils/random_id_generator.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -39,6 +41,7 @@ class SearchPatient extends _$SearchPatient {
   final avConRxOdCercaController = TextEditingController();
   final avConRxOiCercaController = TextEditingController();
   final optometricDiagnosisController = TextEditingController();
+  final dateConsultController = TextEditingController();
 
   @override
   SearchPatientState build() {
@@ -110,6 +113,47 @@ class SearchPatient extends _$SearchPatient {
     }
   }
 
+  Future<void> addReview() async {
+    final date =
+        dateConsultController.text.isEmpty
+            ? DateTime.now()
+            : DateFormat('dd-MM-yyyy').parse(dateConsultController.text);
+    final review = ReviewModel(
+      patientName: state.patientName,
+      date: DateFormat('dd-MMM-yyyy', 'es_ES').format(date),
+      dateReviewUpdated: DateFormat('yyyy-MM-dd').format(date),
+      reasonConsult: reasonConsultController.text,
+      clinicHistory: clinicHistoryController.text,
+      odEsf: odEsfController.text,
+      odCil: odCilController.text,
+      odEje: odEjeController.text,
+      odAv: odAvController.text,
+      oiEsf: oiEsfController.text,
+      oiCil: oiCilController.text,
+      oiEje: oiEjeController.text,
+      oiAv: oiAvController.text,
+      add: addController.text,
+      observation: observationReviewController.text,
+      dip: dipController.text,
+      idReview: generateRandomId(13).toInt(),
+    );
+    state = state.copyWith(isLoading: true);
+    try {
+      await Supabase.instance.client.from('revisiones').insert(review.toJson());
+      clearAddReviewForm();
+      state = state.copyWith(
+        errorMessage: 'Medición agregada correctamente',
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Aviso',
+          type: SnackbarEnum.success,
+        ),
+        isLoading: false,
+      );
+    } catch (e) {
+      state = state.copyWith(errorMessage: e.toString(), isLoading: false);
+    }
+  }
+
   void openAddViewMeasureDialog(String patientName) {
     state = state.copyWith(
       isAddViewMeasureDialogOpen: true,
@@ -122,6 +166,37 @@ class SearchPatient extends _$SearchPatient {
       isAddViewMeasureDialogOpen: false,
       patientName: '',
     );
+  }
+
+  void clearAddReviewForm() {
+    reasonConsultController.clear();
+    clinicHistoryController.clear();
+    odEsfController.clear();
+    odCilController.clear();
+    odEjeController.clear();
+    odAvController.clear();
+    oiEsfController.clear();
+    oiCilController.clear();
+    oiEjeController.clear();
+    oiAvController.clear();
+    addController.clear();
+    observationReviewController.clear();
+    dipController.clear();
+    odCbLcController.clear();
+    odDiamLcController.clear();
+    oiCbLcController.clear();
+    oiDiamLcController.clear();
+    graduationTypeController.clear();
+    avSinRxOdLejosController.clear();
+    avSinRxOiLejosController.clear();
+    cvOdLejosController.clear();
+    cvOiLejosController.clear();
+    avSinRxOdCercaController.clear();
+    avSinRxOiCercaController.clear();
+    avConRxOdCercaController.clear();
+    avConRxOiCercaController.clear();
+    optometricDiagnosisController.clear();
+    dateConsultController.clear();
   }
 
   void changeRowsPerPage(int value) {

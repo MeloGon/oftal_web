@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:oftal_web/core/constants/app_strings.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -24,7 +27,12 @@ class AddReviewDialog {
             description: Text('Ingresa los datos de la medición'),
             actions: [
               ShadButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () {
+                  ref.read(searchPatientProvider.notifier).addReview();
+                  if (context.mounted) {
+                    context.pop();
+                  }
+                },
                 child: Text('Guardar'),
               ),
               ShadButton(
@@ -59,6 +67,11 @@ class AddReviewWidget extends ConsumerWidget {
           children: [
             // Información General
             _buildSectionTitle(context, 'Información General'),
+            _buildInputDateField(
+              'Fecha de la medida a ingresar',
+              searchPatientNotifier.dateConsultController,
+              '31-03-2000',
+            ),
             _buildInputField(
               'Motivo de Consulta',
               searchPatientNotifier.reasonConsultController,
@@ -281,6 +294,34 @@ class AddReviewWidget extends ConsumerWidget {
       controller: controller,
       maxLines: maxLines,
       keyboardType: _getKeyboardType(label),
+    );
+  }
+
+  Widget _buildInputDateField(
+    String label,
+    TextEditingController controller,
+    String placeholder,
+  ) {
+    return ShadInputFormField(
+      label: Text(label),
+      controller: controller,
+      keyboardType: TextInputType.datetime,
+      placeholder: Text(placeholder),
+      inputFormatters: [
+        MaskTextInputFormatter(
+          mask: '##-##-####',
+          filter: {
+            '#': RegExp(r'[0-9]'),
+          },
+        ),
+      ],
+      validator:
+          (v) =>
+              RegExp(
+                    r'^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(19|20)\d{2}$',
+                  ).hasMatch(v)
+                  ? null
+                  : null,
     );
   }
 
