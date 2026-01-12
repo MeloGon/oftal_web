@@ -13,26 +13,44 @@ class FilterHistorySales extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final salesHistoryState = ref.watch(salesHistoryProvider);
     final salesHistoryNotifier = ref.read(salesHistoryProvider.notifier);
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      direction: Axis.horizontal,
-      crossAxisAlignment: WrapCrossAlignment.center,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Text('Filtrar por :'),
-        ShadSelect<FilterToSalesHistory>(
-          placeholder: Text(AppStrings.select),
-          selectedOptionBuilder: (context, value) => Text(value.label),
-          options:
-              FilterToSalesHistory.values
-                  .map(
-                    (e) => ShadOption(value: e, child: Text(e.label)),
-                  )
-                  .toList(),
-          onChanged:
-              (value) => salesHistoryNotifier.selectFilter(
-                value ?? FilterToSalesHistory.date,
+        Row(
+          children: [
+            Text('Filtrar por :'),
+            const SizedBox(width: 10),
+            SizedBox(
+              width: 200,
+              child: DropdownButtonFormField<FilterToSalesHistory>(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                ),
+                hint: Text(AppStrings.select),
+                value: salesHistoryState.selectedFilter,
+                items:
+                    FilterToSalesHistory.values
+                        .map(
+                          (e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e.label),
+                          ),
+                        )
+                        .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    salesHistoryNotifier.selectFilter(value);
+                  }
+                },
+                isExpanded: true,
               ),
+            ),
+          ],
         ),
         if (salesHistoryState.selectedFilter == FilterToSalesHistory.patient)
           ShadInputFormField(
