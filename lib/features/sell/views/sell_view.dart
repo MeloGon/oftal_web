@@ -114,24 +114,31 @@ class _SellViewState extends ConsumerState<SellView> {
                     width: MediaQuery.sizeOf(context).width * .9,
                     height: 500,
                     child: PaginatedDataTable2(
+                      wrapInCard: false,
+                      columnSpacing: 12,
+                      horizontalMargin: 12,
+                      minWidth: MediaQuery.sizeOf(context).width * .9,
+                      isHorizontalScrollBarVisible: true,
+                      isVerticalScrollBarVisible: true,
                       headingRowHeight: 42,
+                      headingRowColor: WidgetStateProperty.all(Colors.black12),
                       columns: const [
-                        DataColumn2(label: Text('Nombre'), size: ColumnSize.L),
+                        DataColumn2(label: Text('Nombre'), fixedWidth: 250),
                         DataColumn2(
                           label: Text('Fecha de registro'),
-                          size: ColumnSize.L,
-                        ),
-                        DataColumn2(
-                          label: Text('Sucursal'),
-                          size: ColumnSize.L,
-                        ),
-                        DataColumn2(
-                          label: Text('Teléfono'),
                           size: ColumnSize.M,
                         ),
                         DataColumn2(
+                          label: Text('Sucursal'),
+                          size: ColumnSize.M,
+                        ),
+                        DataColumn2(
+                          label: Text('Teléfono'),
+                          size: ColumnSize.S,
+                        ),
+                        DataColumn2(
                           label: Text('Acciones'),
-                          size: ColumnSize.L,
+                          fixedWidth: 50,
                         ),
                       ],
                       source: PatientsDataSource(
@@ -235,7 +242,17 @@ class _SellViewState extends ConsumerState<SellView> {
                                 width: MediaQuery.sizeOf(context).width * .9,
                                 height: 500,
                                 child: PaginatedDataTable2(
+                                  wrapInCard: false,
+                                  columnSpacing: 12,
+                                  horizontalMargin: 12,
+                                  minWidth:
+                                      MediaQuery.sizeOf(context).width * .9,
+                                  isHorizontalScrollBarVisible: true,
+                                  isVerticalScrollBarVisible: true,
                                   headingRowHeight: 42,
+                                  headingRowColor: WidgetStateProperty.all(
+                                    Colors.black12,
+                                  ),
                                   columns: const [
                                     DataColumn2(label: Text('Marca')),
                                     DataColumn2(label: Text('Modelo')),
@@ -267,7 +284,17 @@ class _SellViewState extends ConsumerState<SellView> {
                                 width: MediaQuery.sizeOf(context).width * .9,
                                 height: 500,
                                 child: PaginatedDataTable2(
+                                  wrapInCard: false,
+                                  columnSpacing: 12,
+                                  horizontalMargin: 12,
+                                  minWidth:
+                                      MediaQuery.sizeOf(context).width * .9,
+                                  isHorizontalScrollBarVisible: true,
+                                  isVerticalScrollBarVisible: true,
                                   headingRowHeight: 42,
+                                  headingRowColor: WidgetStateProperty.all(
+                                    Colors.black12,
+                                  ),
                                   columns: const [
                                     DataColumn2(label: Text('Marca')),
                                     DataColumn2(

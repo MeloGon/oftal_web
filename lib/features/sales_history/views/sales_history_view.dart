@@ -89,6 +89,7 @@ class SalesHistoryView extends ConsumerWidget {
                 minWidth: width * .9,
                 isHorizontalScrollBarVisible: true,
                 isVerticalScrollBarVisible: true,
+                headingRowColor: WidgetStateProperty.all(Colors.black12),
                 columns: const [
                   DataColumn2(
                     label: Text('Folio'),
@@ -127,10 +128,7 @@ class SalesHistoryView extends ConsumerWidget {
                     label: Text('Sucursal'),
                     size: ColumnSize.L,
                   ),
-                  DataColumn2(
-                    label: Text('Acciones'),
-                    size: ColumnSize.M,
-                  ),
+                  DataColumn2(label: Text('Acciones'), fixedWidth: 100),
                 ],
                 source: SalesHistoryDataSource(
                   sales: salesState.sales,

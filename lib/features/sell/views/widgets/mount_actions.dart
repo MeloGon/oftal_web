@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
 class MountActions extends StatelessWidget {
   final MountModel mount;

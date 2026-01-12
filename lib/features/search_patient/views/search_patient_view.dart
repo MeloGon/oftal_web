@@ -111,12 +111,22 @@ class SearchPatientView extends ConsumerWidget {
                     isHorizontalScrollBarVisible: true,
                     isVerticalScrollBarVisible: true,
                     headingRowHeight: 42,
+                    headingRowColor: WidgetStateProperty.all(Colors.black12),
                     columns: const [
-                      DataColumn2(label: Text('Nombre')),
-                      DataColumn2(label: Text('Fecha de registro')),
-                      DataColumn2(label: Text('Sucursal')),
-                      DataColumn2(label: Text('Teléfono')),
-                      DataColumn2(label: Text('Acciones')),
+                      DataColumn2(label: Text('Nombre'), fixedWidth: 250),
+                      DataColumn2(
+                        label: Text('Fecha de registro'),
+                        size: ColumnSize.S,
+                      ),
+                      DataColumn2(
+                        label: Text('Sucursal'),
+                        size: ColumnSize.S,
+                      ),
+                      DataColumn2(
+                        label: Text('Teléfono'),
+                        size: ColumnSize.S,
+                      ),
+                      DataColumn2(label: Text('Acciones'), fixedWidth: 250),
                     ],
                     source: PatientsDataSource(
                       patients: searchPatientState.patients,
