@@ -155,6 +155,7 @@ class Sell extends _$Sell {
         //   'dd-MMM-yyyy',
         //   'es_ES',
         // ).format(DateTime.parse(dateController.text)),
+        idOftalmico: itemParsed.id,
         dateSale:
             DateFormat('dd-MMM-yy')
                 .format(DateFormat('dd-MM-yyyy').parse(dateController.text))
@@ -184,7 +185,6 @@ class Sell extends _$Sell {
         id: generateRandomId(17).toInt(),
         idRemision: state.idRemision.toString(),
         folioSale: state.idFolio.toString(),
-        idOftalmico: itemParsed.id,
         description: itemParsed.description,
         design: itemParsed.design,
         line: itemParsed.line,
@@ -274,6 +274,7 @@ class Sell extends _$Sell {
     try {
       print('VENTA ${state.itemsToSell[0].folioSale}');
 
+      await _deleteItemsInDatabase();
       await Supabase.instance.client
           .from('ventas')
           .insert(state.itemsToSell.map((e) => e.toJson()).toList());
@@ -289,6 +290,31 @@ class Sell extends _$Sell {
       );
     } finally {
       state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> _deleteItemsInDatabase() async {
+    for (var item in state.itemsToSell) {
+      if (item.idOftalmico != null && item.idOftalmico != 0) {
+        final response = await Supabase.instance.client
+            .from('armazones')
+            .select('*')
+            .eq('ID ARMAZON', item.idOftalmico!);
+        final mount = MountModel.fromJson(response.first);
+        if (mount.stock > 1) {
+          await Supabase.instance.client
+              .from('armazones')
+              .update({
+                'EXISTENCIAS': mount.stock - 1,
+              })
+              .eq('ID ARMAZON', mount.id);
+        } else {
+          await Supabase.instance.client
+              .from('armazones')
+              .delete()
+              .eq('ID ARMAZON', mount.id);
+        }
+      }
     }
   }
 
