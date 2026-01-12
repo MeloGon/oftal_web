@@ -1,3 +1,4 @@
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -99,18 +100,23 @@ class SearchPatientView extends ConsumerWidget {
                         ),
               ),
               if (searchPatientState.patients.isNotEmpty)
-                Scrollbar(
-                  thumbVisibility: true,
-                  child: PaginatedDataTable(
-                    primary: true,
+                SizedBox(
+                  width: width * .9,
+                  height: 600,
+                  child: PaginatedDataTable2(
+                    wrapInCard: false,
+                    columnSpacing: 12,
+                    horizontalMargin: 12,
+                    minWidth: width * .9,
+                    isHorizontalScrollBarVisible: true,
+                    isVerticalScrollBarVisible: true,
                     headingRowHeight: 42,
-                    dataRowMinHeight: 40,
                     columns: const [
-                      DataColumn(label: Text('Nombre')),
-                      DataColumn(label: Text('Fecha de registro')),
-                      DataColumn(label: Text('Sucursal')),
-                      DataColumn(label: Text('Teléfono')),
-                      DataColumn(label: Text('Acciones')),
+                      DataColumn2(label: Text('Nombre')),
+                      DataColumn2(label: Text('Fecha de registro')),
+                      DataColumn2(label: Text('Sucursal')),
+                      DataColumn2(label: Text('Teléfono')),
+                      DataColumn2(label: Text('Acciones')),
                     ],
                     source: PatientsDataSource(
                       patients: searchPatientState.patients,
@@ -122,8 +128,8 @@ class SearchPatientView extends ConsumerWidget {
                     onRowsPerPageChanged:
                         (value) =>
                             searchPatientNotifier.changeRowsPerPage(value ?? 7),
-                  ).box(width: width * .9).paddingOnly(top: 20),
-                ),
+                  ),
+                ).paddingOnly(top: 20),
             ],
           ),
         ),

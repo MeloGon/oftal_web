@@ -1,3 +1,4 @@
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -19,24 +20,6 @@ class SellView extends ConsumerStatefulWidget {
 }
 
 class _SellViewState extends ConsumerState<SellView> {
-  final _patientsScrollController = ScrollController();
-  final _patientsHorizontalScrollController = ScrollController();
-  final _mountsScrollController = ScrollController();
-  final _mountsHorizontalScrollController = ScrollController();
-  final _resinsScrollController = ScrollController();
-  final _resinsHorizontalScrollController = ScrollController();
-
-  @override
-  void dispose() {
-    _patientsScrollController.dispose();
-    _patientsHorizontalScrollController.dispose();
-    _mountsScrollController.dispose();
-    _mountsHorizontalScrollController.dispose();
-    _resinsScrollController.dispose();
-    _resinsHorizontalScrollController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final sellNotifier = ref.watch(sellProvider.notifier);
@@ -127,45 +110,28 @@ class _SellViewState extends ConsumerState<SellView> {
                   onSubmitted: (_) => sellNotifier.searchPatient(),
                 ),
                 if (sellState.patients.isNotEmpty && !sellState.isLoading)
-                  Scrollbar(
-                    controller: _patientsScrollController,
-                    thumbVisibility: true,
-                    interactive: true,
-                    child: Scrollbar(
-                      controller: _patientsHorizontalScrollController,
-                      thumbVisibility: true,
-                      interactive: true,
-                      scrollbarOrientation: ScrollbarOrientation.bottom,
-                      child: SingleChildScrollView(
-                        controller: _patientsHorizontalScrollController,
-                        scrollDirection: Axis.horizontal,
-                        child: SingleChildScrollView(
-                          controller: _patientsScrollController,
-                          scrollDirection: Axis.vertical,
-                          child: PaginatedDataTable(
-                            headingRowHeight: 42,
-                            dataRowMinHeight: 40,
-                            columns: const [
-                              DataColumn(label: Text('Nombre')),
-                              DataColumn(label: Text('Fecha de registro')),
-                              DataColumn(label: Text('Sucursal')),
-                              DataColumn(label: Text('Teléfono')),
-                              DataColumn(label: Text('Acciones')),
-                            ],
-                            source: PatientsDataSource(
-                              patients: sellState.patients,
-                              context: context,
-                              isForSell: true,
-                              ref: ref,
-                            ),
-                            availableRowsPerPage: [5, 10, 20, 50],
-                            rowsPerPage: sellState.rowsPerPage,
-                            onRowsPerPageChanged:
-                                (value) =>
-                                    sellNotifier.changeRowsPerPage(value ?? 5),
-                          ).box(width: MediaQuery.sizeOf(context).width * .9),
-                        ),
+                  SizedBox(
+                    width: MediaQuery.sizeOf(context).width * .9,
+                    height: 500,
+                    child: PaginatedDataTable2(
+                      headingRowHeight: 42,
+                      columns: const [
+                        DataColumn2(label: Text('Nombre')),
+                        DataColumn2(label: Text('Fecha de registro')),
+                        DataColumn2(label: Text('Sucursal')),
+                        DataColumn2(label: Text('Teléfono')),
+                        DataColumn2(label: Text('Acciones')),
+                      ],
+                      source: PatientsDataSource(
+                        patients: sellState.patients,
+                        context: context,
+                        isForSell: true,
+                        ref: ref,
                       ),
+                      availableRowsPerPage: [5, 10, 20, 50],
+                      rowsPerPage: sellState.rowsPerPage,
+                      onRowsPerPageChanged:
+                          (value) => sellNotifier.changeRowsPerPage(value ?? 5),
                     ),
                   ),
 
@@ -253,108 +219,62 @@ class _SellViewState extends ConsumerState<SellView> {
                             ),
                             if (sellState.mounts.isNotEmpty &&
                                 !sellState.isLoading)
-                              Scrollbar(
-                                controller: _mountsScrollController,
-                                thumbVisibility: true,
-                                interactive: true,
-                                child: Scrollbar(
-                                  controller: _mountsHorizontalScrollController,
-                                  thumbVisibility: true,
-                                  interactive: true,
-                                  scrollbarOrientation:
-                                      ScrollbarOrientation.bottom,
-                                  child: SingleChildScrollView(
-                                    controller:
-                                        _mountsHorizontalScrollController,
-                                    scrollDirection: Axis.horizontal,
-                                    child: SingleChildScrollView(
-                                      controller: _mountsScrollController,
-                                      scrollDirection: Axis.vertical,
-                                      child: PaginatedDataTable(
-                                        headingRowHeight: 42,
-                                        dataRowMinHeight: 40,
-                                        columns: const [
-                                          DataColumn(label: Text('Marca')),
-                                          DataColumn(label: Text('Modelo')),
-                                          DataColumn(label: Text('Color')),
-                                          DataColumn(
-                                            label: Text('Descripción'),
-                                          ),
-                                          DataColumn(label: Text('Optica')),
-                                          DataColumn(label: Text('Precio')),
-                                          DataColumn(label: Text('Acciones')),
-                                        ],
-                                        source: MountsDataSource(
-                                          mounts: sellState.mounts,
-                                          context: context,
-                                          ref: ref,
-                                        ),
-                                        availableRowsPerPage: [5, 10, 20, 50],
-                                        rowsPerPage: sellState.rowsPerPage,
-                                        onRowsPerPageChanged:
-                                            (value) =>
-                                                sellNotifier.changeRowsPerPage(
-                                                  value ?? 5,
-                                                ),
-                                      ).box(
-                                        width:
-                                            MediaQuery.sizeOf(context).width *
-                                            .9,
-                                      ),
+                              SizedBox(
+                                width: MediaQuery.sizeOf(context).width * .9,
+                                height: 500,
+                                child: PaginatedDataTable2(
+                                  headingRowHeight: 42,
+                                  columns: const [
+                                    DataColumn2(label: Text('Marca')),
+                                    DataColumn2(label: Text('Modelo')),
+                                    DataColumn2(label: Text('Color')),
+                                    DataColumn2(
+                                      label: Text('Descripción'),
                                     ),
+                                    DataColumn2(label: Text('Optica')),
+                                    DataColumn2(label: Text('Precio')),
+                                    DataColumn2(label: Text('Acciones')),
+                                  ],
+                                  source: MountsDataSource(
+                                    mounts: sellState.mounts,
+                                    context: context,
+                                    ref: ref,
                                   ),
+                                  availableRowsPerPage: [5, 10, 20, 50],
+                                  rowsPerPage: sellState.rowsPerPage,
+                                  onRowsPerPageChanged:
+                                      (value) => sellNotifier.changeRowsPerPage(
+                                        value ?? 5,
+                                      ),
                                 ),
                               ),
 
                             if (sellState.resins.isNotEmpty &&
                                 !sellState.isLoading)
-                              Scrollbar(
-                                controller: _resinsScrollController,
-                                thumbVisibility: true,
-                                interactive: true,
-                                child: Scrollbar(
-                                  controller: _resinsHorizontalScrollController,
-                                  thumbVisibility: true,
-                                  interactive: true,
-                                  scrollbarOrientation:
-                                      ScrollbarOrientation.bottom,
-                                  child: SingleChildScrollView(
-                                    controller:
-                                        _resinsHorizontalScrollController,
-                                    scrollDirection: Axis.horizontal,
-                                    child: SingleChildScrollView(
-                                      controller: _resinsScrollController,
-                                      scrollDirection: Axis.vertical,
-                                      child: PaginatedDataTable(
-                                        headingRowHeight: 42,
-                                        dataRowMinHeight: 40,
-                                        columns: const [
-                                          DataColumn(label: Text('Marca')),
-                                          DataColumn(
-                                            label: Text('Descripción'),
-                                          ),
-                                          DataColumn(label: Text('Precio')),
-                                          DataColumn(label: Text('Acciones')),
-                                        ],
-                                        source: ResinDataSource(
-                                          resins: sellState.resins,
-                                          context: context,
-                                          ref: ref,
-                                        ),
-                                        availableRowsPerPage: [5, 10, 20, 50],
-                                        rowsPerPage: sellState.rowsPerPage,
-                                        onRowsPerPageChanged:
-                                            (value) =>
-                                                sellNotifier.changeRowsPerPage(
-                                                  value ?? 5,
-                                                ),
-                                      ).box(
-                                        width:
-                                            MediaQuery.sizeOf(context).width *
-                                            .9,
-                                      ),
+                              SizedBox(
+                                width: MediaQuery.sizeOf(context).width * .9,
+                                height: 500,
+                                child: PaginatedDataTable2(
+                                  headingRowHeight: 42,
+                                  columns: const [
+                                    DataColumn2(label: Text('Marca')),
+                                    DataColumn2(
+                                      label: Text('Descripción'),
                                     ),
+                                    DataColumn2(label: Text('Precio')),
+                                    DataColumn2(label: Text('Acciones')),
+                                  ],
+                                  source: ResinDataSource(
+                                    resins: sellState.resins,
+                                    context: context,
+                                    ref: ref,
                                   ),
+                                  availableRowsPerPage: [5, 10, 20, 50],
+                                  rowsPerPage: sellState.rowsPerPage,
+                                  onRowsPerPageChanged:
+                                      (value) => sellNotifier.changeRowsPerPage(
+                                        value ?? 5,
+                                      ),
                                 ),
                               ),
                           ],

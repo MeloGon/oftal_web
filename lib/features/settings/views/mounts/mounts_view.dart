@@ -1,3 +1,4 @@
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -63,21 +64,26 @@ class MountsView extends ConsumerWidget {
           ),
           Stack(
             children: [
-              Scrollbar(
-                thumbVisibility: true,
-                child: PaginatedDataTable(
-                  primary: true,
-                  headingRowHeight: 42,
-                  dataRowMinHeight: 40,
+              SizedBox(
+                width: width * .9,
+                height: 600,
+                child: PaginatedDataTable2(
+                  // headingRowHeight: 42,
+                  wrapInCard: false,
+                  columnSpacing: 12,
+                  horizontalMargin: 12,
+                  minWidth: width * .9,
+                  isHorizontalScrollBarVisible: true,
+                  isVerticalScrollBarVisible: true,
                   columns: const [
-                    DataColumn(label: Text('Marca')),
-                    DataColumn(label: Text('Modelo')),
-                    DataColumn(label: Text('Color')),
-                    DataColumn(label: Text('Descripción')),
-                    DataColumn(label: Text('Optica')),
-                    DataColumn(label: Text('Precio')),
-                    DataColumn(label: Text('Stock')),
-                    DataColumn(label: Text('Acciones')),
+                    DataColumn2(label: Text('Marca'), fixedWidth: 200),
+                    DataColumn2(label: Text('Modelo'), size: ColumnSize.M),
+                    DataColumn2(label: Text('Color'), size: ColumnSize.M),
+                    DataColumn2(label: Text('Descripción'), size: ColumnSize.L),
+                    DataColumn2(label: Text('Optica'), size: ColumnSize.M),
+                    DataColumn2(label: Text('Precio'), size: ColumnSize.M),
+                    DataColumn2(label: Text('Stock'), size: ColumnSize.S),
+                    DataColumn2(label: Text('Acciones'), size: ColumnSize.M),
                   ],
                   source: MountsInventoryDataSource(
                     pageItems: mountsState.mounts,
@@ -97,7 +103,7 @@ class MountsView extends ConsumerWidget {
                     final limit = mountsState.rowsPerPage;
                     mountsNotifier.fetchPage(offset: rowIndex, limit: limit);
                   },
-                ).box(width: width * .9),
+                ),
               ),
               if (mountsState.isLoading)
                 Positioned.fill(

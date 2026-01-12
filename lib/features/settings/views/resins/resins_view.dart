@@ -1,3 +1,4 @@
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -64,22 +65,30 @@ class ResinsView extends ConsumerWidget {
           ),
           Stack(
             children: [
-              Scrollbar(
-                thumbVisibility: true,
-                child: PaginatedDataTable(
-                  primary: true,
-                  headingRowHeight: 42,
-                  dataRowMinHeight: 40,
+              SizedBox(
+                width: width * .9,
+                height: 600,
+                child: PaginatedDataTable2(
+                  // headingRowHeight: 42,
+                  wrapInCard: false,
+                  columnSpacing: 12,
+                  horizontalMargin: 12,
+                  minWidth: width * .9,
+                  isHorizontalScrollBarVisible: true,
+                  isVerticalScrollBarVisible: true,
                   columns: const [
-                    DataColumn(label: Text('Descripción')),
-                    DataColumn(label: Text('Diseño')),
-                    DataColumn(label: Text('Linea')),
-                    DataColumn(label: Text('Material')),
-                    DataColumn(label: Text('Tecnologia')),
-                    DataColumn(label: Text('Cantidad')),
-                    DataColumn(label: Text('Precio interno')),
-                    DataColumn(label: Text('Precio')),
-                    DataColumn(label: Text('Acciones')),
+                    DataColumn2(label: Text('Descripción'), fixedWidth: 250),
+                    DataColumn2(label: Text('Diseño'), size: ColumnSize.M),
+                    DataColumn2(label: Text('Linea'), size: ColumnSize.M),
+                    DataColumn2(label: Text('Material'), size: ColumnSize.L),
+                    DataColumn2(label: Text('Tecnologia'), size: ColumnSize.L),
+                    DataColumn2(label: Text('Cantidad'), size: ColumnSize.S),
+                    DataColumn2(
+                      label: Text('Precio interno'),
+                      size: ColumnSize.M,
+                    ),
+                    DataColumn2(label: Text('Precio'), size: ColumnSize.M),
+                    DataColumn2(label: Text('Acciones'), size: ColumnSize.M),
                   ],
                   source: ResinInventoryDataSource(
                     pageItems: resinsState.resins,
@@ -99,8 +108,6 @@ class ResinsView extends ConsumerWidget {
                     resinsNotifier.fetchPage(offset: rowIndex, limit: limit);
                   },
                 ),
-              ).box(
-                width: width * .9,
               ),
               if (resinsState.isLoading)
                 Positioned.fill(

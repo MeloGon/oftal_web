@@ -1,3 +1,4 @@
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -76,38 +77,71 @@ class SalesHistoryView extends ConsumerWidget {
         ),
         ShadCard(
           width: MediaQuery.sizeOf(context).width * .9,
+          height: 600,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               FilterHistorySales(),
-              Scrollbar(
-                thumbVisibility: true,
-                child: PaginatedDataTable(
-                  primary: true,
-                  columns: const [
-                    DataColumn(label: Text('Folio')),
-                    DataColumn(label: Text('Paciente')),
-                    DataColumn(label: Text('Fecha')),
-                    DataColumn(label: Text('Vendedor')),
-                    DataColumn(label: Text('A cuenta')),
-                    DataColumn(label: Text('Resto')),
-                    DataColumn(label: Text('Descuento')),
-                    DataColumn(label: Text('Total')),
-                    DataColumn(label: Text('Total con descuento')),
-                    DataColumn(label: Text('Sucursal')),
-                    DataColumn(label: Text('Acciones')),
-                  ],
-                  source: SalesHistoryDataSource(
-                    sales: salesState.sales,
-                    context: context,
-                    ref: ref,
+              PaginatedDataTable2(
+                wrapInCard: false,
+                columnSpacing: 12,
+                horizontalMargin: 12,
+                minWidth: width * .9,
+                isHorizontalScrollBarVisible: true,
+                isVerticalScrollBarVisible: true,
+                columns: const [
+                  DataColumn2(
+                    label: Text('Folio'),
+                    size: ColumnSize.M,
                   ),
-                  availableRowsPerPage: [10, 20, 50],
-                  rowsPerPage: salesState.rowsPerPage,
-                  onRowsPerPageChanged:
-                      (value) => salesNotifier.changeRowsPerPage(value ?? 10),
-                ).box(width: width * .9).paddingOnly(top: 20),
-              ),
+                  DataColumn2(label: Text('Paciente'), fixedWidth: 200),
+                  DataColumn2(
+                    label: Text('Fecha'),
+                    size: ColumnSize.M,
+                  ),
+                  DataColumn2(
+                    label: Text('Vendedor'),
+                    size: ColumnSize.S,
+                  ),
+                  DataColumn2(
+                    label: Text('A cuenta'),
+                    size: ColumnSize.M,
+                  ),
+                  DataColumn2(
+                    label: Text('Resto'),
+                    size: ColumnSize.M,
+                  ),
+                  DataColumn2(
+                    label: Text('Descuento'),
+                    size: ColumnSize.M,
+                  ),
+                  DataColumn2(
+                    label: Text('Total'),
+                    size: ColumnSize.M,
+                  ),
+                  DataColumn2(
+                    label: Text('Total con descuento'),
+                    size: ColumnSize.M,
+                  ),
+                  DataColumn2(
+                    label: Text('Sucursal'),
+                    size: ColumnSize.L,
+                  ),
+                  DataColumn2(
+                    label: Text('Acciones'),
+                    size: ColumnSize.M,
+                  ),
+                ],
+                source: SalesHistoryDataSource(
+                  sales: salesState.sales,
+                  context: context,
+                  ref: ref,
+                ),
+                availableRowsPerPage: [10, 20, 50],
+                rowsPerPage: salesState.rowsPerPage,
+                onRowsPerPageChanged:
+                    (value) => salesNotifier.changeRowsPerPage(value ?? 10),
+              ).paddingOnly(top: 20).expanded(),
             ],
           ).paddingOnly(top: 20),
         ),
