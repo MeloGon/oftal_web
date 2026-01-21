@@ -78,7 +78,7 @@ class SalesHistory extends _$SalesHistory {
       final response = await Supabase.instance.client
           .from('ventas cortas')
           .select()
-          .limit(10)
+          .limit(20)
           .order('fecha_actualizada', ascending: false);
       state = state.copyWith(
         sales: response.map((json) => SalesModel.fromJson(json)).toList(),

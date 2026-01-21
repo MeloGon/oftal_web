@@ -23,7 +23,12 @@ class ResinDataSource extends DataTableSource {
       cells: [
         DataCell(Text(resin.description ?? '')),
         DataCell(Text(resin.design ?? '')),
-        DataCell(Text(resin.price?.toString() ?? '')),
+        DataCell(Text(resin.line ?? '')),
+        DataCell(Text(resin.material ?? '')),
+        DataCell(Text(resin.technology ?? '')),
+        DataCell(Text(resin.quantity?.toString() ?? '')),
+        DataCell(Text('s./ ${resin.priceInternal?.toStringAsFixed(2) ?? ''}')),
+        DataCell(Text('s./ ${resin.price?.toStringAsFixed(2) ?? ''}')),
         DataCell(
           ResinActions(
             resin: resin,

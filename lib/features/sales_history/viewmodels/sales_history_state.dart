@@ -18,7 +18,7 @@ class SalesHistoryState {
     this.saleDetails = const [],
     this.snackbarConfig,
     this.errorMessage = '',
-    this.rowsPerPage = 10,
+    this.rowsPerPage = 20,
     this.selectedFilter,
   });
 

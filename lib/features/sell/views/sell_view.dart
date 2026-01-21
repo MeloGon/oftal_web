@@ -110,31 +110,32 @@ class _SellViewState extends ConsumerState<SellView> {
                   onSubmitted: (_) => sellNotifier.searchPatient(),
                 ),
                 if (sellState.patients.isNotEmpty && !sellState.isLoading)
-                  SizedBox(
-                    width: MediaQuery.sizeOf(context).width * .9,
-                    height: 500,
+                  TooltipVisibility(
+                    visible: false,
                     child: PaginatedDataTable2(
                       wrapInCard: false,
                       columnSpacing: 12,
                       horizontalMargin: 12,
-                      minWidth: MediaQuery.sizeOf(context).width * .9,
+                      minWidth: 100000,
                       isHorizontalScrollBarVisible: true,
                       isVerticalScrollBarVisible: true,
                       headingRowHeight: 42,
-                      headingRowColor: WidgetStateProperty.all(Colors.black12),
+                      headingRowColor: WidgetStateProperty.all(
+                        Colors.black12,
+                      ),
                       columns: const [
                         DataColumn2(label: Text('Nombre'), fixedWidth: 250),
                         DataColumn2(
                           label: Text('Fecha de registro'),
-                          size: ColumnSize.M,
+                          fixedWidth: 100,
                         ),
                         DataColumn2(
                           label: Text('Sucursal'),
-                          size: ColumnSize.M,
+                          fixedWidth: 100,
                         ),
                         DataColumn2(
                           label: Text('Teléfono'),
-                          size: ColumnSize.S,
+                          fixedWidth: 100,
                         ),
                         DataColumn2(
                           label: Text('Acciones'),
@@ -152,6 +153,9 @@ class _SellViewState extends ConsumerState<SellView> {
                       onRowsPerPageChanged:
                           (value) => sellNotifier.changeRowsPerPage(value ?? 5),
                     ),
+                  ).box(
+                    width: MediaQuery.sizeOf(context).width * .9,
+                    height: 350,
                   ),
 
                 if (sellState.patients.isEmpty && !sellState.isLoading)
@@ -214,9 +218,10 @@ class _SellViewState extends ConsumerState<SellView> {
                       ),
                       ConstrainedBox(
                         constraints: BoxConstraints(
-                          maxWidth: MediaQuery.sizeOf(context).width * .6,
+                          maxWidth: MediaQuery.sizeOf(context).width * .9,
                         ),
                         child: Column(
+                          spacing: 10,
                           children: [
                             ShadInputFormField(
                               placeholder: Text('Ingrese'),
@@ -238,15 +243,13 @@ class _SellViewState extends ConsumerState<SellView> {
                             ),
                             if (sellState.mounts.isNotEmpty &&
                                 !sellState.isLoading)
-                              SizedBox(
-                                width: MediaQuery.sizeOf(context).width * .9,
-                                height: 500,
+                              TooltipVisibility(
+                                visible: false,
                                 child: PaginatedDataTable2(
                                   wrapInCard: false,
                                   columnSpacing: 12,
                                   horizontalMargin: 12,
-                                  minWidth:
-                                      MediaQuery.sizeOf(context).width * .9,
+                                  minWidth: 100000,
                                   isHorizontalScrollBarVisible: true,
                                   isVerticalScrollBarVisible: true,
                                   headingRowHeight: 42,
@@ -254,15 +257,41 @@ class _SellViewState extends ConsumerState<SellView> {
                                     Colors.black12,
                                   ),
                                   columns: const [
-                                    DataColumn2(label: Text('Marca')),
-                                    DataColumn2(label: Text('Modelo')),
-                                    DataColumn2(label: Text('Color')),
+                                    DataColumn2(
+                                      label: Text('Marca'),
+                                      fixedWidth: 120,
+                                      isResizable: true,
+                                    ),
+                                    DataColumn2(
+                                      label: Text('Modelo'),
+                                      fixedWidth: 100,
+                                      isResizable: true,
+                                    ),
+                                    DataColumn2(
+                                      label: Text('Color'),
+                                      fixedWidth: 120,
+                                      isResizable: true,
+                                    ),
                                     DataColumn2(
                                       label: Text('Descripción'),
+                                      fixedWidth: 150,
+                                      isResizable: true,
                                     ),
-                                    DataColumn2(label: Text('Optica')),
-                                    DataColumn2(label: Text('Precio')),
-                                    DataColumn2(label: Text('Acciones')),
+                                    DataColumn2(
+                                      label: Text('Optica'),
+                                      fixedWidth: 100,
+                                      isResizable: true,
+                                    ),
+                                    DataColumn2(
+                                      label: Text('Precio'),
+                                      fixedWidth: 100,
+                                      isResizable: true,
+                                    ),
+                                    DataColumn2(
+                                      label: Text('Acciones'),
+                                      fixedWidth: 100,
+                                      isResizable: true,
+                                    ),
                                   ],
                                   source: MountsDataSource(
                                     mounts: sellState.mounts,
@@ -276,19 +305,20 @@ class _SellViewState extends ConsumerState<SellView> {
                                         value ?? 5,
                                       ),
                                 ),
+                              ).box(
+                                width: MediaQuery.sizeOf(context).width * .9,
+                                height: 350,
                               ),
 
                             if (sellState.resins.isNotEmpty &&
                                 !sellState.isLoading)
-                              SizedBox(
-                                width: MediaQuery.sizeOf(context).width * .9,
-                                height: 500,
+                              TooltipVisibility(
+                                visible: false,
                                 child: PaginatedDataTable2(
                                   wrapInCard: false,
                                   columnSpacing: 12,
                                   horizontalMargin: 12,
-                                  minWidth:
-                                      MediaQuery.sizeOf(context).width * .9,
+                                  minWidth: 100000,
                                   isHorizontalScrollBarVisible: true,
                                   isVerticalScrollBarVisible: true,
                                   headingRowHeight: 42,
@@ -296,12 +326,51 @@ class _SellViewState extends ConsumerState<SellView> {
                                     Colors.black12,
                                   ),
                                   columns: const [
-                                    DataColumn2(label: Text('Marca')),
                                     DataColumn2(
                                       label: Text('Descripción'),
+                                      fixedWidth: 120,
+                                      isResizable: true,
                                     ),
-                                    DataColumn2(label: Text('Precio')),
-                                    DataColumn2(label: Text('Acciones')),
+                                    DataColumn2(
+                                      label: Text('Diseño'),
+                                      fixedWidth: 200,
+                                      isResizable: true,
+                                    ),
+                                    DataColumn2(
+                                      label: Text('Linea'),
+                                      fixedWidth: 120,
+                                      isResizable: true,
+                                    ),
+                                    DataColumn2(
+                                      label: Text('Material'),
+                                      fixedWidth: 120,
+                                      isResizable: true,
+                                    ),
+                                    DataColumn2(
+                                      label: Text('Tecnología'),
+                                      fixedWidth: 150,
+                                      isResizable: true,
+                                    ),
+                                    DataColumn2(
+                                      label: Text('Cantidad'),
+                                      fixedWidth: 20,
+                                      isResizable: true,
+                                    ),
+                                    DataColumn2(
+                                      label: Text('Precio Interno'),
+                                      fixedWidth: 100,
+                                      isResizable: true,
+                                    ),
+                                    DataColumn2(
+                                      label: Text('Precio Publico'),
+                                      fixedWidth: 100,
+                                      isResizable: true,
+                                    ),
+                                    DataColumn2(
+                                      label: Text('Acciones'),
+                                      fixedWidth: 100,
+                                      isResizable: true,
+                                    ),
                                   ],
                                   source: ResinDataSource(
                                     resins: sellState.resins,
@@ -315,6 +384,9 @@ class _SellViewState extends ConsumerState<SellView> {
                                         value ?? 5,
                                       ),
                                 ),
+                              ).box(
+                                width: MediaQuery.sizeOf(context).width * .9,
+                                height: 350,
                               ),
                           ],
                         ),
@@ -341,7 +413,7 @@ class _SellViewState extends ConsumerState<SellView> {
                       spacing: 10,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        Wrap(
                           children: [
                             RichText(
                               text: TextSpan(

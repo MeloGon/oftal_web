@@ -76,70 +76,97 @@ class SalesHistoryView extends ConsumerWidget {
           ),
         ),
         ShadCard(
-          width: MediaQuery.sizeOf(context).width * .9,
-          height: 600,
+          width: width * .9,
           child: Column(
+            spacing: 20,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               FilterHistorySales(),
-              PaginatedDataTable2(
-                wrapInCard: false,
-                columnSpacing: 12,
-                horizontalMargin: 12,
-                minWidth: width * .9,
-                isHorizontalScrollBarVisible: true,
-                isVerticalScrollBarVisible: true,
-                headingRowColor: WidgetStateProperty.all(Colors.black12),
-                columns: const [
-                  DataColumn2(
-                    label: Text('Folio'),
-                    size: ColumnSize.M,
+              TooltipVisibility(
+                visible: false,
+                child: PaginatedDataTable2(
+                  wrapInCard: false,
+                  columnSpacing: 12,
+                  columnResizingParameters: ColumnResizingParameters(
+                    desktopMode: true,
+                    realTime: true,
+                    widgetColor: Theme.of(context).primaryColor,
                   ),
-                  DataColumn2(label: Text('Paciente'), fixedWidth: 200),
-                  DataColumn2(
-                    label: Text('Fecha'),
-                    size: ColumnSize.M,
+                  horizontalMargin: 12,
+                  minWidth: 100000,
+                  isHorizontalScrollBarVisible: true,
+                  isVerticalScrollBarVisible: true,
+                  headingRowColor: WidgetStateProperty.all(Colors.black12),
+                  columns: const [
+                    DataColumn2(
+                      label: Text('Folio'),
+                      fixedWidth: 70,
+                      isResizable: true,
+                    ),
+                    DataColumn2(
+                      label: Text('Paciente'),
+                      fixedWidth: 210,
+                      isResizable: true,
+                    ),
+                    DataColumn2(
+                      label: Text('Fecha'),
+                      fixedWidth: 100,
+                      isResizable: true,
+                    ),
+                    DataColumn2(
+                      label: Text(
+                        'Vendedor',
+                      ),
+                      fixedWidth: 100,
+                      isResizable: true,
+                    ),
+                    DataColumn2(
+                      label: Text('A cuenta'),
+                      fixedWidth: 100,
+                      isResizable: true,
+                    ),
+                    DataColumn2(
+                      label: Text('Resto'),
+                      fixedWidth: 100,
+                      isResizable: true,
+                    ),
+                    DataColumn2(
+                      label: Text('Descuento'),
+                      fixedWidth: 100,
+                      isResizable: true,
+                    ),
+                    DataColumn2(
+                      label: Text('Total'),
+                      fixedWidth: 100,
+                      isResizable: true,
+                    ),
+                    DataColumn2(
+                      label: Text('Total con descuento'),
+                      fixedWidth: 100,
+                      isResizable: true,
+                    ),
+                    DataColumn2(
+                      label: Text('Sucursal'),
+                      fixedWidth: 100,
+                      isResizable: true,
+                    ),
+                    DataColumn2(
+                      label: Text('Acciones'),
+                      fixedWidth: 100,
+                      isResizable: true,
+                    ),
+                  ],
+                  source: SalesHistoryDataSource(
+                    sales: salesState.sales,
+                    context: context,
+                    ref: ref,
                   ),
-                  DataColumn2(
-                    label: Text('Vendedor'),
-                    size: ColumnSize.S,
-                  ),
-                  DataColumn2(
-                    label: Text('A cuenta'),
-                    size: ColumnSize.M,
-                  ),
-                  DataColumn2(
-                    label: Text('Resto'),
-                    size: ColumnSize.M,
-                  ),
-                  DataColumn2(
-                    label: Text('Descuento'),
-                    size: ColumnSize.M,
-                  ),
-                  DataColumn2(
-                    label: Text('Total'),
-                    size: ColumnSize.M,
-                  ),
-                  DataColumn2(
-                    label: Text('Total con descuento'),
-                    size: ColumnSize.M,
-                  ),
-                  DataColumn2(
-                    label: Text('Sucursal'),
-                    size: ColumnSize.L,
-                  ),
-                  DataColumn2(label: Text('Acciones'), fixedWidth: 100),
-                ],
-                source: SalesHistoryDataSource(
-                  sales: salesState.sales,
-                  context: context,
-                  ref: ref,
+                  availableRowsPerPage: [20],
+                  rowsPerPage: salesState.rowsPerPage,
+                  onRowsPerPageChanged:
+                      (value) => salesNotifier.changeRowsPerPage(value ?? 20),
                 ),
-                availableRowsPerPage: [10, 20, 50],
-                rowsPerPage: salesState.rowsPerPage,
-                onRowsPerPageChanged:
-                    (value) => salesNotifier.changeRowsPerPage(value ?? 10),
-              ).paddingOnly(top: 20).expanded(),
+              ).box(height: 1085),
             ],
           ).paddingOnly(top: 20),
         ),
