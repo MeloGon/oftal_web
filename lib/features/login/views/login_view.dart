@@ -43,6 +43,10 @@ class LoginView extends ConsumerWidget {
                   AppStrings.begin,
                   style: ShadTheme.of(context).textTheme.h1,
                 ),
+                Text(
+                  'Version 1.0.0',
+                  style: ShadTheme.of(context).textTheme.h2,
+                ),
                 ShadInputFormField(
                   label: Text(AppStrings.email),
                   placeholder: Text(AppStrings.emailExample),
