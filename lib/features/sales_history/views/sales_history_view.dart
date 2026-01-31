@@ -18,6 +18,7 @@ class SalesHistoryView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final width = MediaQuery.sizeOf(context).width;
+    final height = MediaQuery.sizeOf(context).height;
     final salesState = ref.watch(salesHistoryProvider);
     final salesNotifier = ref.watch(salesHistoryProvider.notifier);
 
@@ -33,6 +34,7 @@ class SalesHistoryView extends ConsumerWidget {
               context,
               next.saleDetails,
               next.saleSelectedForDetails!,
+              ref,
             );
           }
         }
@@ -47,44 +49,29 @@ class SalesHistoryView extends ConsumerWidget {
     });
 
     return Column(
-      spacing: 20,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ShadCard(
-          width: width * .9,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 6,
-            children: [
-              Text(
-                'Ventas realizadas',
-                style: ShadTheme.of(context).textTheme.h2,
+          spacing: 20,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            ShadCard(
+              width: width * .9,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Ventas realizadas',
+                    style: ShadTheme.of(context).textTheme.h2,
+                  ),
+                  FilterHistorySales(),
+                ],
               ),
-              Text(
-                'En este modulo puedes realizar opciones como:',
-              ),
-              Text(
-                '\u2022 Ver las ventas realizadas',
-              ),
-              Text(
-                '\u2022 Filtrar las ventas realizadas por folio, paciente o fecha',
-              ),
-              Text(
-                '\u2022 Ver los detalles de una venta',
-              ),
-            ],
-          ),
-        ),
-        ShadCard(
-          width: width * .9,
-          child: Column(
-            spacing: 20,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              FilterHistorySales(),
-              TooltipVisibility(
+            ),
+            ShadCard(
+              width: width * .9,
+              child: TooltipVisibility(
                 visible: false,
                 child: PaginatedDataTable2(
+                  showCheckboxColumn: false,
                   wrapInCard: false,
                   columnSpacing: 12,
                   columnResizingParameters: ColumnResizingParameters(
@@ -96,7 +83,18 @@ class SalesHistoryView extends ConsumerWidget {
                   minWidth: 100000,
                   isHorizontalScrollBarVisible: true,
                   isVerticalScrollBarVisible: true,
-                  headingRowColor: WidgetStateProperty.all(Colors.black12),
+                  headingRowColor: WidgetStateProperty.all(
+                    Colors.black12,
+                  ),
+                  source: SalesHistoryDataSource(
+                    sales: salesState.sales,
+                    context: context,
+                    ref: ref,
+                  ),
+                  availableRowsPerPage: [20],
+                  rowsPerPage: salesState.rowsPerPage,
+                  onRowsPerPageChanged:
+                      (value) => salesNotifier.changeRowsPerPage(value ?? 20),
                   columns: const [
                     DataColumn2(
                       label: Text('Folio'),
@@ -156,26 +154,18 @@ class SalesHistoryView extends ConsumerWidget {
                       isResizable: true,
                     ),
                   ],
-                  source: SalesHistoryDataSource(
-                    sales: salesState.sales,
-                    context: context,
-                    ref: ref,
-                  ),
-                  availableRowsPerPage: [20],
-                  rowsPerPage: salesState.rowsPerPage,
-                  onRowsPerPageChanged:
-                      (value) => salesNotifier.changeRowsPerPage(value ?? 20),
                 ),
-              ).box(height: 1085),
-            ],
-          ).paddingOnly(top: 20),
-        ),
-        ShadButton(
-          onPressed: () => salesNotifier.exportPatientsToCsv(salesState.sales),
-          child: const Text('Exportar CSV'),
-        ),
-      ],
-    ).paddingSymmetric(horizontal: 20, vertical: 20);
+              ),
+            ).expanded(),
+            ShadButton(
+              onPressed:
+                  () => salesNotifier.exportPatientsToCsv(salesState.sales),
+              child: const Text('Exportar CSV'),
+            ),
+          ],
+        )
+        .constrained(width: width * .9, height: height * .85)
+        .paddingSymmetric(horizontal: 20, vertical: 20);
   }
 }
 

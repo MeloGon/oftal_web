@@ -16,23 +16,60 @@ class SalesHistoryDataSource extends DataTableSource {
     required this.ref,
   });
 
+  void doubleTap(SalesModel sale) {
+    ref.read(salesHistoryProvider.notifier).selectSaleForDetails(sale);
+    ref.read(salesHistoryProvider.notifier).getSalesDetails();
+  }
+
   @override
   DataRow? getRow(int index) {
     final sale = sales[index];
 
     return DataRow.byIndex(
+      onSelectChanged: (value) {},
       index: index,
       cells: [
-        DataCell(Text(sale.folioSale.toString())),
-        DataCell(Text(sale.patient.toString())),
-        DataCell(Text(sale.date.toString())),
-        DataCell(Text(sale.authorName.toString())),
-        DataCell(Text(sale.account?.toCurrency() ?? '0')),
-        DataCell(Text(sale.rest?.toCurrency() ?? '0')),
-        DataCell(Text(sale.discount?.toCurrency() ?? '0')),
-        DataCell(Text(sale.total?.toCurrency() ?? '0')),
-        DataCell(Text(sale.totalWithDiscount?.toCurrency() ?? '0')),
-        DataCell(Text(sale.branch.toString())),
+        DataCell(
+          Text(sale.folioSale.toString()),
+          onDoubleTap: () => doubleTap(sale),
+        ),
+        DataCell(
+          Text(sale.patient.toString()),
+          onDoubleTap: () => doubleTap(sale),
+        ),
+        DataCell(
+          Text(sale.date.toString()),
+          onDoubleTap: () => doubleTap(sale),
+        ),
+        DataCell(
+          Text(sale.authorName.toString()),
+          onDoubleTap: () => doubleTap(sale),
+        ),
+        DataCell(
+          Text(sale.account?.toCurrency() ?? '0'),
+          onDoubleTap: () => doubleTap(sale),
+        ),
+        DataCell(
+          Text(sale.rest?.toCurrency() ?? '0'),
+          onDoubleTap: () => doubleTap(sale),
+        ),
+        DataCell(
+          Text(sale.discount?.toCurrency() ?? '0'),
+          onDoubleTap: () => doubleTap(sale),
+        ),
+        DataCell(
+          Text(sale.total?.toCurrency() ?? '0'),
+          onDoubleTap: () => doubleTap(sale),
+        ),
+        DataCell(
+          Text(sale.totalWithDiscount?.toCurrency() ?? '0'),
+          onDoubleTap: () => doubleTap(sale),
+        ),
+        DataCell(
+          Text(sale.branch.toString()),
+          onDoubleTap: () => doubleTap(sale),
+        ),
+
         DataCell(
           SalesHistoryActions(
             sale: sale,

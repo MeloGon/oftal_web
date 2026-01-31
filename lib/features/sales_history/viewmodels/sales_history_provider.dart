@@ -143,7 +143,7 @@ class SalesHistory extends _$SalesHistory {
   }
 
   void closeSaleDetails() {
-    state = state.copyWith(saleSelectedForDetails: SalesModel.empty());
+    state = state.copyWith(resetSaleSelectedForDetails: true);
   }
 
   void changeRowsPerPage(int value) {
@@ -375,6 +375,12 @@ class SalesHistory extends _$SalesHistory {
     state = state.copyWith(
       errorMessage: '',
       snackbarConfig: null,
+    );
+  }
+
+  void clearSaleSelectedForDetails() {
+    state = state.copyWith(
+      resetSaleSelectedForDetails: true,
     );
   }
 }

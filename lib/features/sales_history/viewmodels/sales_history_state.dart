@@ -26,6 +26,7 @@ class SalesHistoryState {
     bool? isLoading,
     List<SalesModel>? sales,
     SalesModel? saleSelectedForDetails,
+    bool resetSaleSelectedForDetails = false,
     List<SalesDetailsModel>? saleDetails,
     SnackbarConfigModel? snackbarConfig,
     String? errorMessage,
@@ -36,12 +37,14 @@ class SalesHistoryState {
       isLoading: isLoading ?? this.isLoading,
       sales: sales ?? this.sales,
       saleSelectedForDetails:
-          saleSelectedForDetails ?? this.saleSelectedForDetails,
+          resetSaleSelectedForDetails
+              ? null
+              : (saleSelectedForDetails ?? this.saleSelectedForDetails),
+
       saleDetails: saleDetails ?? this.saleDetails,
       snackbarConfig: snackbarConfig ?? this.snackbarConfig,
       errorMessage: errorMessage ?? this.errorMessage,
       rowsPerPage: rowsPerPage ?? this.rowsPerPage,
-      selectedFilter: selectedFilter ?? this.selectedFilter,
     );
   }
 }

@@ -86,6 +86,8 @@ class FilterHistorySales extends ConsumerWidget {
                       },
                       child: Icon(Icons.close),
                     ),
+          ).paddingOnly(
+            top: 10,
           ),
         if (salesHistoryState.selectedFilter == FilterToSalesHistory.date)
           ShadInputFormField(
@@ -93,7 +95,7 @@ class FilterHistorySales extends ConsumerWidget {
               salesHistoryNotifier.mask,
             ],
             placeholder: Text(
-              'Ingresa la fecha en formato 31-04-2000 (día - mes - año)',
+              'Ingresa la fecha ejm. 2026-04-31 (año - mes - día)',
             ),
             onSubmitted: (_) => salesHistoryNotifier.getSales(),
             controller: salesHistoryNotifier.searchController,
@@ -104,6 +106,8 @@ class FilterHistorySales extends ConsumerWidget {
                         ).hasMatch(v)
                         ? null
                         : 'Ingresa una fecha valida',
+          ).paddingOnly(
+            top: 10,
           ),
       ],
     );

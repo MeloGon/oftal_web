@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -8,12 +11,22 @@ class SalesDetailsDialog {
     BuildContext context,
     List<SalesDetailsModel> saleDetails,
     SalesModel sale,
+    WidgetRef ref,
   ) async {
     return showShadDialog(
       context: context,
 
       builder:
           (context) => ShadDialog(
+            closeIcon: ShadIconButton(
+              icon: Icon(Icons.close),
+              onPressed: () {
+                ref
+                    .read(salesHistoryProvider.notifier)
+                    .clearSaleSelectedForDetails();
+                context.pop();
+              },
+            ),
             title: Text('Detalles de la venta'),
             description: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
