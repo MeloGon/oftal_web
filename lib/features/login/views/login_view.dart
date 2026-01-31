@@ -44,7 +44,7 @@ class LoginView extends ConsumerWidget {
                   style: ShadTheme.of(context).textTheme.h1,
                 ),
                 Text(
-                  'Version 1.0.0',
+                  'Version 1.0.1',
                   style: ShadTheme.of(context).textTheme.h2,
                 ),
                 ShadInputFormField(
