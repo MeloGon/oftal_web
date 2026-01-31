@@ -45,6 +45,7 @@ class SalesHistoryState {
       snackbarConfig: snackbarConfig ?? this.snackbarConfig,
       errorMessage: errorMessage ?? this.errorMessage,
       rowsPerPage: rowsPerPage ?? this.rowsPerPage,
+      selectedFilter: selectedFilter ?? this.selectedFilter,
     );
   }
 }

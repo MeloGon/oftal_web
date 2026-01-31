@@ -11,45 +11,44 @@ class FilterHistorySales extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final size = MediaQuery.of(context).size;
     final salesHistoryState = ref.watch(salesHistoryProvider);
     final salesHistoryNotifier = ref.read(salesHistoryProvider.notifier);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+    return Wrap(
+      spacing: 20,
+      runSpacing: 10,
       children: [
         Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text('Filtrar por :'),
             const SizedBox(width: 10),
-            SizedBox(
-              width: 200,
-              child: DropdownButtonFormField<FilterToSalesHistory>(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
+            DropdownButtonFormField<FilterToSalesHistory>(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
                 ),
-                hint: Text(AppStrings.select),
-                value: salesHistoryState.selectedFilter,
-                items:
-                    FilterToSalesHistory.values
-                        .map(
-                          (e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(e.label),
-                          ),
-                        )
-                        .toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    salesHistoryNotifier.selectFilter(value);
-                  }
-                },
-                isExpanded: true,
               ),
-            ),
+              hint: Text(AppStrings.select),
+              initialValue: salesHistoryState.selectedFilter,
+              items:
+                  FilterToSalesHistory.values
+                      .map(
+                        (e) => DropdownMenuItem(
+                          value: e,
+                          child: Text(e.label),
+                        ),
+                      )
+                      .toList(),
+              onChanged: (value) {
+                if (value != null) {
+                  salesHistoryNotifier.selectFilter(value);
+                }
+              },
+              isExpanded: true,
+            ).constrained(width: 200, height: 40),
           ],
         ),
         if (salesHistoryState.selectedFilter == FilterToSalesHistory.patient)
@@ -67,10 +66,7 @@ class FilterHistorySales extends ConsumerWidget {
                       },
                       child: Icon(Icons.close),
                     ),
-          ).paddingOnly(
-            top: 10,
-            bottom: 20,
-          ),
+          ).constrained(width: size.width * .48),
         if (salesHistoryState.selectedFilter == FilterToSalesHistory.folio)
           ShadInputFormField(
             controller: salesHistoryNotifier.searchController,
@@ -86,9 +82,7 @@ class FilterHistorySales extends ConsumerWidget {
                       },
                       child: Icon(Icons.close),
                     ),
-          ).paddingOnly(
-            top: 10,
-          ),
+          ).constrained(width: size.width * .4),
         if (salesHistoryState.selectedFilter == FilterToSalesHistory.date)
           ShadInputFormField(
             inputFormatters: [
@@ -106,9 +100,7 @@ class FilterHistorySales extends ConsumerWidget {
                         ).hasMatch(v)
                         ? null
                         : 'Ingresa una fecha valida',
-          ).paddingOnly(
-            top: 10,
-          ),
+          ).constrained(width: size.width * .4),
       ],
     );
   }
