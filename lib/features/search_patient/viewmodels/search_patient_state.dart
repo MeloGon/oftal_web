@@ -17,7 +17,7 @@ class SearchPatientState {
     this.snackbarConfig,
     this.reviews = const [],
     this.isAddViewMeasureDialogOpen = false,
-    this.rowsPerPage = 7,
+    this.rowsPerPage = 10,
     this.patientName = '',
   });
 

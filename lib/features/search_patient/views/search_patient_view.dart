@@ -10,12 +10,26 @@ import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/widgets/loading_dialog.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class SearchPatientView extends ConsumerWidget {
+class SearchPatientView extends ConsumerStatefulWidget {
   const SearchPatientView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SearchPatientView> createState() => _SearchPatientViewState();
+}
+
+class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
+  final PaginatorController _paginatorController = PaginatorController();
+
+  @override
+  void dispose() {
+    _paginatorController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
+    final height = MediaQuery.sizeOf(context).height;
     final searchPatientState = ref.watch(searchPatientProvider);
     final searchPatientNotifier = ref.watch(searchPatientProvider.notifier);
 
@@ -57,36 +71,19 @@ class SearchPatientView extends ConsumerWidget {
       children: [
         ShadCard(
           width: width * .9,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 6,
-            children: [
-              Text(
-                'Buscar paciente',
-                style: ShadTheme.of(context).textTheme.h2,
-              ),
-              Text(
-                'En este modulo puedes realizar opciones como:',
-              ),
-              Text(
-                '\u2022 Buscar un paciente por su nombre completo o un aproximado',
-              ),
-              Text('\u2022 Ver las mediciones de un paciente'),
-              Text('\u2022 Agregar mediciones a un paciente'),
-              Text('\u2022 Eliminar un paciente (solo si eres admin)'),
-              Text('\u2022 Actualizar un paciente'),
-            ],
-          ),
-        ),
-        ShadCard(
-          width: width * .9,
+          height: height * .8,
           child: Column(
             children: [
               ShadInputFormField(
                 placeholder: Text('Ingrese el nombre del paciente'),
                 controller: searchPatientNotifier.searchController,
                 leading: Icon(LucideIcons.search),
-                onSubmitted: (_) => searchPatientNotifier.getPatients(),
+                onSubmitted: (_) {
+                  searchPatientNotifier.getPatients();
+                  if (_paginatorController.isAttached) {
+                    _paginatorController.goToFirstPage();
+                  }
+                },
                 trailing:
                     searchPatientNotifier.searchIsEmpty
                         ? null
@@ -94,16 +91,19 @@ class SearchPatientView extends ConsumerWidget {
                           onPressed: () {
                             searchPatientNotifier.searchController.clear();
                             searchPatientNotifier.getPatients();
+                            if (_paginatorController.isAttached) {
+                              _paginatorController.goToFirstPage();
+                            }
                           },
                           height: 30,
                           child: Icon(Icons.close),
                         ),
               ),
               if (searchPatientState.patients.isNotEmpty)
-                SizedBox(
-                  width: width * .9,
-                  height: 600,
+                TooltipVisibility(
+                  visible: false,
                   child: PaginatedDataTable2(
+                    controller: _paginatorController,
                     wrapInCard: false,
                     columnSpacing: 12,
                     horizontalMargin: 12,
@@ -133,13 +133,14 @@ class SearchPatientView extends ConsumerWidget {
                       context: context,
                       ref: ref,
                     ),
-                    availableRowsPerPage: [7, 10, 15, 20],
+                    availableRowsPerPage: [10],
                     rowsPerPage: searchPatientState.rowsPerPage,
                     onRowsPerPageChanged:
-                        (value) =>
-                            searchPatientNotifier.changeRowsPerPage(value ?? 7),
-                  ),
-                ).paddingOnly(top: 20),
+                        (value) => searchPatientNotifier.changeRowsPerPage(
+                          value ?? 10,
+                        ),
+                  ).paddingOnly(top: 20),
+                ).expanded(),
             ],
           ),
         ),

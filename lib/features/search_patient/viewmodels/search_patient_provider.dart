@@ -60,7 +60,7 @@ class SearchPatient extends _$SearchPatient {
               ? await Supabase.instance.client
                   .from('pacientes')
                   .select()
-                  .limit(5)
+                  .limit(10)
                   .order('fecha_registro_actualizada', ascending: false)
               : await Supabase.instance.client
                   .from('pacientes')
