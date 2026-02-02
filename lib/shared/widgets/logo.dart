@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class Logo extends StatelessWidget {
   const Logo({super.key});
@@ -13,14 +12,7 @@ class Logo extends StatelessWidget {
         children: [
           Icon(Icons.bubble_chart_outlined, color: Color(0xff7A6BF5)),
           SizedBox(width: 10),
-          Text(
-            'OFTALWEB',
-            style: GoogleFonts.montserratAlternates(
-              fontSize: 20,
-              fontWeight: FontWeight.w200,
-              color: Colors.white,
-            ),
-          ),
+          Text('OFTALWEB', style: TextStyle(color: Colors.white, fontSize: 20)),
         ],
       ),
     );

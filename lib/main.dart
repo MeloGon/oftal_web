@@ -42,7 +42,7 @@ class MyApp extends ConsumerWidget {
       routerConfig: router,
       theme: ShadThemeData(
         colorScheme: ShadZincColorScheme.light(),
-        textTheme: ShadTextTheme.fromGoogleFont(GoogleFonts.sofiaSans),
+        textTheme: ShadTextTheme.fromGoogleFont(GoogleFonts.poppins),
         brightness: Brightness.light,
       ),
     );

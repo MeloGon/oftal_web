@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/constants/constants.dart';
 import 'package:oftal_web/core/enums/enums.dart';
+import 'package:oftal_web/core/theme/app_text_styles.dart';
 import 'package:oftal_web/features/add_patient/viewmodels/add_patient_provider.dart';
-import 'package:oftal_web/features/sell/viewmodels/sell_provider.dart';
-import 'package:oftal_web/router/app_router.dart';
-import 'package:oftal_web/router/router_name.dart';
+import 'package:oftal_web/features/add_patient/views/widgets/add_patient_guide.dart';
+import 'package:oftal_web/features/add_patient/views/widgets/last_patients_added.dart';
 // import 'package:oftal_web/features/sell/views/widgets/invoice_widget.dart';
 import 'package:oftal_web/shared/extensions/widget_extension.dart';
 import 'package:oftal_web/shared/models/snackbar_config_model.dart';
@@ -41,65 +41,36 @@ class AddPatientView extends ConsumerWidget {
       key: addPatientState.formKey,
       autovalidateMode: ShadAutovalidateMode.onUserInteraction,
       child: Column(
-        spacing: 24,
+        spacing: 10,
         children: [
+          const AddPatientGuide(),
           ShadCard(
             width: width * .9,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 6,
-              children: [
-                Text(
-                  'Agregar paciente',
-                  style: ShadTheme.of(context).textTheme.h2,
-                ),
-                Text(
-                  'En este modulo puedes realizar opciones como:',
-                ),
-                Text(
-                  '\u2022 Agregar un nuevo paciente',
-                ),
-                Text(
-                  '\u2022 Recuerda ingresar todos los campos requeridos, en caso de no hacerlo te indicara cuáles son los campos requeridos',
-                ),
-                Text(
-                  '\u2022 Una vez agregado el paciente te saldra un mensaje de confirmacion',
-                ),
-                Text(
-                  '\u2022 Ya agregado el paciente puedes verlo desde el modulo de buscar paciente',
-                ),
-                Text(
-                  '\u2022 Recuerda aqui solo puedes agregar pacientes, si quieres ver medidas , agregar medidas o eliminar pacientes debes hacerlo desde el modulo de buscar paciente',
-                ),
-              ],
-            ),
-          ),
-          ShadCard(
-            width: width * .9,
-            child: Column(
+              spacing: 10,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   AppStrings.identification,
-                  style: ShadTheme.of(context).textTheme.h4,
+                  style: AppTextStyles(context).small14Bold,
                 ),
                 Wrap(
                   spacing: 16,
+                  runSpacing: 10,
                   direction: Axis.horizontal,
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 6),
                         Text(
                           AppStrings.registrationBranch,
                           style:
                               (ref.read(addPatientProvider).selectedBranch ==
                                       null)
-                                  ? ShadTheme.of(
+                                  ? AppTextStyles(
                                     context,
-                                  ).textTheme.small.copyWith(color: Colors.red)
-                                  : ShadTheme.of(context).textTheme.small,
+                                  ).small12.copyWith(color: Colors.red)
+                                  : AppTextStyles(context).small12,
                         ),
                         const SizedBox(height: 8),
                         ShadSelect<BranchEnum>(
@@ -129,7 +100,7 @@ class AddPatientView extends ConsumerWidget {
                         ),
                         if (ref.read(addPatientProvider).selectedBranch == null)
                           Text(
-                            AppStrings.registrationBranchRequired,
+                            AppStrings.lblrequired,
                             style: ShadTheme.of(
                               context,
                             ).textTheme.small.copyWith(color: Colors.red),
@@ -138,20 +109,26 @@ class AddPatientView extends ConsumerWidget {
                     ),
                     ConstrainedBox(
                       constraints: BoxConstraints(
-                        maxWidth: MediaQuery.sizeOf(context).width * .3,
+                        maxWidth: width * .3,
                       ),
                       child: ShadInputFormField(
                         readOnly: true,
-                        label: Text(AppStrings.uniqueId),
+                        label: Text(
+                          AppStrings.uniqueId,
+                          style: AppTextStyles(context).small12,
+                        ),
                         controller: addPatientNotifier.uniqueIdController,
                       ),
                     ),
                     ConstrainedBox(
                       constraints: BoxConstraints(
-                        maxWidth: MediaQuery.sizeOf(context).width * .1,
+                        maxWidth: 118,
                       ),
                       child: ShadInputFormField(
-                        label: Text(AppStrings.registerDate),
+                        label: Text(
+                          AppStrings.registerDate,
+                          style: AppTextStyles(context).small12,
+                        ),
                         controller: addPatientNotifier.registerDateController,
                         readOnly: true,
                       ),
@@ -165,27 +142,30 @@ class AddPatientView extends ConsumerWidget {
             width: width * .9,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 8,
+              spacing: 10,
               children: [
                 Text(
                   AppStrings.patientData,
-                  style: ShadTheme.of(context).textTheme.h4,
+                  style: AppTextStyles(context).small14Bold,
                 ),
                 Wrap(
                   spacing: 16,
-                  runSpacing: 8,
+                  runSpacing: 10,
                   direction: Axis.horizontal,
                   children: [
                     ConstrainedBox(
                       constraints: BoxConstraints(
-                        maxWidth: MediaQuery.sizeOf(context).width * .3,
+                        maxWidth: 300,
                       ),
                       child: ShadInputFormField(
-                        label: Text(AppStrings.fullName),
+                        label: Text(
+                          AppStrings.fullName,
+                          style: AppTextStyles(context).small12,
+                        ),
                         controller: addPatientNotifier.fullNameController,
                         validator: (value) {
                           if (value.isEmpty) {
-                            return AppStrings.fullNameRequired;
+                            return AppStrings.lblrequired;
                           }
                           return null;
                         },
@@ -193,14 +173,17 @@ class AddPatientView extends ConsumerWidget {
                     ),
                     ConstrainedBox(
                       constraints: BoxConstraints(
-                        maxWidth: MediaQuery.sizeOf(context).width * .1,
+                        maxWidth: 115,
                       ),
                       child: ShadInputFormField(
                         inputFormatters: [
                           addPatientNotifier.mask,
                         ],
                         placeholder: Text('31-03-2000'),
-                        label: Text(AppStrings.birthDate),
+                        label: Text(
+                          AppStrings.birthDate,
+                          style: AppTextStyles(context).small12,
+                        ),
                         controller: addPatientNotifier.birthDateController,
                         validator:
                             (v) =>
@@ -208,7 +191,7 @@ class AddPatientView extends ConsumerWidget {
                                       r'^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(19|20)\d{2}$',
                                     ).hasMatch(v)
                                     ? null
-                                    : AppStrings.birthDateRequired,
+                                    : AppStrings.lblrequired,
                       ),
                     ),
                     Column(
@@ -219,12 +202,12 @@ class AddPatientView extends ConsumerWidget {
                           style:
                               (ref.read(addPatientProvider).selectedGender ==
                                       null)
-                                  ? ShadTheme.of(
+                                  ? AppTextStyles(
                                     context,
-                                  ).textTheme.small.copyWith(color: Colors.red)
-                                  : ShadTheme.of(context).textTheme.small,
+                                  ).small12.copyWith(color: Colors.red)
+                                  : AppTextStyles(context).small12,
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 9),
                         ShadSelect<String>(
                           placeholder: Text(AppStrings.select),
                           initialValue: addPatientState.selectedGender,
@@ -246,7 +229,7 @@ class AddPatientView extends ConsumerWidget {
                         ),
                         if (ref.read(addPatientProvider).selectedGender == null)
                           Text(
-                            AppStrings.genderRequired,
+                            AppStrings.lblrequired,
                             style: ShadTheme.of(
                               context,
                             ).textTheme.small.copyWith(color: Colors.red),
@@ -255,18 +238,21 @@ class AddPatientView extends ConsumerWidget {
                     ),
                     ConstrainedBox(
                       constraints: BoxConstraints(
-                        maxWidth: 200,
+                        maxWidth: 100,
                       ),
                       child: ShadInputFormField(
-                        label: Text('Número de teléfono'),
+                        label: Text(
+                          'Telefono',
+                          style: AppTextStyles(context).small12,
+                        ),
                         controller: addPatientNotifier.phoneController,
                         keyboardType: TextInputType.number,
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return AppStrings.phoneRequired;
-                          }
-                          return null;
-                        },
+                        // validator: (value) {
+                        //   if (value.isEmpty) {
+                        //     return AppStrings.lblrequired;
+                        //   }
+                        //   return null;
+                        // },
                       ),
                     ),
                   ],
@@ -277,7 +263,10 @@ class AddPatientView extends ConsumerWidget {
                   ),
                   child: ShadInputFormField(
                     maxLines: 3,
-                    label: Text('Observaciones'),
+                    label: Text(
+                      'Observaciones (Opcional)',
+                      style: AppTextStyles(context).small12,
+                    ),
                     controller: addPatientNotifier.observationsController,
                     keyboardType: TextInputType.multiline,
                   ),
@@ -293,7 +282,9 @@ class AddPatientView extends ConsumerWidget {
               ShadButton.outline(
                 size: ShadButtonSize.lg,
                 backgroundColor: Colors.white,
-                onPressed: () {},
+                onPressed: () {
+                  ref.read(addPatientProvider.notifier).clearForm();
+                },
                 child: Text(AppStrings.cancel),
               ),
               ShadButton(
@@ -308,49 +299,7 @@ class AddPatientView extends ConsumerWidget {
               ),
             ],
           ),
-          if (addPatientState.lastPatients.isNotEmpty)
-            ShadCard(
-              width: width * .9,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 10,
-                children: [
-                  Text(
-                    AppStrings.lastPatients,
-                    style: ShadTheme.of(context).textTheme.h4,
-                  ),
-                  ListView.separated(
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: addPatientState.lastPatients.length,
-                    shrinkWrap: true,
-                    separatorBuilder: (context, index) => const Divider(),
-                    itemBuilder: (context, index) {
-                      final patient = addPatientState.lastPatients[index];
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            patient.name,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              ref
-                                  .read(sellProvider.notifier)
-                                  .selectPatientAndOption(
-                                    patient,
-                                    SellItemOptionsEnum.sell,
-                                  );
-                              ref.read(appRouterProvider).go(RouterName.sell);
-                            },
-                            child: Icon(Icons.shopping_bag_rounded),
-                          ),
-                        ],
-                      ).paddingSymmetric(vertical: 2);
-                    },
-                  ),
-                ],
-              ),
-            ),
+          if (addPatientState.lastPatients.isNotEmpty) LastPatientsAdded(),
         ],
       ).paddingSymmetric(horizontal: 16, vertical: 16),
     );

@@ -13,7 +13,6 @@ part 'add_patient_provider.g.dart';
 
 @Riverpod(keepAlive: true)
 class AddPatient extends _$AddPatient {
-  final identificationController = TextEditingController();
   final uniqueIdController = TextEditingController();
   final registerDateController = TextEditingController();
   final registrationBranchController = TextEditingController();
@@ -37,6 +36,8 @@ class AddPatient extends _$AddPatient {
       'dd-MMM-yyyy',
       'es_ES',
     ).format(DateTime.now());
+    birthDateController.text =
+        DateFormat('dd-MM-yyyy').format(DateTime.now()).toString();
 
     Future.microtask(() {
       initializeBranch();
@@ -44,7 +45,6 @@ class AddPatient extends _$AddPatient {
     });
 
     ref.onDispose(() {
-      identificationController.dispose();
       uniqueIdController.dispose();
       registerDateController.dispose();
       fullNameController.dispose();
@@ -95,12 +95,12 @@ class AddPatient extends _$AddPatient {
     try {
       final patient = PatientModel(
         id: int.parse(uniqueIdController.text),
-        branch: state.selectedBranch ?? '',
+        branch: state.selectedBranch?.toUpperCase() ?? '',
         registerDate: registerDateController.text,
-        name: fullNameController.text,
+        name: fullNameController.text.toUpperCase(),
         birthDate: birthDateController.text,
         phone: phoneController.text,
-        observations: observationsController.text,
+        observations: observationsController.text.toUpperCase(),
         gender: state.selectedGender ?? '',
         updatedRegisterDate:
             DateFormat('yyyy-MM-dd').format(DateTime.now()).toString(),
@@ -111,6 +111,7 @@ class AddPatient extends _$AddPatient {
           .select();
 
       await _getLastPatients();
+      clearForm();
       state = state.copyWith(
         errorMessage: 'Paciente creado correctamente',
         snackbarConfig: SnackbarConfigModel(
@@ -132,13 +133,12 @@ class AddPatient extends _$AddPatient {
   }
 
   void clearForm() {
-    identificationController.clear();
+    uniqueIdController.text = generateRandomId(16).toString();
     fullNameController.clear();
-    birthDateController.clear();
+    birthDateController.text =
+        DateFormat('dd-MM-yyyy').format(DateTime.now()).toString();
     genderController.value.clear();
     state = state.copyWith(
-      selectedGender: null,
-      selectedBranch: null,
       errorMessage: '',
     );
   }

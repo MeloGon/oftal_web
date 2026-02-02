@@ -15,6 +15,7 @@ class AppStrings {
   static const emailInvalid = 'El email no es válido';
   static const phoneRequired = 'El número de teléfono es requerido';
   static const birthDateRequired = 'La fecha de nacimiento es requerida';
+  static const lblrequired = 'Campo requerido';
   static const fullNameRequired = 'El nombre completo es requerido';
   static const genderRequired = 'El género es requerido';
   static const registrationBranchRequired =
@@ -29,7 +30,7 @@ class AppStrings {
   static const registerDate = 'Fecha de registro';
   static const registrationBranch = 'Sucursal de registro';
   static const fullName = 'Apellidos y Nombres';
-  static const birthDate = 'Fecha de nacimiento';
+  static const birthDate = 'Fecha de naci.';
   static const age = 'Edad';
   static const gender = 'Género';
   static const select = '- Seleccione -';

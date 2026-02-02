@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:oftal_web/core/theme/app_text_styles.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/providers/providers.dart';
 
@@ -15,7 +15,7 @@ class Navbar extends ConsumerWidget {
     final authState = ref.watch(authProvider);
     return Container(
       width: double.infinity,
-      height: 50,
+      height: 30,
       decoration: buildBoxDecoration(),
       child: Row(
         children: [
@@ -31,8 +31,8 @@ class Navbar extends ConsumerWidget {
             ConstrainedBox(
               constraints: BoxConstraints(maxWidth: 250),
               child: Text(
-                'Bienvenid@, ${authState.profile?.name ?? ''}',
-                style: ShadTheme.of(context).textTheme.h3,
+                '✌️Bienvenid@, ${authState.profile?.name ?? ''}',
+                style: AppTextStyles(context).large,
               ),
             ).paddingOnly(left: 15),
 
