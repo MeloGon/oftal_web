@@ -107,26 +107,37 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
                     wrapInCard: false,
                     columnSpacing: 12,
                     horizontalMargin: 12,
-                    minWidth: width * .9,
+
                     isHorizontalScrollBarVisible: true,
                     isVerticalScrollBarVisible: true,
                     headingRowHeight: 42,
                     headingRowColor: WidgetStateProperty.all(Colors.black12),
                     columns: const [
-                      DataColumn2(label: Text('Nombre'), fixedWidth: 250),
+                      DataColumn2(
+                        label: Text('Nombre'),
+                        size: ColumnSize.L,
+                        minWidth: 200,
+                      ),
                       DataColumn2(
                         label: Text('Fecha de registro'),
                         size: ColumnSize.S,
+                        minWidth: 100,
                       ),
                       DataColumn2(
                         label: Text('Sucursal'),
                         size: ColumnSize.S,
+                        minWidth: 60,
                       ),
                       DataColumn2(
                         label: Text('Teléfono'),
                         size: ColumnSize.S,
+                        minWidth: 100,
                       ),
-                      DataColumn2(label: Text('Acciones'), fixedWidth: 250),
+                      DataColumn2(
+                        label: Text('Acciones'),
+                        size: ColumnSize.S,
+                        minWidth: 120,
+                      ),
                     ],
                     source: PatientsDataSource(
                       patients: searchPatientState.patients,

@@ -26,25 +26,37 @@ class PatientActions extends StatelessWidget {
         if (isForSell ?? false) ...[
           InkWell(
             onTap: onSelectPatientToSell,
-            child: Icon(Icons.add_shopping_cart, size: 20),
+            child: SizedBox.square(
+              dimension: 30,
+              child: Icon(Icons.add_shopping_cart, size: 20),
+            ),
           ),
         ] else ...[
           InkWell(
             onTap: onViewMeasurements,
-            child: Icon(Icons.remove_red_eye_outlined, size: 20),
+            child: SizedBox.square(
+              dimension: 30,
+              child: Icon(Icons.remove_red_eye_outlined, size: 20),
+            ),
           ),
           InkWell(
             onTap: onAddMeasurement,
-            child: Icon(
-              Icons.add_circle_outline_sharp,
-              size: 20,
+            child: SizedBox.square(
+              dimension: 30,
+              child: Icon(
+                Icons.add_circle_outline_sharp,
+                size: 20,
+              ),
             ),
           ),
           InkWell(
             onTap: onDeletePatient,
-            child: Icon(
-              Icons.delete_outline_outlined,
-              size: 20,
+            child: SizedBox.square(
+              dimension: 30,
+              child: Icon(
+                Icons.delete_outline_outlined,
+                size: 20,
+              ),
             ),
           ),
         ],

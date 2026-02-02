@@ -16,6 +16,15 @@ class SalesHistoryDataSource extends DataTableSource {
     required this.ref,
   });
 
+  Widget cell(String label, SalesModel sale) => GestureDetector(
+    behavior: HitTestBehavior.opaque,
+    onDoubleTap: () {
+      ref.read(salesHistoryProvider.notifier).selectSaleForDetails(sale);
+      ref.read(salesHistoryProvider.notifier).getSalesDetails();
+    },
+    child: Text(label),
+  );
+
   void doubleTap(SalesModel sale) {
     ref.read(salesHistoryProvider.notifier).selectSaleForDetails(sale);
     ref.read(salesHistoryProvider.notifier).getSalesDetails();

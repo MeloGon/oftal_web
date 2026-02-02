@@ -47,57 +47,57 @@ class _SellViewState extends ConsumerState<SellView> {
       child: Column(
         spacing: 20,
         children: [
-          ShadCard(
-            child: ShadAccordion<int>(
-              children: [
-                ShadAccordionItem(
-                  value: 1,
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Vender',
-                        style: ShadTheme.of(context).textTheme.h2,
-                      ),
-                      Text('Presiona para desplegar o contraer el contenido'),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 6,
-                    children: [
-                      Text(
-                        'Para realizar una venta, debes de seguir los siguientes pasos:',
-                      ),
-                      Text(
-                        '\u2022 Buscar un paciente por su nombre completo o un aproximado (Ingresa en el campo de busqueda el nombre del paciente)',
-                      ),
-                      Text(
-                        '\u2022 Seleccionar el paciente a vender (Selecciona el paciente de la lista de pacientes en la columna de acciones)',
-                      ),
-                      Text(
-                        '\u2022 Buscar los productos a vender (Ingresa en el campo de busqueda el nombre del producto)',
-                      ),
-                      Text(
-                        '\u2022 Seleccionar los productos a vender (Selecciona el producto de la lista de productos en la columna de acciones)',
-                      ),
-                      Text('\u2022 Crear la nota de venta'),
-                      Text(
-                        '\u2022 Ingresar el importe, descuento y a cuenta en caso hubiera',
-                      ),
-                      Text('\u2022 Realiza la venta'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // ShadCard(
+          //   child: ShadAccordion<int>(
+          //     children: [
+          //       ShadAccordionItem(
+          //         value: 1,
+          //         title: Column(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           children: [
+          //             Text(
+          //               'Vender',
+          //               style: ShadTheme.of(context).textTheme.h2,
+          //             ),
+          //             Text('Presiona para desplegar o contraer el contenido'),
+          //           ],
+          //         ),
+          //         child: Column(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           spacing: 6,
+          //           children: [
+          //             Text(
+          //               'Para realizar una venta, debes de seguir los siguientes pasos:',
+          //             ),
+          //             Text(
+          //               '\u2022 Buscar un paciente por su nombre completo o un aproximado (Ingresa en el campo de busqueda el nombre del paciente)',
+          //             ),
+          //             Text(
+          //               '\u2022 Seleccionar el paciente a vender (Selecciona el paciente de la lista de pacientes en la columna de acciones)',
+          //             ),
+          //             Text(
+          //               '\u2022 Buscar los productos a vender (Ingresa en el campo de busqueda el nombre del producto)',
+          //             ),
+          //             Text(
+          //               '\u2022 Seleccionar los productos a vender (Selecciona el producto de la lista de productos en la columna de acciones)',
+          //             ),
+          //             Text('\u2022 Crear la nota de venta'),
+          //             Text(
+          //               '\u2022 Ingresar el importe, descuento y a cuenta en caso hubiera',
+          //             ),
+          //             Text('\u2022 Realiza la venta'),
+          //           ],
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
           ShadCard(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 ShadInput(
-                  placeholder: Text('Ingrese el nombre del paciente'),
+                  placeholder: Text('Ingrese el nombre del paciente a vender'),
                   leading: Icon(LucideIcons.search),
                   controller: sellNotifier.searchController,
                   trailing: ShadButton(
@@ -413,7 +413,8 @@ class _SellViewState extends ConsumerState<SellView> {
                       spacing: 10,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Wrap(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             RichText(
                               text: TextSpan(
@@ -431,7 +432,6 @@ class _SellViewState extends ConsumerState<SellView> {
                                 ],
                               ),
                             ),
-                            Spacer(),
                             ShadForm(
                               key: sellState.formKey,
                               autovalidateMode:
