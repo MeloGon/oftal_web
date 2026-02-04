@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:oftal_web/core/enums/enums.dart';
+import 'package:oftal_web/core/theme/app_text_styles.dart';
 import 'package:oftal_web/datatables/datatables.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/filter_history_sales.dart';
@@ -60,7 +61,7 @@ class SalesHistoryView extends ConsumerWidget {
                 children: [
                   Text(
                     'Ventas realizadas',
-                    style: ShadTheme.of(context).textTheme.h2,
+                    style: AppTextStyles(context).large,
                   ),
                   FilterHistorySales(),
                 ],
@@ -71,6 +72,7 @@ class SalesHistoryView extends ConsumerWidget {
               child: TooltipVisibility(
                 visible: false,
                 child: PaginatedDataTable2(
+                  headingRowHeight: 25,
                   showCheckboxColumn: false,
                   wrapInCard: false,
                   columnSpacing: 12,
@@ -95,61 +97,92 @@ class SalesHistoryView extends ConsumerWidget {
                   rowsPerPage: salesState.rowsPerPage,
                   onRowsPerPageChanged:
                       (value) => salesNotifier.changeRowsPerPage(value ?? 20),
-                  columns: const [
+                  columns: [
                     DataColumn2(
-                      label: Text('Folio'),
+                      label: Text(
+                        'Folio',
+                        style: AppTextStyles(context).small13Bold,
+                      ),
                       fixedWidth: 70,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: Text('Paciente'),
+                      label: Text(
+                        'Paciente',
+                        style: AppTextStyles(context).small13Bold,
+                      ),
                       fixedWidth: 210,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: Text('Fecha'),
+                      label: Text(
+                        'Fecha',
+                        style: AppTextStyles(context).small13Bold,
+                      ),
                       fixedWidth: 100,
                       isResizable: true,
                     ),
                     DataColumn2(
                       label: Text(
                         'Vendedor',
+                        style: AppTextStyles(context).small13Bold,
                       ),
                       fixedWidth: 100,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: Text('A cuenta'),
+                      label: Text(
+                        'A cuenta',
+                        style: AppTextStyles(context).small13Bold,
+                      ),
                       fixedWidth: 100,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: Text('Resto'),
+                      label: Text(
+                        'Resto',
+                        style: AppTextStyles(context).small13Bold,
+                      ),
                       fixedWidth: 100,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: Text('Descuento'),
+                      label: Text(
+                        'Descuento',
+                        style: AppTextStyles(context).small13Bold,
+                      ),
                       fixedWidth: 100,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: Text('Total'),
+                      label: Text(
+                        'Total',
+                        style: AppTextStyles(context).small13Bold,
+                      ),
                       fixedWidth: 100,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: Text('Total con descuento'),
+                      label: Text(
+                        'Total con descuento',
+                        style: AppTextStyles(context).small13Bold,
+                      ),
                       fixedWidth: 100,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: Text('Sucursal'),
+                      label: Text(
+                        'Sucursal',
+                        style: AppTextStyles(context).small13Bold,
+                      ),
                       fixedWidth: 100,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: Text('Acciones'),
+                      label: Text(
+                        'Acciones',
+                        style: AppTextStyles(context).small13Bold,
+                      ),
                       fixedWidth: 100,
                       isResizable: true,
                     ),

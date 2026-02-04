@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/enums/enums.dart';
+import 'package:oftal_web/core/theme/app_text_styles.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_provider.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/patient_actions.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_provider.dart';
@@ -25,10 +26,27 @@ class PatientsDataSource extends DataTableSource {
     return DataRow.byIndex(
       index: index,
       cells: [
-        DataCell(Text(patient.name)),
-        DataCell(Text(patient.registerDate)),
-        DataCell(Text(patient.branch)),
-        DataCell(Text(patient.phone)),
+        DataCell(
+          Text(patient.name, style: AppTextStyles(context).small12),
+        ),
+        DataCell(
+          Text(
+            patient.registerDate,
+            style: AppTextStyles(context).small12,
+          ),
+        ),
+        DataCell(
+          Text(
+            patient.branch,
+            style: AppTextStyles(context).small12,
+          ),
+        ),
+        DataCell(
+          Text(
+            patient.phone,
+            style: AppTextStyles(context).small12,
+          ),
+        ),
         DataCell(
           PatientActions(
             isForSell: isForSell,

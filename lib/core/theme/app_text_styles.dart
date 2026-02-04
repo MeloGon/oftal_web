@@ -17,6 +17,12 @@ class AppTextStyles {
     fontFamily: GoogleFonts.poppins().fontFamily,
   );
 
+  TextStyle get small13Bold => ShadTheme.of(context).textTheme.small.copyWith(
+    fontSize: 13,
+    fontFamily: GoogleFonts.poppins().fontFamily,
+    fontWeight: FontWeight.bold,
+  );
+
   TextStyle get small14Bold => ShadTheme.of(context).textTheme.small.copyWith(
     fontSize: 14,
     fontFamily: GoogleFonts.poppins().fontFamily,

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:oftal_web/core/constants/constants.dart';
 import 'package:oftal_web/core/enums/enums.dart';
+import 'package:oftal_web/core/theme/app_text_styles.dart';
 import 'package:oftal_web/datatables/datatables.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_provider.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_state.dart';
@@ -24,6 +25,7 @@ class _SellViewState extends ConsumerState<SellView> {
   Widget build(BuildContext context) {
     final sellNotifier = ref.watch(sellProvider.notifier);
     final sellState = ref.watch(sellProvider);
+    final size = MediaQuery.sizeOf(context);
 
     ref.listen<SellState>(sellProvider, (previous, next) {
       if (next.errorMessage.isNotEmpty &&
@@ -98,10 +100,11 @@ class _SellViewState extends ConsumerState<SellView> {
               children: [
                 ShadInput(
                   placeholder: Text('Ingrese el nombre del paciente a vender'),
+                  padding: EdgeInsets.symmetric(vertical: 6, horizontal: 6),
                   leading: Icon(LucideIcons.search),
                   controller: sellNotifier.searchController,
                   trailing: ShadButton(
-                    height: 30,
+                    height: 29,
                     onPressed: () => sellNotifier.searchPatient(),
                     child: Text(
                       AppStrings.search,
@@ -111,52 +114,55 @@ class _SellViewState extends ConsumerState<SellView> {
                 ),
                 if (sellState.patients.isNotEmpty && !sellState.isLoading)
                   TooltipVisibility(
-                    visible: false,
-                    child: PaginatedDataTable2(
-                      wrapInCard: false,
-                      columnSpacing: 12,
-                      horizontalMargin: 12,
-                      minWidth: 100000,
-                      isHorizontalScrollBarVisible: true,
-                      isVerticalScrollBarVisible: true,
-                      headingRowHeight: 42,
-                      headingRowColor: WidgetStateProperty.all(
-                        Colors.black12,
-                      ),
-                      columns: const [
-                        DataColumn2(label: Text('Nombre'), fixedWidth: 250),
-                        DataColumn2(
-                          label: Text('Fecha de registro'),
-                          fixedWidth: 100,
+                        visible: false,
+                        child: PaginatedDataTable2(
+                          wrapInCard: false,
+                          columnSpacing: 12,
+                          horizontalMargin: 12,
+                          minWidth: 100000,
+                          isHorizontalScrollBarVisible: true,
+                          isVerticalScrollBarVisible: true,
+                          headingRowHeight: 42,
+                          headingRowColor: WidgetStateProperty.all(
+                            Colors.black12,
+                          ),
+                          columns: const [
+                            DataColumn2(label: Text('Nombre'), fixedWidth: 250),
+                            DataColumn2(
+                              label: Text('Fecha de registro'),
+                              fixedWidth: 100,
+                            ),
+                            DataColumn2(
+                              label: Text('Sucursal'),
+                              fixedWidth: 100,
+                            ),
+                            DataColumn2(
+                              label: Text('Teléfono'),
+                              fixedWidth: 100,
+                            ),
+                            DataColumn2(
+                              label: Text('Acciones'),
+                              fixedWidth: 50,
+                            ),
+                          ],
+                          source: PatientsDataSource(
+                            patients: sellState.patients,
+                            context: context,
+                            isForSell: true,
+                            ref: ref,
+                          ),
+                          availableRowsPerPage: [5, 10, 20, 50],
+                          rowsPerPage: sellState.rowsPerPage,
+                          onRowsPerPageChanged:
+                              (value) =>
+                                  sellNotifier.changeRowsPerPage(value ?? 5),
                         ),
-                        DataColumn2(
-                          label: Text('Sucursal'),
-                          fixedWidth: 100,
-                        ),
-                        DataColumn2(
-                          label: Text('Teléfono'),
-                          fixedWidth: 100,
-                        ),
-                        DataColumn2(
-                          label: Text('Acciones'),
-                          fixedWidth: 50,
-                        ),
-                      ],
-                      source: PatientsDataSource(
-                        patients: sellState.patients,
-                        context: context,
-                        isForSell: true,
-                        ref: ref,
-                      ),
-                      availableRowsPerPage: [5, 10, 20, 50],
-                      rowsPerPage: sellState.rowsPerPage,
-                      onRowsPerPageChanged:
-                          (value) => sellNotifier.changeRowsPerPage(value ?? 5),
-                    ),
-                  ).box(
-                    width: MediaQuery.sizeOf(context).width * .9,
-                    height: 350,
-                  ),
+                      )
+                      .box(
+                        width: MediaQuery.sizeOf(context).width * .9,
+                        height: 350,
+                      )
+                      .padding(top: 10),
 
                 if (sellState.patients.isEmpty && !sellState.isLoading)
                   ShadCard(
@@ -181,7 +187,7 @@ class _SellViewState extends ConsumerState<SellView> {
                 children: [
                   Text(
                     'Seleccione los productos a vender',
-                    style: ShadTheme.of(context).textTheme.h2,
+                    style: AppTextStyles(context).largeBold,
                   ),
                   Wrap(
                     spacing: 16,
@@ -192,7 +198,10 @@ class _SellViewState extends ConsumerState<SellView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         spacing: 8,
                         children: [
-                          Text('Clasificación'),
+                          Text(
+                            'Clasificación',
+                            style: AppTextStyles(context).small13Bold,
+                          ),
                           ShadSelect<String>(
                             placeholder: Text(AppStrings.select),
                             selectedOptionBuilder:
@@ -225,7 +234,10 @@ class _SellViewState extends ConsumerState<SellView> {
                           children: [
                             ShadInputFormField(
                               placeholder: Text('Ingrese'),
-                              label: Text('Nombre del producto'),
+                              label: Text(
+                                'Nombre del producto',
+                                style: AppTextStyles(context).small13Bold,
+                              ),
                               controller:
                                   sellNotifier.searchItemToSellController,
                               onSubmitted: (_) {
@@ -405,7 +417,7 @@ class _SellViewState extends ConsumerState<SellView> {
                 children: [
                   Text(
                     'Nota de venta',
-                    style: ShadTheme.of(context).textTheme.h2,
+                    style: AppTextStyles(context).largeBold,
                   ),
                   ShadCard(
                     width: MediaQuery.sizeOf(context).width * .9,
@@ -421,13 +433,14 @@ class _SellViewState extends ConsumerState<SellView> {
                                 children: [
                                   TextSpan(
                                     text: 'Paciente: ',
+                                    style: AppTextStyles(context).small13Bold,
                                   ),
                                   TextSpan(
                                     text: '  ',
                                   ),
                                   TextSpan(
                                     text: sellState.selectedPatient?.name ?? '',
-                                    style: ShadTheme.of(context).textTheme.h4,
+                                    style: AppTextStyles(context).largeBold,
                                   ),
                                 ],
                               ),
@@ -437,7 +450,10 @@ class _SellViewState extends ConsumerState<SellView> {
                               autovalidateMode:
                                   ShadAutovalidateMode.onUserInteraction,
                               child: ShadInputFormField(
-                                label: Text('Fecha'),
+                                label: Text(
+                                  'Fecha',
+                                  style: AppTextStyles(context).small13Bold,
+                                ),
                                 inputFormatters: [sellNotifier.mask],
                                 controller: sellNotifier.dateController,
                                 validator:
@@ -451,7 +467,38 @@ class _SellViewState extends ConsumerState<SellView> {
                             ),
                           ],
                         ),
-                        Text('Items a vender').paddingOnly(bottom: 20),
+                        Row(
+                          spacing: 10,
+                          children: [
+                            Text(
+                              'Vendedor:',
+                              style: AppTextStyles(context).small13Bold,
+                            ),
+                            if (sellState.sellers?.isNotEmpty ?? false)
+                              ShadSelect<SellerModel>(
+                                placeholder: Text(AppStrings.select),
+                                initialValue: sellState.selectedSeller,
+                                selectedOptionBuilder:
+                                    (context, value) => Text(value.name),
+                                options:
+                                    sellState.sellers
+                                        ?.map(
+                                          (e) => ShadOption(
+                                            value: e,
+                                            child: Text(e.name),
+                                          ),
+                                        )
+                                        .toList(),
+                                onChanged: (value) {
+                                  sellNotifier.updateSelectedSeller(value);
+                                },
+                              ).constrained(width: 180),
+                          ],
+                        ),
+                        Text(
+                          'Items a vender',
+                          style: AppTextStyles(context).small13Bold,
+                        ).paddingOnly(bottom: 20),
                         // Enviar el item cuando se seleccione y solo crear un modelo detalle de ventas e ir llenando con lo que se pueda, se crea un detalle de venta por cada item
                         // el venta corto es la union de los detalles de las ventas
                         if (sellState.itemsToSell.isNotEmpty)
@@ -512,6 +559,14 @@ class _SellViewState extends ConsumerState<SellView> {
                                 ),
                               );
                             },
+                          )
+                        else
+                          ShadCard(
+                            width: size.width,
+                            child: Text(
+                              'Aun no ha agregado algun producto para vender',
+                              style: AppTextStyles(context).small13,
+                            ),
                           ),
                         SizedBox(height: 20),
                         if (sellState.itemsToSell.isNotEmpty)
@@ -550,14 +605,20 @@ class _SellViewState extends ConsumerState<SellView> {
                             Flexible(
                               child: ShadInputFormField(
                                 readOnly: true,
-                                label: Text('Importe'), //la suma de todo
+                                label: Text(
+                                  'Importe',
+                                  style: AppTextStyles(context).small13Bold,
+                                ), //la suma de todo
                                 controller: sellNotifier.importController,
                               ),
                             ),
                             Flexible(
                               child: ShadInputFormField(
                                 readOnly: sellState.itemsToSell.isEmpty,
-                                label: Text('Descuento'), //el descuento de todo
+                                label: Text(
+                                  'Descuento',
+                                  style: AppTextStyles(context).small13Bold,
+                                ), //el descuento de todo
                                 controller: sellNotifier.discountController,
                                 onSubmitted:
                                     (_) => sellNotifier.applyDiscount(),
@@ -568,6 +629,7 @@ class _SellViewState extends ConsumerState<SellView> {
                                 readOnly: true,
                                 label: Text(
                                   'Total',
+                                  style: AppTextStyles(context).small13Bold,
                                 ), //la suma de todo - el descuento
                                 controller: sellNotifier.totalController,
                               ),
@@ -575,7 +637,10 @@ class _SellViewState extends ConsumerState<SellView> {
                             Flexible(
                               child: ShadInputFormField(
                                 readOnly: sellState.itemsToSell.isEmpty,
-                                label: Text('A cuenta'), //el dinero que se paga
+                                label: Text(
+                                  'A cuenta',
+                                  style: AppTextStyles(context).small13Bold,
+                                ), //el dinero que se paga
                                 controller: sellNotifier.accountController,
                                 onSubmitted: (_) => sellNotifier.leaveAccount(),
                               ),
@@ -583,7 +648,10 @@ class _SellViewState extends ConsumerState<SellView> {
                             Flexible(
                               child: ShadInputFormField(
                                 readOnly: true,
-                                label: Text('Resto'), //el dinero que se debe
+                                label: Text(
+                                  'Resto',
+                                  style: AppTextStyles(context).small13Bold,
+                                ), //el dinero que se debe
                                 controller: sellNotifier.restController,
                               ),
                             ),

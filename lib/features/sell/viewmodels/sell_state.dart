@@ -21,6 +21,8 @@ class SellState {
   final List<ResinModel> resins;
   final int rowsPerPage;
   final GlobalKey<ShadFormState>? formKey;
+  final List<SellerModel>? sellers;
+  final SellerModel? selectedSeller;
 
   SellState({
     this.isLoading = false,
@@ -40,6 +42,8 @@ class SellState {
     this.resins = const [],
     this.rowsPerPage = 5,
     this.formKey,
+    this.sellers = const [],
+    this.selectedSeller,
   });
 
   SellState copyWith({
@@ -60,6 +64,8 @@ class SellState {
     List<ResinModel>? resins,
     int? rowsPerPage,
     GlobalKey<ShadFormState>? formKey,
+    List<SellerModel>? sellers,
+    SellerModel? selectedSeller,
   }) {
     return SellState(
       isLoading: isLoading ?? this.isLoading,
@@ -80,6 +86,8 @@ class SellState {
       resins: resins ?? this.resins,
       rowsPerPage: rowsPerPage ?? this.rowsPerPage,
       formKey: formKey ?? this.formKey,
+      sellers: sellers ?? this.sellers,
+      selectedSeller: selectedSeller ?? this.selectedSeller,
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:oftal_web/core/theme/app_text_styles.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
 class MenuItem extends StatefulWidget {
   final String text;
@@ -53,9 +53,7 @@ class MenuItemState extends State<MenuItem> {
                   Icon(widget.icon, color: Colors.white.withValues(alpha: 0.3)),
                   Text(
                     widget.text,
-                    style: ShadTheme.of(
-                      context,
-                    ).textTheme.muted.copyWith(
+                    style: AppTextStyles(context).small12.copyWith(
                       color: Colors.white.withValues(alpha: 0.8),
                     ),
                   ),

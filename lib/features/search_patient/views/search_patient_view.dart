@@ -2,6 +2,7 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:oftal_web/core/theme/app_text_styles.dart';
 import 'package:oftal_web/datatables/datatables.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_provider.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/add_review_dialog.dart';
@@ -75,6 +76,7 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
           child: Column(
             children: [
               ShadInputFormField(
+                padding: EdgeInsets.symmetric(vertical: 6, horizontal: 6),
                 placeholder: Text('Ingrese el nombre del paciente'),
                 controller: searchPatientNotifier.searchController,
                 leading: Icon(LucideIcons.search),
@@ -107,34 +109,48 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
                     wrapInCard: false,
                     columnSpacing: 12,
                     horizontalMargin: 12,
-
                     isHorizontalScrollBarVisible: true,
                     isVerticalScrollBarVisible: true,
                     headingRowHeight: 42,
                     headingRowColor: WidgetStateProperty.all(Colors.black12),
-                    columns: const [
+                    columns: [
                       DataColumn2(
-                        label: Text('Nombre'),
+                        label: Text(
+                          'Nombre',
+                          style: AppTextStyles(context).small13Bold,
+                        ),
                         size: ColumnSize.L,
                         minWidth: 200,
                       ),
                       DataColumn2(
-                        label: Text('Fecha de registro'),
+                        label: Text(
+                          'Fecha de registro',
+                          style: AppTextStyles(context).small13Bold,
+                        ),
                         size: ColumnSize.S,
                         minWidth: 100,
                       ),
                       DataColumn2(
-                        label: Text('Sucursal'),
+                        label: Text(
+                          'Sucursal',
+                          style: AppTextStyles(context).small13Bold,
+                        ),
                         size: ColumnSize.S,
                         minWidth: 60,
                       ),
                       DataColumn2(
-                        label: Text('Teléfono'),
+                        label: Text(
+                          'Teléfono',
+                          style: AppTextStyles(context).small13Bold,
+                        ),
                         size: ColumnSize.S,
                         minWidth: 100,
                       ),
                       DataColumn2(
-                        label: Text('Acciones'),
+                        label: Text(
+                          'Acciones',
+                          style: AppTextStyles(context).small14Bold,
+                        ),
                         size: ColumnSize.S,
                         minWidth: 120,
                       ),

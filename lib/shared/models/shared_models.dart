@@ -5,3 +5,4 @@ export 'snackbar_config_model.dart';
 export 'sales_model.dart';
 export 'sales_details_model.dart';
 export 'resin_model.dart';
+export 'seller_model.dart';

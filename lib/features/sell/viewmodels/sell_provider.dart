@@ -83,7 +83,8 @@ class Sell extends _$Sell {
     }
   }
 
-  void selectPatient(PatientModel patient) {
+  Future<void> selectPatient(PatientModel patient) async {
+    await _getSellers();
     state = state.copyWith(
       selectedPatient: patient,
       idRemision: generateRandomId(17).toString(),
@@ -364,7 +365,7 @@ class Sell extends _$Sell {
                       )
                       .toString(),
               patient: state.selectedPatient?.name,
-              authorName: customerData.name,
+              authorName: state.selectedSeller?.name ?? '',
               total: double.parse(importController.text),
               discount: double.parse(discountController.text),
               totalWithDiscount: double.parse(totalController.text),
@@ -586,5 +587,32 @@ class Sell extends _$Sell {
             .toString();
     accountController.text = '0';
     restController.text = '0';
+  }
+
+  Future<void> _getSellers() async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final response =
+          await Supabase.instance.client.from('vendedores').select();
+      state = state.copyWith(
+        sellers: response.map((json) => SellerModel.fromJson(json)).toList(),
+        isLoading: false,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        errorMessage: e.toString(),
+        isLoading: false,
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+      );
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  void updateSelectedSeller(SellerModel? seller) {
+    state = state.copyWith(selectedSeller: seller);
   }
 }
