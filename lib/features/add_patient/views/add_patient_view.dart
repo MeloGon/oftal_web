@@ -6,17 +6,23 @@ import 'package:oftal_web/core/theme/app_text_styles.dart';
 import 'package:oftal_web/features/add_patient/viewmodels/add_patient_provider.dart';
 import 'package:oftal_web/features/add_patient/views/widgets/add_patient_guide.dart';
 import 'package:oftal_web/features/add_patient/views/widgets/last_patients_added.dart';
-// import 'package:oftal_web/features/sell/views/widgets/invoice_widget.dart';
 import 'package:oftal_web/shared/extensions/widget_extension.dart';
 import 'package:oftal_web/shared/models/snackbar_config_model.dart';
 import 'package:oftal_web/shared/widgets/custom_snackbar.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class AddPatientView extends ConsumerWidget {
+class AddPatientView extends ConsumerStatefulWidget {
   const AddPatientView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AddPatientView> createState() => _AddPatientViewState();
+}
+
+class _AddPatientViewState extends ConsumerState<AddPatientView> {
+  final _formKey = GlobalKey<ShadFormState>();
+
+  @override
+  Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     final addPatientNotifier = ref.watch(addPatientProvider.notifier);
     final addPatientState = ref.watch(addPatientProvider);
@@ -38,7 +44,7 @@ class AddPatientView extends ConsumerWidget {
     });
 
     return ShadForm(
-      key: addPatientState.formKey,
+      key: _formKey,
       autovalidateMode: ShadAutovalidateMode.onUserInteraction,
       child: Column(
         spacing: 10,
@@ -247,12 +253,6 @@ class AddPatientView extends ConsumerWidget {
                         ),
                         controller: addPatientNotifier.phoneController,
                         keyboardType: TextInputType.number,
-                        // validator: (value) {
-                        //   if (value.isEmpty) {
-                        //     return AppStrings.lblrequired;
-                        //   }
-                        //   return null;
-                        // },
                       ),
                     ),
                   ],
@@ -271,7 +271,6 @@ class AddPatientView extends ConsumerWidget {
                     keyboardType: TextInputType.multiline,
                   ),
                 ),
-                // PdfWebExample().box(width: 100, height: 100),
               ],
             ),
           ),
@@ -293,7 +292,10 @@ class AddPatientView extends ConsumerWidget {
                     addPatientState.isLoading
                         ? null
                         : () {
-                          addPatientNotifier.createPatient();
+                          addPatientNotifier.createPatient(
+                            isValid:
+                                _formKey.currentState?.validate() ?? false,
+                          );
                         },
                 child: Text(AppStrings.save),
               ),

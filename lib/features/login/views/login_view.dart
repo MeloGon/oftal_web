@@ -8,11 +8,18 @@ import 'package:oftal_web/shared/models/snackbar_config_model.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class LoginView extends ConsumerWidget {
+class LoginView extends ConsumerStatefulWidget {
   const LoginView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LoginView> createState() => _LoginViewState();
+}
+
+class _LoginViewState extends ConsumerState<LoginView> {
+  final _formKey = GlobalKey<ShadFormState>();
+
+  @override
+  Widget build(BuildContext context) {
     final loginState = ref.watch(loginProvider);
     final loginNotifier = ref.watch(loginProvider.notifier);
 
@@ -33,7 +40,7 @@ class LoginView extends ConsumerWidget {
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: 370),
           child: ShadForm(
-            key: loginState.formKey,
+            key: _formKey,
             autovalidateMode: ShadAutovalidateMode.onUserInteraction,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,7 +59,9 @@ class LoginView extends ConsumerWidget {
                   placeholder: Text(AppStrings.emailExample),
                   controller: loginNotifier.emailController,
                   keyboardType: TextInputType.emailAddress,
-                  onSubmitted: (_) => loginNotifier.onFormSubmit(),
+                  onSubmitted: (_) => loginNotifier.onFormSubmit(
+                    isValid: _formKey.currentState?.validate() ?? false,
+                  ),
                   validator: (value) {
                     if (!EmailValidator.validate(value)) {
                       return AppStrings.emailInvalid;
@@ -78,7 +87,9 @@ class LoginView extends ConsumerWidget {
                   label: Text(AppStrings.password),
                   placeholder: Text(AppStrings.passwordExample),
                   controller: loginNotifier.passwordController,
-                  onSubmitted: (_) => loginNotifier.onFormSubmit(),
+                  onSubmitted: (_) => loginNotifier.onFormSubmit(
+                    isValid: _formKey.currentState?.validate() ?? false,
+                  ),
                   validator: (value) {
                     if (value.isEmpty) return AppStrings.passwordRequired;
                     if (value.length < 6) {
@@ -89,7 +100,9 @@ class LoginView extends ConsumerWidget {
                 ),
                 ShadButton(
                   child: Text(AppStrings.loginButton),
-                  onPressed: () => loginNotifier.onFormSubmit(),
+                  onPressed: () => loginNotifier.onFormSubmit(
+                    isValid: _formKey.currentState?.validate() ?? false,
+                  ),
                 ),
               ],
             ),

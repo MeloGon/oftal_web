@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/core/enums/snackbar_enum.dart';
 import 'package:oftal_web/features/add_patient/viewmodels/add_patient_state.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
@@ -7,7 +8,6 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:oftal_web/shared/services/local_storage.dart' as local_storage;
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'add_patient_provider.g.dart';
 
@@ -24,9 +24,7 @@ class AddPatient extends _$AddPatient {
 
   final mask = MaskTextInputFormatter(
     mask: '##-##-####',
-    filter: {
-      '#': RegExp(r'[0-9]'),
-    },
+    filter: {'#': RegExp(r'[0-9]')},
   );
 
   @override
@@ -54,7 +52,7 @@ class AddPatient extends _$AddPatient {
       observationsController.dispose();
     });
 
-    return AddPatientState(formKey: GlobalKey<ShadFormState>());
+    return const AddPatientState();
   }
 
   Future<void> initializeBranch() async {
@@ -88,8 +86,8 @@ class AddPatient extends _$AddPatient {
         DateFormat('yyyy-MM-dd').format(birthDate ?? DateTime.now()).toString();
   }
 
-  Future<void> createPatient() async {
-    if (!_validateForm()) return;
+  Future<void> createPatient({required bool isValid}) async {
+    if (!isValid) return;
     state = state.copyWith(isLoading: true);
 
     try {
@@ -105,19 +103,30 @@ class AddPatient extends _$AddPatient {
         updatedRegisterDate:
             DateFormat('yyyy-MM-dd').format(DateTime.now()).toString(),
       );
-      await Supabase.instance.client
-          .from('pacientes')
-          .insert(patient.toJson())
-          .select();
 
-      await _getLastPatients();
-      clearForm();
-      state = state.copyWith(
-        errorMessage: 'Paciente creado correctamente',
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Aviso',
-          type: SnackbarEnum.success,
+      final result =
+          await ref.read(patientRepositoryProvider).insertPatient(patient);
+      await result.fold(
+        (failure) async => state = state.copyWith(
+          errorMessage: failure.message,
+          snackbarConfig: SnackbarConfigModel(
+            title: 'Error',
+            type: SnackbarEnum.error,
+          ),
+          isLoading: false,
         ),
+        (_) async {
+          await _getLastPatients();
+          clearForm();
+          state = state.copyWith(
+            errorMessage: 'Paciente creado correctamente',
+            snackbarConfig: SnackbarConfigModel(
+              title: 'Aviso',
+              type: SnackbarEnum.success,
+            ),
+            isLoading: false,
+          );
+        },
       );
     } catch (e) {
       state = state.copyWith(
@@ -126,6 +135,7 @@ class AddPatient extends _$AddPatient {
           title: 'Error',
           type: SnackbarEnum.error,
         ),
+        isLoading: false,
       );
     } finally {
       state = state.copyWith(isLoading: false);
@@ -138,42 +148,26 @@ class AddPatient extends _$AddPatient {
     birthDateController.text =
         DateFormat('dd-MM-yyyy').format(DateTime.now()).toString();
     genderController.value.clear();
-    state = state.copyWith(
-      errorMessage: '',
-    );
-  }
-
-  bool _validateForm() {
-    if (state.formKey?.currentState?.validate() ?? false) {
-      return true;
-    }
-    return false;
+    state = state.copyWith(errorMessage: '');
   }
 
   void clearErrorMessage() {
-    state = state.copyWith(
-      errorMessage: '',
-      snackbarConfig: null,
-    );
+    state = state.copyWith(errorMessage: '', snackbarConfig: null);
   }
 
   Future<void> _getLastPatients() async {
     state = state.copyWith(isLoading: true);
-    try {
-      final response = await Supabase.instance.client
-          .from('pacientes')
-          .select()
-          .limit(5)
-          .order('fecha_registro_actualizada', ascending: false);
-      state = state.copyWith(
-        lastPatients:
-            response.map((json) => PatientModel.fromJson(json)).toList(),
+    final result =
+        await ref.read(patientRepositoryProvider).getLastPatients(limit: 5);
+    result.fold(
+      (failure) => state = state.copyWith(
+        errorMessage: failure.message,
         isLoading: false,
-      );
-    } catch (e) {
-      state = state.copyWith(errorMessage: e.toString());
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
+      ),
+      (patients) => state = state.copyWith(
+        lastPatients: patients,
+        isLoading: false,
+      ),
+    );
   }
 }

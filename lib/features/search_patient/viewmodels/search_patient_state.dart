@@ -1,46 +1,18 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 
-class SearchPatientState {
-  final bool isLoading;
-  final String errorMessage;
-  final List<PatientModel> patients;
-  final SnackbarConfigModel? snackbarConfig;
-  final List<ReviewModel> reviews;
-  final bool isAddViewMeasureDialogOpen;
-  final int rowsPerPage;
-  final String patientName;
+part 'search_patient_state.freezed.dart';
 
-  SearchPatientState({
-    this.isLoading = false,
-    this.errorMessage = '',
-    this.patients = const [],
-    this.snackbarConfig,
-    this.reviews = const [],
-    this.isAddViewMeasureDialogOpen = false,
-    this.rowsPerPage = 10,
-    this.patientName = '',
-  });
-
-  SearchPatientState copyWith({
-    bool? isLoading,
-    String? errorMessage,
-    List<PatientModel>? patients,
+@freezed
+abstract class SearchPatientState with _$SearchPatientState {
+  const factory SearchPatientState({
+    @Default(false) bool isLoading,
+    @Default('') String errorMessage,
+    @Default([]) List<PatientModel> patients,
     SnackbarConfigModel? snackbarConfig,
-    List<ReviewModel>? reviews,
-    bool? isAddViewMeasureDialogOpen,
-    int? rowsPerPage,
-    String? patientName,
-  }) {
-    return SearchPatientState(
-      isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage ?? this.errorMessage,
-      patients: patients ?? this.patients,
-      snackbarConfig: snackbarConfig ?? this.snackbarConfig,
-      reviews: reviews ?? this.reviews,
-      isAddViewMeasureDialogOpen:
-          isAddViewMeasureDialogOpen ?? this.isAddViewMeasureDialogOpen,
-      rowsPerPage: rowsPerPage ?? this.rowsPerPage,
-      patientName: patientName ?? this.patientName,
-    );
-  }
+    @Default([]) List<ReviewModel> reviews,
+    @Default(false) bool isAddViewMeasureDialogOpen,
+    @Default(10) int rowsPerPage,
+    @Default('') String patientName,
+  }) = _SearchPatientState;
 }

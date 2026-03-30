@@ -1,53 +1,20 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 
-class ResinsState {
-  final bool isLoading;
-  final String errorMessage;
-  final List<ResinModel> resins;
-  final int rowsPerPage;
-  final int totalCount;
-  final int offset;
-  final bool hasMore;
-  final SnackbarConfigModel? snackbarConfig;
-  final bool isAddResinDialogOpen;
-  final ResinModel? selectedResin;
+part 'resins_state.freezed.dart';
 
-  ResinsState({
-    this.isLoading = false,
-    this.errorMessage = '',
-    this.resins = const [],
-    this.rowsPerPage = 10,
-    this.totalCount = 0,
-    this.offset = 0,
-    this.hasMore = true,
-    this.snackbarConfig,
-    this.isAddResinDialogOpen = false,
-    this.selectedResin,
-  });
-
-  ResinsState copyWith({
-    bool? isLoading,
-    String? errorMessage,
-    List<ResinModel>? resins,
-    int? rowsPerPage,
-    int? totalCount,
-    int? offset,
-    bool? hasMore,
+@freezed
+abstract class ResinsState with _$ResinsState {
+  const factory ResinsState({
+    @Default(false) bool isLoading,
+    @Default('') String errorMessage,
+    @Default([]) List<ResinModel> resins,
+    @Default(10) int rowsPerPage,
+    @Default(0) int totalCount,
+    @Default(0) int offset,
+    @Default(true) bool hasMore,
     SnackbarConfigModel? snackbarConfig,
-    bool? isAddResinDialogOpen,
+    @Default(false) bool isAddResinDialogOpen,
     ResinModel? selectedResin,
-  }) {
-    return ResinsState(
-      isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage ?? this.errorMessage,
-      resins: resins ?? this.resins,
-      rowsPerPage: rowsPerPage ?? this.rowsPerPage,
-      totalCount: totalCount ?? this.totalCount,
-      offset: offset ?? this.offset,
-      hasMore: hasMore ?? this.hasMore,
-      snackbarConfig: snackbarConfig ?? this.snackbarConfig,
-      isAddResinDialogOpen: isAddResinDialogOpen ?? this.isAddResinDialogOpen,
-      selectedResin: selectedResin ?? this.selectedResin,
-    );
-  }
+  }) = _ResinsState;
 }

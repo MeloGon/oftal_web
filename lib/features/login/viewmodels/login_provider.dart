@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/login/viewmodels/login_state.dart';
@@ -18,57 +17,51 @@ class Login extends _$Login {
 
   @override
   LoginState build() {
-    return LoginState(formKey: GlobalKey<ShadFormState>());
+    ref.onDispose(() {
+      emailController.dispose();
+      passwordController.dispose();
+    });
+    return const LoginState();
   }
 
-  bool _validateForm() {
-    if (state.formKey?.currentState?.validate() ?? false) {
-      return true;
-    }
-    return false;
-  }
-
-  Future<bool> onFormSubmit() async {
+  Future<bool> onFormSubmit({required bool isValid}) async {
+    if (!isValid) return false;
     state = state.copyWith(isLoading: true);
-    if (_validateForm()) {
-      debugPrint('form is valid');
-      try {
-        await ref
-            .watch(authProvider.notifier)
-            .login(emailController.text, passwordController.text);
-        state = state.copyWith(
-          isLoading: false,
-          errorMessage: 'Login realizado correctamente',
-          snackbarConfig: SnackbarConfigModel(
-            title: 'Aviso',
-            type: SnackbarEnum.success,
-          ),
-        );
-        return true;
-      } on AuthApiException catch (e) {
-        state = state.copyWith(
-          errorMessage: e.message,
-          isLoading: false,
-          snackbarConfig: SnackbarConfigModel(
-            title: 'Error',
-            type: SnackbarEnum.error,
-          ),
-        );
-        return false;
-      } catch (e) {
-        log('Error al iniciar sesión $e');
-        state = state.copyWith(
-          errorMessage: 'Error al iniciar sesión $e',
-          isLoading: false,
-          snackbarConfig: SnackbarConfigModel(
-            title: 'Error',
-            type: SnackbarEnum.error,
-          ),
-        );
-        return false;
-      }
+    try {
+      await ref
+          .watch(authProvider.notifier)
+          .login(emailController.text, passwordController.text);
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'Login realizado correctamente',
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Aviso',
+          type: SnackbarEnum.success,
+        ),
+      );
+      return true;
+    } on AuthApiException catch (e) {
+      state = state.copyWith(
+        errorMessage: e.message,
+        isLoading: false,
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+      );
+      return false;
+    } catch (e) {
+      log('Error al iniciar sesión $e');
+      state = state.copyWith(
+        errorMessage: 'Error al iniciar sesión $e',
+        isLoading: false,
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+      );
+      return false;
     }
-    return false;
   }
 
   void togglePasswordVisibility() {

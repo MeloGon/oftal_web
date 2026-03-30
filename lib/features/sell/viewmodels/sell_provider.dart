@@ -3,12 +3,11 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' hide LocalStorage;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_state.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
-import 'package:oftal_web/shared/services/local_storage.dart';
 import 'package:oftal_web/shared/utils/random_id_generator.dart';
 import 'dart:html' as html;
 import 'package:pdf/widgets.dart' as pw;
@@ -28,17 +27,12 @@ class Sell extends _$Sell {
 
   final mask = MaskTextInputFormatter(
     mask: '##-##-####',
-    filter: {
-      '#': RegExp(r'[0-9]'),
-    },
+    filter: {'#': RegExp(r'[0-9]')},
   );
 
   @override
   SellState build() {
-    dateController.text = DateFormat(
-      'dd-MM-yyyy',
-      'es_ES',
-    ).format(DateTime.now());
+    dateController.text = DateFormat('dd-MM-yyyy', 'es_ES').format(DateTime.now());
     ref.onDispose(() {
       searchController.dispose();
       searchItemToSellController.dispose();
@@ -49,7 +43,7 @@ class Sell extends _$Sell {
       restController.dispose();
       dateController.dispose();
     });
-    return SellState();
+    return const SellState();
   }
 
   void resetState() {
@@ -60,42 +54,27 @@ class Sell extends _$Sell {
     totalController.clear();
     accountController.clear();
     restController.clear();
-    dateController.text = DateFormat(
-      'dd-MM-yyyy',
-      'es_ES',
-    ).format(DateTime.now());
-    state = SellState();
+    dateController.text = DateFormat('dd-MM-yyyy', 'es_ES').format(DateTime.now());
+    state = const SellState();
   }
 
   Future<void> searchPatient() async {
     state = state.copyWith(isLoading: true);
-    try {
-      final response = await Supabase.instance.client
-          .from('pacientes')
-          .select()
-          .textSearch(
-            '"NOMBRE COMPLETO"',
-            '%${searchController.text}%',
-            type: TextSearchType.plain,
-          );
-
-      state = state.copyWith(
-        patients: response.map((json) => PatientModel.fromJson(json)).toList(),
-        isLoading: false,
-      );
-    } catch (e) {
-      state = state.copyWith(
-        errorMessage: e.toString(),
+    final result = await ref
+        .read(patientRepositoryProvider)
+        .searchPatients(searchController.text);
+    result.fold(
+      (failure) => state = state.copyWith(
+        errorMessage: failure.message,
         isLoading: false,
         patients: [],
         snackbarConfig: SnackbarConfigModel(
           title: 'Error',
           type: SnackbarEnum.error,
         ),
-      );
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
+      ),
+      (patients) => state = state.copyWith(patients: patients, isLoading: false),
+    );
   }
 
   Future<void> selectPatient(PatientModel patient) async {
@@ -141,36 +120,17 @@ class Sell extends _$Sell {
         state = state.copyWith(mounts: []);
         break;
       case OptionsToSellEnum.others:
-        // state = state.copyWith(others: []);
         break;
     }
   }
 
   void selectItemToSell(dynamic item) {
     if (state.selectedOptionToSell == OptionsToSellEnum.mount) {
-      // state = state.copyWith(mountToSell: item as MountModel);
       final itemParsed = item as MountModel;
       final itemToSell = SalesDetailsModel(
-        id:
-            generateRandomId(
-              17,
-            ).toInt(), //se crea random distinto por cada item a no ser que sean montura y lunas afiliadas
-        idRemision:
-            state.idRemision
-                .toString(), //se crea random el mismo para todos los items en una sola compra
-        folioSale:
-            state.idFolio
-                .toString(), //se crea random pero es igual para todos los items en una sola compra
-        // dateSale: DateFormat(
-        //   'dd-MMM-yyyy',
-        //   'es_ES',
-        // ).format(
-        //   DateTime.now(),
-        // ), // ver que se cree en formato normal diai-mes-año
-        // dateSale: DateFormat(
-        //   'dd-MMM-yyyy',
-        //   'es_ES',
-        // ).format(DateTime.parse(dateController.text)),
+        id: generateRandomId(17).toInt(),
+        idRemision: state.idRemision.toString(),
+        folioSale: state.idFolio.toString(),
         idOftalmico: itemParsed.id,
         dateSale:
             DateFormat('dd-MMM-yy')
@@ -178,17 +138,12 @@ class Sell extends _$Sell {
                 .toString(),
         patient: state.selectedPatient?.name,
         idMount: itemParsed.id,
-        // mount: itemParsed.model, //acetato, oftalmico, ver como va esto despues
         mountBrand: itemParsed.brand,
         mountModel: itemParsed.model,
         mountColor: itemParsed.color,
         mountQuantity: itemParsed.stock.toString(),
         mountPrice: itemParsed.price,
         mountText: itemParsed.description,
-        // updatedDate:
-        //     DateFormat(
-        //       'yyyy-MM-dd',
-        //     ).format(DateTime.parse(dateController.text)).toString(),
         updatedDate:
             DateFormat('yyyy-MM-dd')
                 .format(DateFormat('dd-MM-yyyy').parse(dateController.text))
@@ -207,11 +162,6 @@ class Sell extends _$Sell {
         material: itemParsed.material,
         technology: itemParsed.technology,
         patient: state.selectedPatient?.name,
-        // dateSale: DateFormat('dd-MMM-yyyy', 'es_ES').format(DateTime.now()),
-        // dateSale: DateFormat(
-        //   'dd-MMM-yyyy',
-        //   'es_ES',
-        // ).format(DateTime.parse(dateController.text)),
         dateSale:
             DateFormat('dd-MMM-yy')
                 .format(DateFormat('dd-MM-yyyy').parse(dateController.text))
@@ -219,11 +169,6 @@ class Sell extends _$Sell {
         text: itemParsed.text,
         quantity: itemParsed.quantity.toString(),
         price: itemParsed.price,
-        // updatedDate: DateFormat('yyyy-MM-dd').format(DateTime.now()).toString(),
-        // updatedDate:
-        //     DateFormat(
-        //       'yyyy-MM-dd',
-        //     ).format(DateTime.parse(dateController.text)).toString(),
         updatedDate:
             DateFormat('yyyy-MM-dd')
                 .format(DateFormat('dd-MM-yyyy').parse(dateController.text))
@@ -231,33 +176,7 @@ class Sell extends _$Sell {
       );
       state = state.copyWith(itemsToSell: [...state.itemsToSell, itemToSell]);
     }
-    importController.text =
-        state.itemsToSell
-            .fold(
-              0.0,
-              (previousValue, element) =>
-                  previousValue + (element.mountPrice ?? element.price ?? 0.0),
-            )
-            .toString();
-    discountController.text = '0';
-    totalController.text =
-        state.itemsToSell
-            .fold(
-              0.0,
-              (previousValue, element) =>
-                  previousValue + (element.mountPrice ?? element.price ?? 0.0),
-            )
-            .toString();
-    accountController.text = '0';
-    restController.text =
-        state.itemsToSell
-            .fold(
-              0.0,
-              (previousValue, element) =>
-                  previousValue + (element.mountPrice ?? element.price ?? 0.0),
-            )
-            .toString();
-
+    _recalculateTotals();
     state = state.copyWith(
       snackbarConfig: SnackbarConfigModel(
         title: 'Aviso',
@@ -265,6 +184,18 @@ class Sell extends _$Sell {
       ),
       errorMessage: 'Item añadido correctamente',
     );
+  }
+
+  void _recalculateTotals() {
+    final total = state.itemsToSell.fold(
+      0.0,
+      (prev, e) => prev + (e.mountPrice ?? e.price ?? 0.0),
+    );
+    importController.text = total.toString();
+    discountController.text = '0';
+    totalController.text = total.toString();
+    accountController.text = '0';
+    restController.text = total.toString();
   }
 
   void applyDiscount() {
@@ -289,12 +220,21 @@ class Sell extends _$Sell {
     _checkDate();
     try {
       print('VENTA ${state.itemsToSell[0].folioSale}');
-
       await _deleteItemsInDatabase();
-      await Supabase.instance.client
-          .from('ventas')
-          .insert(state.itemsToSell.map((e) => e.toJson()).toList());
-      _createShortSale();
+      final insertResult = await ref
+          .read(saleRepositoryProvider)
+          .insertSalesDetails(state.itemsToSell);
+      insertResult.fold(
+        (failure) => state = state.copyWith(
+          errorMessage: failure.message,
+          snackbarConfig: SnackbarConfigModel(
+            title: 'Error',
+            type: SnackbarEnum.error,
+          ),
+          isLoading: false,
+        ),
+        (_) => _createShortSale(),
+      );
     } catch (e) {
       state = state.copyWith(
         errorMessage: e.toString(),
@@ -312,90 +252,87 @@ class Sell extends _$Sell {
   Future<void> _deleteItemsInDatabase() async {
     for (var item in state.itemsToSell) {
       if (item.idOftalmico != null && item.idOftalmico != 0) {
-        final response = await Supabase.instance.client
-            .from('armazones')
-            .select('*')
-            .eq('ID ARMAZON', item.idOftalmico!);
-        final mount = MountModel.fromJson(response.first);
-        if (mount.stock > 1) {
-          await Supabase.instance.client
-              .from('armazones')
-              .update({
-                'EXISTENCIAS': mount.stock - 1,
-              })
-              .eq('ID ARMAZON', mount.id);
-        } else {
-          await Supabase.instance.client
-              .from('armazones')
-              .delete()
-              .eq('ID ARMAZON', mount.id);
-        }
+        final mountResult = await ref
+            .read(mountRepositoryProvider)
+            .getMountById(item.idOftalmico!);
+        await mountResult.fold(
+          (failure) async {},
+          (mount) async {
+            await ref
+                .read(mountRepositoryProvider)
+                .decrementStock(mount.id, mount.stock);
+          },
+        );
       }
     }
   }
 
   void _checkDate() {
-    final updatedDate =
-        state.itemsToSell
-            .map(
-              (item) => item.copyWith(
-                updatedDate:
-                    DateFormat('yyyy-MM-dd')
-                        .format(
-                          DateFormat('dd-MM-yyyy').parse(dateController.text),
-                        )
-                        .toString(),
-                dateSale:
-                    DateFormat('dd-MMM-yy')
-                        .format(
-                          DateFormat('dd-MM-yyyy').parse(dateController.text),
-                        )
-                        .toString(),
-              ),
-            )
-            .toList();
+    final updatedDate = state.itemsToSell
+        .map(
+          (item) => item.copyWith(
+            updatedDate:
+                DateFormat('yyyy-MM-dd')
+                    .format(
+                      DateFormat('dd-MM-yyyy').parse(dateController.text),
+                    )
+                    .toString(),
+            dateSale:
+                DateFormat('dd-MMM-yy')
+                    .format(
+                      DateFormat('dd-MM-yyyy').parse(dateController.text),
+                    )
+                    .toString(),
+          ),
+        )
+        .toList();
     state = state.copyWith(itemsToSell: updatedDate);
   }
 
   Future<void> _createShortSale() async {
-    // final customerData = await LocalStorage.getProfile();
     try {
-      await Supabase.instance.client
-          .from('ventas cortas')
-          .insert(
-            SalesModel(
-              // id: int.parse(state.itemsToSell[0].idRemision ?? '0'),
-              id: state.idRemision,
-              branch: state.selectedPatient?.branch,
-              date:
-                  DateFormat('dd-MMM-yy')
-                      .format(
-                        DateFormat('dd-MM-yyyy').parse(dateController.text),
-                      )
-                      .toString(),
-              updatedDate:
-                  DateFormat('yyyy-MM-dd')
-                      .format(
-                        DateFormat('dd-MM-yyyy').parse(dateController.text),
-                      )
-                      .toString(),
-              patient: state.selectedPatient?.name,
-              authorName: state.selectedSeller?.name ?? '',
-              total: double.parse(importController.text),
-              discount: double.parse(discountController.text),
-              totalWithDiscount: double.parse(totalController.text),
-              account: double.parse(accountController.text),
-              rest: double.parse(restController.text),
-              folioSale: state.itemsToSell[0].folioSale,
-            ).toJson(),
-          );
-      state = state.copyWith(
-        isLoading: false,
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Aviso',
-          type: SnackbarEnum.success,
+      final sale = SalesModel(
+        id: state.idRemision,
+        branch: state.selectedPatient?.branch,
+        date:
+            DateFormat('dd-MMM-yy')
+                .format(
+                  DateFormat('dd-MM-yyyy').parse(dateController.text),
+                )
+                .toString(),
+        updatedDate:
+            DateFormat('yyyy-MM-dd')
+                .format(
+                  DateFormat('dd-MM-yyyy').parse(dateController.text),
+                )
+                .toString(),
+        patient: state.selectedPatient?.name,
+        authorName: state.selectedSeller?.name ?? '',
+        total: double.parse(importController.text),
+        discount: double.parse(discountController.text),
+        totalWithDiscount: double.parse(totalController.text),
+        account: double.parse(accountController.text),
+        rest: double.parse(restController.text),
+        folioSale: state.itemsToSell[0].folioSale,
+      );
+      final result = await ref.read(saleRepositoryProvider).insertShortSale(sale);
+      result.fold(
+        (failure) => state = state.copyWith(
+          errorMessage: failure.message,
+          snackbarConfig: SnackbarConfigModel(
+            title: 'Error',
+            type: SnackbarEnum.error,
+          ),
+          isLoading: false,
         ),
-        errorMessage: 'Venta realizada correctamente',
+        (_) => state = state.copyWith(
+          isLoading: false,
+          snackbarConfig: SnackbarConfigModel(
+            title: 'Aviso',
+            type: SnackbarEnum.success,
+          ),
+          errorMessage: 'Venta realizada correctamente',
+        ),
       );
     } catch (e) {
       state = state.copyWith(
@@ -407,9 +344,7 @@ class Sell extends _$Sell {
         isLoading: false,
       );
     } finally {
-      state = state.copyWith(
-        isLoading: false,
-      );
+      state = state.copyWith(isLoading: false);
     }
   }
 
@@ -431,103 +366,73 @@ class Sell extends _$Sell {
 
   Future<void> getViewMeasurements() async {
     state = state.copyWith(isLoading: true);
-    try {
-      final response = await Supabase.instance.client
-          .from('revisiones')
-          .select()
-          .ilike(
-            '"PACIENTE"',
-            '%${state.selectedPatient?.name ?? ''}%',
-          );
-      if (response.isNotEmpty) {
-        state = state.copyWith(
-          reviews: response.map((json) => ReviewModel.fromJson(json)).toList(),
-        );
-        return;
-      }
-      state = state.copyWith(
-        errorMessage: 'No se encontraron mediciones',
-        isLoading: false,
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Aviso',
-          type: SnackbarEnum.error,
-        ),
-      );
-    } catch (e) {
-      state = state.copyWith(
-        errorMessage: e.toString(),
+    final result = await ref
+        .read(reviewRepositoryProvider)
+        .getReviewsByPatient(state.selectedPatient?.name ?? '');
+    result.fold(
+      (failure) => state = state.copyWith(
+        errorMessage: failure.message,
         isLoading: false,
         snackbarConfig: SnackbarConfigModel(
           title: 'Error',
           type: SnackbarEnum.error,
         ),
-      );
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
+      ),
+      (reviews) {
+        if (reviews.isNotEmpty) {
+          state = state.copyWith(reviews: reviews, isLoading: false);
+        } else {
+          state = state.copyWith(
+            errorMessage: 'No se encontraron mediciones',
+            isLoading: false,
+            snackbarConfig: SnackbarConfigModel(
+              title: 'Aviso',
+              type: SnackbarEnum.error,
+            ),
+          );
+        }
+      },
+    );
   }
 
   Future<void> getMounts() async {
     state = state.copyWith(isLoading: true);
-    try {
-      final response = await Supabase.instance.client
-          .from('armazones')
-          .select()
-          .textSearch(
-            '"MARCA"',
-            '%${searchItemToSellController.text}%',
-            type: TextSearchType.plain,
-          );
-      state = state.copyWith(
-        mounts: response.map((json) => MountModel.fromJson(json)).toList(),
-      );
-    } catch (e) {
-      state = state.copyWith(
-        errorMessage: e.toString(),
+    final result = await ref
+        .read(mountRepositoryProvider)
+        .searchMounts(searchItemToSellController.text);
+    result.fold(
+      (failure) => state = state.copyWith(
+        errorMessage: failure.message,
         isLoading: false,
         snackbarConfig: SnackbarConfigModel(
           title: 'Error',
           type: SnackbarEnum.error,
         ),
-      );
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
+      ),
+      (mounts) => state = state.copyWith(mounts: mounts, isLoading: false),
+    );
   }
 
   Future<void> getResin() async {
     state = state.copyWith(isLoading: true);
-    try {
-      final response = await Supabase.instance.client
-          .from('resinas')
-          .select()
-          .textSearch(
-            '"texto"',
-            '%${searchItemToSellController.text}%',
-            type: TextSearchType.plain,
-          );
-      state = state.copyWith(
-        resins: response.map((json) => ResinModel.fromJson(json)).toList(),
-      );
-    } catch (e) {
-      state = state.copyWith(
-        errorMessage: e.toString(),
+    final result = await ref
+        .read(resinRepositoryProvider)
+        .searchResins(searchItemToSellController.text);
+    result.fold(
+      (failure) => state = state.copyWith(
+        errorMessage: failure.message,
         isLoading: false,
         snackbarConfig: SnackbarConfigModel(
           title: 'Error',
           type: SnackbarEnum.error,
         ),
-      );
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
+      ),
+      (resins) => state = state.copyWith(resins: resins, isLoading: false),
+    );
   }
 
   void clearErrorMessage() {
-    state = state.copyWith(
-      errorMessage: '',
-      snackbarConfig: null,
-    );
+    state = state.copyWith(errorMessage: '', snackbarConfig: null);
   }
 
   Future<void> generatePdf(String nombre, String fecha) async {
@@ -554,10 +459,7 @@ class Sell extends _$Sell {
       ),
     );
 
-    // 3️⃣ Convertir a bytes
     final Uint8List bytes = await pdf.save();
-
-    // 4️⃣ Crear un blob y descargarlo
     final blob = html.Blob([bytes], 'application/pdf');
     final url = html.Url.createObjectUrlFromBlob(blob);
     final anchor =
@@ -583,48 +485,31 @@ class Sell extends _$Sell {
       ),
       errorMessage: 'Item eliminado de la nota de venta',
     );
-    importController.text =
-        state.itemsToSell
-            .fold(
-              0.0,
-              (previousValue, element) =>
-                  previousValue + (element.mountPrice ?? element.price ?? 0.0),
-            )
-            .toString();
+    final total = state.itemsToSell.fold(
+      0.0,
+      (prev, e) => prev + (e.mountPrice ?? e.price ?? 0.0),
+    );
+    importController.text = total.toString();
     discountController.text = '0';
-    totalController.text =
-        state.itemsToSell
-            .fold(
-              0.0,
-              (previousValue, element) =>
-                  previousValue + (element.mountPrice ?? element.price ?? 0.0),
-            )
-            .toString();
+    totalController.text = total.toString();
     accountController.text = '0';
     restController.text = '0';
   }
 
   Future<void> _getSellers() async {
     state = state.copyWith(isLoading: true);
-    try {
-      final response =
-          await Supabase.instance.client.from('vendedores').select();
-      state = state.copyWith(
-        sellers: response.map((json) => SellerModel.fromJson(json)).toList(),
-        isLoading: false,
-      );
-    } catch (e) {
-      state = state.copyWith(
-        errorMessage: e.toString(),
+    final result = await ref.read(sellerRepositoryProvider).getSellers();
+    result.fold(
+      (failure) => state = state.copyWith(
+        errorMessage: failure.message,
         isLoading: false,
         snackbarConfig: SnackbarConfigModel(
           title: 'Error',
           type: SnackbarEnum.error,
         ),
-      );
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
+      ),
+      (sellers) => state = state.copyWith(sellers: sellers, isLoading: false),
+    );
   }
 
   void updateSelectedSeller(SellerModel? seller) {

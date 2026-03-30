@@ -1,91 +1,28 @@
-import 'package:flutter/material.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
-class SellState {
-  final bool isLoading;
-  final String errorMessage;
-  final List<PatientModel> patients;
-  final PatientModel? selectedPatient;
-  final SellItemOptionsEnum? selectedItemOption;
-  final List<ReviewModel> reviews;
-  final List<MountModel> mounts;
-  SnackbarConfigModel? snackbarConfig;
-  OptionsToSellEnum? selectedOptionToSell;
-  final List<SalesDetailsModel> itemsToSell;
-  final String idRemision;
-  final String idFolio;
-  final DiscountReasonEnum? selectedDiscountReason;
-  final List<ResinModel> resins;
-  final int rowsPerPage;
-  final GlobalKey<ShadFormState>? formKey;
-  final List<SellerModel>? sellers;
-  final SellerModel? selectedSeller;
+part 'sell_state.freezed.dart';
 
-  SellState({
-    this.isLoading = false,
-    this.errorMessage = '',
-    this.patients = const [],
-    this.selectedPatient,
-    this.selectedItemOption,
-    this.reviews = const [],
-    this.mounts = const [],
-    this.snackbarConfig,
-    this.selectedOptionToSell,
-    this.itemsToSell = const [],
-    this.idRemision = '',
-    this.idFolio = '',
-    this.selectedDiscountReason,
-    this.resins = const [],
-    this.rowsPerPage = 5,
-    this.formKey,
-    this.sellers = const [],
-    this.selectedSeller,
-  });
-
-  SellState copyWith({
-    bool? isLoading,
-    String? errorMessage,
-    List<PatientModel>? patients,
+@freezed
+abstract class SellState with _$SellState {
+  const factory SellState({
+    @Default(false) bool isLoading,
+    @Default('') String errorMessage,
+    @Default([]) List<PatientModel> patients,
     PatientModel? selectedPatient,
     SellItemOptionsEnum? selectedItemOption,
-    List<ReviewModel>? reviews,
-    List<MountModel>? mounts,
+    @Default([]) List<ReviewModel> reviews,
+    @Default([]) List<MountModel> mounts,
     SnackbarConfigModel? snackbarConfig,
     OptionsToSellEnum? selectedOptionToSell,
-    List<SalesDetailsModel>? itemsToSell,
-    String? idRemision,
-    String? idFolio,
+    @Default([]) List<SalesDetailsModel> itemsToSell,
+    @Default('') String idRemision,
+    @Default('') String idFolio,
     DiscountReasonEnum? selectedDiscountReason,
-    List<ResinModel>? resins,
-    int? rowsPerPage,
-    GlobalKey<ShadFormState>? formKey,
-    List<SellerModel>? sellers,
+    @Default([]) List<ResinModel> resins,
+    @Default(5) int rowsPerPage,
+    @Default([]) List<SellerModel> sellers,
     SellerModel? selectedSeller,
-    //esta bandera quiero que al presionar un boton , regrese todo mi sellstate como estaba al inicio
-    bool resetState = false,
-  }) {
-    return SellState(
-      isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage ?? this.errorMessage,
-      patients: patients ?? this.patients,
-      selectedPatient: selectedPatient ?? this.selectedPatient,
-      selectedItemOption: selectedItemOption ?? this.selectedItemOption,
-      reviews: reviews ?? this.reviews,
-      mounts: mounts ?? this.mounts,
-      snackbarConfig: snackbarConfig ?? this.snackbarConfig,
-      selectedOptionToSell: selectedOptionToSell ?? this.selectedOptionToSell,
-      itemsToSell: itemsToSell ?? this.itemsToSell,
-      idRemision: idRemision ?? this.idRemision,
-      idFolio: idFolio ?? this.idFolio,
-      selectedDiscountReason:
-          selectedDiscountReason ?? this.selectedDiscountReason,
-      resins: resins ?? this.resins,
-      rowsPerPage: rowsPerPage ?? this.rowsPerPage,
-      formKey: formKey ?? this.formKey,
-      sellers: sellers ?? this.sellers,
-      selectedSeller: selectedSeller ?? this.selectedSeller,
-    );
-  }
+  }) = _SellState;
 }

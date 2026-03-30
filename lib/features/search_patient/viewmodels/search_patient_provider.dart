@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_state.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/utils/random_id_generator.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'search_patient_provider.g.dart';
 
@@ -49,68 +49,47 @@ class SearchPatient extends _$SearchPatient {
     ref.onDispose(() {
       searchController.dispose();
     });
-    return SearchPatientState();
+    return const SearchPatientState();
   }
 
   Future<void> getPatients() async {
     state = state.copyWith(isLoading: true);
-    try {
-      final response =
-          searchIsEmpty
-              ? await Supabase.instance.client
-                  .from('pacientes')
-                  .select()
-                  .limit(10)
-                  .order('fecha_registro_actualizada', ascending: false)
-              : await Supabase.instance.client
-                  .from('pacientes')
-                  .select()
-                  .textSearch(
-                    '"NOMBRE COMPLETO"',
-                    '%${searchController.text}%',
-                    type: TextSearchType.plain,
-                  );
-      state = state.copyWith(
-        patients: response.map((json) => PatientModel.fromJson(json)).toList(),
-        isLoading: false,
-      );
-    } catch (e) {
-      state = state.copyWith(
-        errorMessage: e.toString(),
+    final result = searchIsEmpty
+        ? await ref
+            .read(patientRepositoryProvider)
+            .getLastPatients(limit: 10)
+        : await ref
+            .read(patientRepositoryProvider)
+            .searchPatients(searchController.text);
+    result.fold(
+      (failure) => state = state.copyWith(
+        errorMessage: failure.message,
         snackbarConfig: SnackbarConfigModel(
           title: 'Error',
           type: SnackbarEnum.error,
         ),
         isLoading: false,
-      );
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
+      ),
+      (patients) => state = state.copyWith(patients: patients, isLoading: false),
+    );
   }
 
   Future<void> getReviews(String patientName) async {
     state = state.copyWith(isLoading: true);
-    try {
-      final response = await Supabase.instance.client
-          .from('revisiones')
-          .select()
-          .ilike('"PACIENTE"', '%$patientName%');
-      state = state.copyWith(
-        reviews: response.map((json) => ReviewModel.fromJson(json)).toList(),
-        isLoading: false,
-      );
-    } catch (e) {
-      state = state.copyWith(
-        errorMessage: e.toString(),
+    final result = await ref
+        .read(reviewRepositoryProvider)
+        .getReviewsByPatient(patientName);
+    result.fold(
+      (failure) => state = state.copyWith(
+        errorMessage: failure.message,
         snackbarConfig: SnackbarConfigModel(
           title: 'Error',
           type: SnackbarEnum.error,
         ),
         isLoading: false,
-      );
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
+      ),
+      (reviews) => state = state.copyWith(reviews: reviews, isLoading: false),
+    );
   }
 
   Future<void> addReview() async {
@@ -138,20 +117,24 @@ class SearchPatient extends _$SearchPatient {
       idReview: generateRandomId(13).toInt(),
     );
     state = state.copyWith(isLoading: true);
-    try {
-      await Supabase.instance.client.from('revisiones').insert(review.toJson());
-      clearAddReviewForm();
-      state = state.copyWith(
-        errorMessage: 'Medición agregada correctamente',
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Aviso',
-          type: SnackbarEnum.success,
-        ),
+    final result = await ref.read(reviewRepositoryProvider).insertReview(review);
+    result.fold(
+      (failure) => state = state.copyWith(
+        errorMessage: failure.message,
         isLoading: false,
-      );
-    } catch (e) {
-      state = state.copyWith(errorMessage: e.toString(), isLoading: false);
-    }
+      ),
+      (_) {
+        clearAddReviewForm();
+        state = state.copyWith(
+          errorMessage: 'Medición agregada correctamente',
+          snackbarConfig: SnackbarConfigModel(
+            title: 'Aviso',
+            type: SnackbarEnum.success,
+          ),
+          isLoading: false,
+        );
+      },
+    );
   }
 
   void openAddViewMeasureDialog(String patientName) {
@@ -200,44 +183,36 @@ class SearchPatient extends _$SearchPatient {
   }
 
   void changeRowsPerPage(int value) {
-    state = state.copyWith(
-      rowsPerPage: value,
-    );
+    state = state.copyWith(rowsPerPage: value);
   }
 
   Future<void> deletePatient(int id) async {
     state = state.copyWith(isLoading: true);
-    try {
-      await Supabase.instance.client
-          .from('pacientes')
-          .delete()
-          .eq('ID PACIENTE', id);
-      getPatients();
-      state = state.copyWith(
-        errorMessage: 'Paciente eliminado correctamente',
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Aviso',
-          type: SnackbarEnum.success,
-        ),
-        isLoading: false,
-      );
-    } catch (e) {
-      state = state.copyWith(
-        errorMessage: e.toString(),
+    final result = await ref.read(patientRepositoryProvider).deletePatient(id);
+    result.fold(
+      (failure) => state = state.copyWith(
+        errorMessage: failure.message,
         snackbarConfig: SnackbarConfigModel(
           title: 'Error',
           type: SnackbarEnum.error,
         ),
         isLoading: false,
-      );
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
+      ),
+      (_) {
+        getPatients();
+        state = state.copyWith(
+          errorMessage: 'Paciente eliminado correctamente',
+          snackbarConfig: SnackbarConfigModel(
+            title: 'Aviso',
+            type: SnackbarEnum.success,
+          ),
+          isLoading: false,
+        );
+      },
+    );
   }
 
   void clearIsLoading() {
-    state = state.copyWith(
-      isLoading: false,
-    );
+    state = state.copyWith(isLoading: false);
   }
 }

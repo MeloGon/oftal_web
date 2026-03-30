@@ -1,31 +1,14 @@
-class DashboardState {
-  final bool isLoading;
-  final String errorMessage;
-  final int salesToday;
-  final int clientsByBranch;
-  final String branchName;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  DashboardState({
-    this.isLoading = false,
-    this.errorMessage = '',
-    this.salesToday = 0,
-    this.clientsByBranch = 0,
-    this.branchName = '',
-  });
+part 'dashboard_state.freezed.dart';
 
-  DashboardState copyWith({
-    bool? isLoading,
-    String? errorMessage,
-    int? salesToday,
-    int? clientsByBranch,
-    String? branchName,
-  }) {
-    return DashboardState(
-      isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage ?? this.errorMessage,
-      salesToday: salesToday ?? this.salesToday,
-      clientsByBranch: clientsByBranch ?? this.clientsByBranch,
-      branchName: branchName ?? this.branchName,
-    );
-  }
+@freezed
+abstract class DashboardState with _$DashboardState {
+  const factory DashboardState({
+    @Default(false) bool isLoading,
+    @Default('') String errorMessage,
+    @Default(0) int salesToday,
+    @Default(0) int clientsByBranch,
+    @Default('') String branchName,
+  }) = _DashboardState;
 }

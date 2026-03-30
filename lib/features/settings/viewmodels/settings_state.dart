@@ -1,25 +1,13 @@
-import 'package:oftal_web/shared/models/shared_models.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:oftal_web/shared/models/snackbar_config_model.dart';
 
-class SettingsState {
-  final bool isLoading;
-  final String errorMessage;
-  final SnackbarConfigModel? snackbarConfig;
+part 'settings_state.freezed.dart';
 
-  SettingsState({
-    this.isLoading = false,
-    this.errorMessage = '',
-    this.snackbarConfig,
-  });
-
-  SettingsState copyWith({
-    bool? isLoading,
-    String? errorMessage,
+@freezed
+abstract class SettingsState with _$SettingsState {
+  const factory SettingsState({
+    @Default(false) bool isLoading,
+    @Default('') String errorMessage,
     SnackbarConfigModel? snackbarConfig,
-  }) {
-    return SettingsState(
-      isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage ?? this.errorMessage,
-      snackbarConfig: snackbarConfig ?? this.snackbarConfig,
-    );
-  }
+  }) = _SettingsState;
 }

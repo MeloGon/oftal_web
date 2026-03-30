@@ -1,8 +1,7 @@
-import 'package:intl/intl.dart';
+import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/features/dashboard/viewmodels/dashboard_state.dart';
 import 'package:oftal_web/shared/services/local_storage.dart' as local_storage;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'dashboard_provider.g.dart';
 
@@ -14,54 +13,43 @@ class DashboardProvider extends _$DashboardProvider {
       getSalesToday();
       getClientsByBranch();
     });
-    return DashboardState();
+    return const DashboardState();
   }
 
   Future<void> getSalesToday() async {
     final profile = await local_storage.LocalStorage.getProfile();
     state = state.copyWith(isLoading: true);
-    try {
-      final response =
-          await Supabase.instance.client
-              .from('ventas cortas')
-              .select(
-                '*',
-              )
-              .eq('"AUTOR NOMBRE"', profile.name ?? '')
-              .eq(
-                '"fecha_actualizada"',
-                DateFormat('yyyy-MM-dd').format(DateTime.now()).toString(),
-              )
-              .count();
-
-      final totalPagadas = response.count;
-      state = state.copyWith(salesToday: totalPagadas);
-    } catch (e) {
-      state = state.copyWith(errorMessage: e.toString());
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
+    final result = await ref
+        .read(saleRepositoryProvider)
+        .countSalesToday(authorName: profile.name ?? '');
+    result.fold(
+      (failure) => state = state.copyWith(
+        errorMessage: failure.message,
+        isLoading: false,
+      ),
+      (count) => state = state.copyWith(
+        salesToday: count,
+        isLoading: false,
+      ),
+    );
   }
 
   Future<void> getClientsByBranch() async {
     final profile = await local_storage.LocalStorage.getProfile();
     state = state.copyWith(isLoading: true);
-    try {
-      final response =
-          await Supabase.instance.client
-              .from('pacientes')
-              .select('*')
-              .eq('"SUCURSAL"', profile.branchName ?? '')
-              .count();
-      final clientesByBranch = response.count;
-      state = state.copyWith(
-        clientsByBranch: clientesByBranch,
+    final result = await ref
+        .read(saleRepositoryProvider)
+        .countPatientsByBranch(branch: profile.branchName ?? '');
+    result.fold(
+      (failure) => state = state.copyWith(
+        errorMessage: failure.message,
+        isLoading: false,
+      ),
+      (count) => state = state.copyWith(
+        clientsByBranch: count,
         branchName: profile.branchName ?? '',
-      );
-    } catch (e) {
-      state = state.copyWith(errorMessage: e.toString());
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
+        isLoading: false,
+      ),
+    );
   }
 }

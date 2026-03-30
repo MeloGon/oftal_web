@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/settings/viewmodels/mounts/mounts_state.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/utils/random_id_generator.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'mounts_provider.g.dart';
 
 @riverpod
 class Mounts extends _$Mounts {
-  //controllers for mount
   final brandController = TextEditingController();
   final modelController = TextEditingController();
   final colorController = TextEditingController();
@@ -35,42 +34,38 @@ class Mounts extends _$Mounts {
       providerController.dispose();
     });
     Future.microtask(() async {
-      final rowsPerPage = state.rowsPerPage;
-      await fetchPage(offset: 0, limit: rowsPerPage);
+      await fetchPage(offset: 0, limit: state.rowsPerPage);
     });
-    return MountsState();
+    return const MountsState();
   }
 
   Future<void> fetchPage({required int offset, required int limit}) async {
     state = state.copyWith(isLoading: true);
-    try {
-      final end = offset + limit - 1;
-      final response = await Supabase.instance.client
-          .from('armazones')
-          .select()
-          .order('CREADO EL', ascending: false)
-          .range(offset, end);
-      final items = response.map((json) => MountModel.fromJson(json)).toList();
-      final bool hasMore = items.length == limit;
-      final int estimatedTotal =
-          hasMore ? offset + items.length + limit : offset + items.length;
-      state = state.copyWith(
-        mounts: items,
-        offset: offset,
-        totalCount: estimatedTotal,
-        hasMore: hasMore,
-      );
-    } catch (e) {
-      state = state.copyWith(
-        errorMessage: e.toString(),
+    final result = await ref
+        .read(mountRepositoryProvider)
+        .fetchPage(offset: offset, limit: limit);
+    result.fold(
+      (failure) => state = state.copyWith(
+        errorMessage: failure.message,
         snackbarConfig: SnackbarConfigModel(
           title: 'Error',
           type: SnackbarEnum.error,
         ),
-      );
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
+        isLoading: false,
+      ),
+      (data) {
+        final estimatedTotal = data.hasMore
+            ? offset + data.items.length + limit
+            : offset + data.items.length;
+        state = state.copyWith(
+          mounts: data.items,
+          offset: offset,
+          totalCount: estimatedTotal,
+          hasMore: data.hasMore,
+          isLoading: false,
+        );
+      },
+    );
   }
 
   void changeRowsPerPage(int newSize) {
@@ -85,31 +80,35 @@ class Mounts extends _$Mounts {
           state.selectedMount == null
               ? _createMount()
               : _createMount(isForEdit: true);
-      state.selectedMount == null
-          ? await Supabase.instance.client
-              .from('armazones')
-              .insert(
-                mount.toJson(),
-              )
-          : await Supabase.instance.client
-              .from('armazones')
-              .update(mount.toJson())
-              .eq('ID ARMAZON', mount.id);
-      state = state.copyWith(
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Aviso',
-          type: SnackbarEnum.success,
+      final result = state.selectedMount == null
+          ? await ref.read(mountRepositoryProvider).insertMount(mount)
+          : await ref.read(mountRepositoryProvider).updateMount(mount);
+      result.fold(
+        (failure) => state = state.copyWith(
+          errorMessage: failure.message,
+          isLoading: false,
+          snackbarConfig: SnackbarConfigModel(
+            title: 'Error',
+            type: SnackbarEnum.error,
+          ),
         ),
-        errorMessage:
-            state.selectedMount == null
+        (_) async {
+          state = state.copyWith(
+            snackbarConfig: SnackbarConfigModel(
+              title: 'Aviso',
+              type: SnackbarEnum.success,
+            ),
+            errorMessage: state.selectedMount == null
                 ? 'Montura creada correctamente'
                 : 'Montura actualizada correctamente',
+          );
+          if (state.selectedMount != null) {
+            state = state.copyWith(selectedMount: null);
+          }
+          clearAddMountForm();
+          await fetchPage(offset: state.offset, limit: state.rowsPerPage);
+        },
       );
-      if (state.selectedMount != null) {
-        clearMountSelected();
-      }
-      clearAddMountForm();
-      await fetchPage(offset: state.offset, limit: state.rowsPerPage);
     } catch (e) {
       state = state.copyWith(
         errorMessage: e.toString(),
@@ -122,21 +121,6 @@ class Mounts extends _$Mounts {
     } finally {
       state = state.copyWith(isLoading: false);
     }
-  }
-
-  void clearMountSelected() {
-    state = MountsState(
-      isLoading: state.isLoading,
-      errorMessage: state.errorMessage,
-      mounts: state.mounts,
-      rowsPerPage: state.rowsPerPage,
-      totalCount: state.totalCount,
-      offset: state.offset,
-      hasMore: state.hasMore,
-      snackbarConfig: state.snackbarConfig,
-      isAddMountDialogOpen: state.isAddMountDialogOpen,
-      selectedMount: null,
-    );
   }
 
   void clearAddMountForm() {
@@ -154,7 +138,7 @@ class Mounts extends _$Mounts {
   MountModel _createMount({bool isForEdit = false}) {
     final id = generateRandomId(17).toInt();
     return MountModel(
-      id: (isForEdit) ? state.selectedMount?.id ?? 0 : id,
+      id: isForEdit ? state.selectedMount?.id ?? 0 : id,
       brand: brandController.text,
       model: modelController.text,
       color: colorController.text,
@@ -175,39 +159,32 @@ class Mounts extends _$Mounts {
   }
 
   void clearErrorMessage() {
-    state = state.copyWith(
-      errorMessage: '',
-      snackbarConfig: null,
-    );
+    state = state.copyWith(errorMessage: '', snackbarConfig: null);
   }
 
   Future<void> deleteMount(int id) async {
     state = state.copyWith(isLoading: true);
-    try {
-      await Supabase.instance.client
-          .from('armazones')
-          .delete()
-          .eq('ID ARMAZON', id);
-      state = state.copyWith(
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Aviso',
-          type: SnackbarEnum.success,
-        ),
-        errorMessage: 'Montura eliminada correctamente',
-      );
-      await fetchPage(offset: state.offset, limit: state.rowsPerPage);
-    } catch (e) {
-      state = state.copyWith(
-        errorMessage: e.toString(),
+    final result = await ref.read(mountRepositoryProvider).deleteMount(id);
+    result.fold(
+      (failure) => state = state.copyWith(
+        errorMessage: failure.message,
         isLoading: false,
         snackbarConfig: SnackbarConfigModel(
           title: 'Error',
           type: SnackbarEnum.error,
         ),
-      );
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
+      ),
+      (_) async {
+        state = state.copyWith(
+          snackbarConfig: SnackbarConfigModel(
+            title: 'Aviso',
+            type: SnackbarEnum.success,
+          ),
+          errorMessage: 'Montura eliminada correctamente',
+        );
+        await fetchPage(offset: state.offset, limit: state.rowsPerPage);
+      },
+    );
   }
 
   Future<void> editMount(MountModel mount) async {

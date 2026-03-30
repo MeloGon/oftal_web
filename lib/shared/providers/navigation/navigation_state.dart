@@ -1,27 +1,13 @@
-class NavigationState {
-  final String currentPage;
-  final bool isMenuOpen;
-  final bool isAuthenticated;
-  final bool isAdmin;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  const NavigationState({
-    this.currentPage = '/',
-    this.isMenuOpen = false,
-    this.isAuthenticated = false,
-    this.isAdmin = false,
-  });
+part 'navigation_state.freezed.dart';
 
-  NavigationState copyWith({
-    String? currentPage,
-    bool? isMenuOpen,
-    bool? isAuthenticated,
-    bool? isAdmin,
-  }) {
-    return NavigationState(
-      currentPage: currentPage ?? this.currentPage,
-      isMenuOpen: isMenuOpen ?? this.isMenuOpen,
-      isAuthenticated: isAuthenticated ?? this.isAuthenticated,
-      isAdmin: isAdmin ?? this.isAdmin,
-    );
-  }
+@freezed
+abstract class NavigationState with _$NavigationState {
+  const factory NavigationState({
+    @Default('/') String currentPage,
+    @Default(false) bool isMenuOpen,
+    @Default(false) bool isAuthenticated,
+    @Default(false) bool isAdmin,
+  }) = _NavigationState;
 }

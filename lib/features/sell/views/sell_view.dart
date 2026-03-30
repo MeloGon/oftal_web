@@ -21,6 +21,8 @@ class SellView extends ConsumerStatefulWidget {
 }
 
 class _SellViewState extends ConsumerState<SellView> {
+  final _formKey = GlobalKey<ShadFormState>();
+
   @override
   Widget build(BuildContext context) {
     final sellNotifier = ref.watch(sellProvider.notifier);
@@ -474,7 +476,7 @@ class _SellViewState extends ConsumerState<SellView> {
                               ),
                             ),
                             ShadForm(
-                              key: sellState.formKey,
+                              key: _formKey,
                               autovalidateMode:
                                   ShadAutovalidateMode.onUserInteraction,
                               child: ShadInputFormField(

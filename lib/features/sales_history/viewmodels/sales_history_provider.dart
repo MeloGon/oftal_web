@@ -3,15 +3,14 @@ import 'dart:typed_data';
 
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_state.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:pdf/pdf.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:pdf/widgets.dart' as pw;
 
@@ -20,80 +19,55 @@ part 'sales_history_provider.g.dart';
 @Riverpod(keepAlive: true)
 class SalesHistory extends _$SalesHistory {
   final searchController = TextEditingController();
+
+  final mask = MaskTextInputFormatter(
+    mask: '####-##-##',
+    filter: {'#': RegExp(r'[0-9]')},
+  );
+
   @override
   SalesHistoryState build() {
     Future.microtask(getSales);
     ref.onDispose(() {
       searchController.dispose();
     });
-    return SalesHistoryState();
+    return const SalesHistoryState();
   }
 
-  final mask = MaskTextInputFormatter(
-    mask: '####-##-##',
-    filter: {
-      '#': RegExp(r'[0-9]'),
-    },
-  );
-
   Future<void> getSales() async {
+    state = state.copyWith(isLoading: true);
     if (searchController.text.isNotEmpty) {
-      state = state.copyWith(isLoading: true);
-      try {
-        final filter = _getFilter();
-        final response =
-            (state.selectedFilter == FilterToSalesHistory.date)
-                ? await Supabase.instance.client
-                    .from('ventas cortas')
-                    .select()
-                    .eq(filter, searchController.text)
-                    .order('fecha_actualizada', ascending: false)
-                : await Supabase.instance.client
-                    .from('ventas cortas')
-                    .select()
-                    .textSearch(
-                      filter,
-                      '%${searchController.text}%',
-                      type: TextSearchType.plain,
-                    );
-        state = state.copyWith(
-          sales: response.map((json) => SalesModel.fromJson(json)).toList(),
-        );
-      } catch (e) {
-        state = state.copyWith(
-          errorMessage: e.toString(),
+      final filter = _getFilter();
+      final isDate = state.selectedFilter == FilterToSalesHistory.date;
+      final result = await ref
+          .read(saleRepositoryProvider)
+          .getSalesByFilter(filter, searchController.text, isDate: isDate);
+      result.fold(
+        (failure) => state = state.copyWith(
+          errorMessage: failure.message,
           snackbarConfig: SnackbarConfigModel(
             title: 'Error',
             type: SnackbarEnum.error,
           ),
-        );
-      } finally {
-        state = state.copyWith(isLoading: false);
-      }
+          isLoading: false,
+        ),
+        (sales) => state = state.copyWith(sales: sales, isLoading: false),
+      );
       return;
     }
-
-    state = state.copyWith(isLoading: true);
-    try {
-      final response = await Supabase.instance.client
-          .from('ventas cortas')
-          .select()
-          .limit(20)
-          .order('fecha_actualizada', ascending: false);
-      state = state.copyWith(
-        sales: response.map((json) => SalesModel.fromJson(json)).toList(),
-      );
-    } catch (e) {
-      state = state.copyWith(
-        errorMessage: e.toString(),
+    final result =
+        await ref.read(saleRepositoryProvider).getRecentSales(limit: 20);
+    result.fold(
+      (failure) => state = state.copyWith(
+        errorMessage: failure.message,
         snackbarConfig: SnackbarConfigModel(
           title: 'Error',
           type: SnackbarEnum.error,
         ),
-      );
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
+        isLoading: false,
+      ),
+      (sales) => state = state.copyWith(sales: sales, isLoading: false),
+    );
   }
 
   String _getFilter() {
@@ -116,34 +90,28 @@ class SalesHistory extends _$SalesHistory {
 
   Future<void> getSalesDetails() async {
     if (state.saleSelectedForDetails == null) return;
-
     state = state.copyWith(isLoading: true);
-    try {
-      final response = await Supabase.instance.client
-          .from('ventas')
-          .select()
-          .eq('FOLIO DE VENTA', state.saleSelectedForDetails!.folioSale!);
-      state = state.copyWith(
-        saleDetails:
-            response.map((json) => SalesDetailsModel.fromJson(json)).toList(),
+    final result = await ref
+        .read(saleRepositoryProvider)
+        .getSaleDetails(state.saleSelectedForDetails!.folioSale!);
+    result.fold(
+      (failure) => state = state.copyWith(
         isLoading: false,
-      );
-    } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
+        errorMessage: failure.message,
         snackbarConfig: SnackbarConfigModel(
           title: 'Error',
           type: SnackbarEnum.error,
         ),
-      );
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
+      ),
+      (details) => state = state.copyWith(
+        saleDetails: details,
+        isLoading: false,
+      ),
+    );
   }
 
   void closeSaleDetails() {
-    state = state.copyWith(resetSaleSelectedForDetails: true);
+    state = state.copyWith(saleSelectedForDetails: null);
   }
 
   void changeRowsPerPage(int value) {
@@ -161,10 +129,7 @@ class SalesHistory extends _$SalesHistory {
       ['Nombre', 'Fecha'],
       ...sales.map((sale) => [sale.patient, sale.date]),
     ];
-
     final csv = const ListToCsvConverter().convert(rows);
-
-    // ↓ Crear y descargar el archivo en Web
     final bytes = utf8.encode(csv);
     final blob = html.Blob([bytes]);
     final url = html.Url.createObjectUrlFromBlob(blob);
@@ -175,9 +140,43 @@ class SalesHistory extends _$SalesHistory {
     html.Url.revokeObjectUrl(url);
   }
 
-  Future<void> generatePdf(
-    SalesModel sale,
-  ) async {
+  Future<void> deleteSale(SalesModel sale) async {
+    state = state.copyWith(isLoading: true);
+    if (sale.folioSale == null) return;
+    final result =
+        await ref.read(saleRepositoryProvider).deleteSale(sale.folioSale!);
+    result.fold(
+      (failure) => state = state.copyWith(
+        isLoading: false,
+        errorMessage: failure.message,
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+      ),
+      (_) async {
+        state = state.copyWith(
+          isLoading: false,
+          snackbarConfig: SnackbarConfigModel(
+            title: 'Aviso',
+            type: SnackbarEnum.success,
+          ),
+          errorMessage: 'Venta eliminada correctamente',
+        );
+        await getSales();
+      },
+    );
+  }
+
+  void clearErrorMessage() {
+    state = state.copyWith(errorMessage: '', snackbarConfig: null);
+  }
+
+  void clearSaleSelectedForDetails() {
+    state = state.copyWith(saleSelectedForDetails: null);
+  }
+
+  Future<void> generatePdf(SalesModel sale) async {
     final saleDetails = state.saleDetails;
     final pdf = pw.Document();
     pdf.addPage(
@@ -187,9 +186,8 @@ class SalesHistory extends _$SalesHistory {
             marginLeft: 6,
             marginRight: 6,
             marginTop: 10,
-            marginBottom: 10, // en puntos
+            marginBottom: 10,
           ),
-          // fuente por defecto monoespaciada ayuda a columnas alineadas
           theme: pw.ThemeData(
             defaultTextStyle: pw.TextStyle(font: pw.Font.courier()),
           ),
@@ -318,69 +316,13 @@ class SalesHistory extends _$SalesHistory {
       ),
     );
 
-    // 3️⃣ Convertir a bytes
     final Uint8List bytes = await pdf.save();
-
-    // 4️⃣ Crear un blob y descargarlo
     final blob = html.Blob([bytes], 'application/pdf');
     final url = html.Url.createObjectUrlFromBlob(blob);
     final anchor =
         html.AnchorElement(href: url)
-          ..setAttribute(
-            'download',
-            'recibo${sale.folioSale}.pdf',
-          )
+          ..setAttribute('download', 'recibo${sale.folioSale}.pdf')
           ..click();
     html.Url.revokeObjectUrl(url);
-  }
-
-  Future<void> deleteSale(SalesModel sale) async {
-    state = state.copyWith(isLoading: true);
-    if (sale.folioSale == null) return;
-    try {
-      await Supabase.instance.client
-          .from('ventas cortas')
-          .delete()
-          .eq('FOLIO REMISION', sale.folioSale!);
-
-      await Supabase.instance.client
-          .from('ventas')
-          .delete()
-          .eq('ID REMISION', sale.folioSale!);
-
-      state = state.copyWith(
-        isLoading: false,
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Aviso',
-          type: SnackbarEnum.success,
-        ),
-        errorMessage: 'Venta eliminada correctamente',
-      );
-      await getSales();
-    } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Error',
-          type: SnackbarEnum.error,
-        ),
-      );
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
-  }
-
-  void clearErrorMessage() {
-    state = state.copyWith(
-      errorMessage: '',
-      snackbarConfig: null,
-    );
-  }
-
-  void clearSaleSelectedForDetails() {
-    state = state.copyWith(
-      resetSaleSelectedForDetails: true,
-    );
   }
 }

@@ -1,51 +1,19 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 
-class SalesHistoryState {
-  final bool isLoading;
-  final List<SalesModel> sales;
-  final SalesModel? saleSelectedForDetails;
-  final List<SalesDetailsModel> saleDetails;
-  SnackbarConfigModel? snackbarConfig;
-  final String errorMessage;
-  final int rowsPerPage;
-  final FilterToSalesHistory? selectedFilter;
+part 'sales_history_state.freezed.dart';
 
-  SalesHistoryState({
-    this.isLoading = false,
-    this.sales = const [],
-    this.saleSelectedForDetails,
-    this.saleDetails = const [],
-    this.snackbarConfig,
-    this.errorMessage = '',
-    this.rowsPerPage = 20,
-    this.selectedFilter,
-  });
-
-  SalesHistoryState copyWith({
-    bool? isLoading,
-    List<SalesModel>? sales,
+@freezed
+abstract class SalesHistoryState with _$SalesHistoryState {
+  const factory SalesHistoryState({
+    @Default(false) bool isLoading,
+    @Default([]) List<SalesModel> sales,
     SalesModel? saleSelectedForDetails,
-    bool resetSaleSelectedForDetails = false,
-    List<SalesDetailsModel>? saleDetails,
+    @Default([]) List<SalesDetailsModel> saleDetails,
     SnackbarConfigModel? snackbarConfig,
-    String? errorMessage,
-    int? rowsPerPage,
+    @Default('') String errorMessage,
+    @Default(20) int rowsPerPage,
     FilterToSalesHistory? selectedFilter,
-  }) {
-    return SalesHistoryState(
-      isLoading: isLoading ?? this.isLoading,
-      sales: sales ?? this.sales,
-      saleSelectedForDetails:
-          resetSaleSelectedForDetails
-              ? null
-              : (saleSelectedForDetails ?? this.saleSelectedForDetails),
-
-      saleDetails: saleDetails ?? this.saleDetails,
-      snackbarConfig: snackbarConfig ?? this.snackbarConfig,
-      errorMessage: errorMessage ?? this.errorMessage,
-      rowsPerPage: rowsPerPage ?? this.rowsPerPage,
-      selectedFilter: selectedFilter ?? this.selectedFilter,
-    );
-  }
+  }) = _SalesHistoryState;
 }

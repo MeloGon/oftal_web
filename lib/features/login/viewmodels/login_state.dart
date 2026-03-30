@@ -1,40 +1,15 @@
-import 'package:flutter/material.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:oftal_web/shared/models/snackbar_config_model.dart';
 
-import 'package:shadcn_ui/shadcn_ui.dart';
+part 'login_state.freezed.dart';
 
-class LoginState {
-  final bool isLoading;
-  final String errorMessage;
-  final bool isFormValid;
-  final GlobalKey<ShadFormState>? formKey;
-  final bool isPasswordVisible;
-  final SnackbarConfigModel? snackbarConfig;
-
-  LoginState({
-    this.isLoading = false,
-    this.errorMessage = '',
-    this.isFormValid = false,
-    this.formKey,
-    this.isPasswordVisible = true,
-    this.snackbarConfig,
-  });
-
-  LoginState copyWith({
-    bool? isLoading,
-    String? errorMessage,
-    bool? isFormValid,
-    GlobalKey<ShadFormState>? formKey,
-    bool? isPasswordVisible,
+@freezed
+abstract class LoginState with _$LoginState {
+  const factory LoginState({
+    @Default(false) bool isLoading,
+    @Default('') String errorMessage,
+    @Default(false) bool isFormValid,
+    @Default(true) bool isPasswordVisible,
     SnackbarConfigModel? snackbarConfig,
-  }) {
-    return LoginState(
-      isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage ?? this.errorMessage,
-      isFormValid: isFormValid ?? this.isFormValid,
-      formKey: formKey ?? this.formKey,
-      isPasswordVisible: isPasswordVisible ?? this.isPasswordVisible,
-      snackbarConfig: snackbarConfig ?? this.snackbarConfig,
-    );
-  }
+  }) = _LoginState;
 }
