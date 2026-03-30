@@ -95,6 +95,7 @@ class _SellViewState extends ConsumerState<SellView> {
           //   ),
           // ),
           ShadCard(
+            width: size.width * 9,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -112,37 +113,65 @@ class _SellViewState extends ConsumerState<SellView> {
                   ),
                   onSubmitted: (_) => sellNotifier.searchPatient(),
                 ),
-                if (sellState.patients.isNotEmpty && !sellState.isLoading)
+                if (sellState.patients.isNotEmpty &&
+                    !sellState.isLoading &&
+                    sellState.selectedPatient == null)
                   TooltipVisibility(
                         visible: false,
                         child: PaginatedDataTable2(
+                          headingRowHeight: 25,
                           wrapInCard: false,
                           columnSpacing: 12,
+                          columnResizingParameters: ColumnResizingParameters(
+                            desktopMode: true,
+                            realTime: true,
+                            widgetColor: Theme.of(context).primaryColor,
+                          ),
                           horizontalMargin: 12,
-                          minWidth: 100000,
                           isHorizontalScrollBarVisible: true,
                           isVerticalScrollBarVisible: true,
-                          headingRowHeight: 42,
                           headingRowColor: WidgetStateProperty.all(
                             Colors.black12,
                           ),
-                          columns: const [
-                            DataColumn2(label: Text('Nombre'), fixedWidth: 250),
+                          columns: [
                             DataColumn2(
-                              label: Text('Fecha de registro'),
-                              fixedWidth: 100,
+                              label: Text(
+                                'Nombre',
+                                style: AppTextStyles(context).small13Bold,
+                              ),
+                              size: ColumnSize.L,
+                              minWidth: 100,
                             ),
                             DataColumn2(
-                              label: Text('Sucursal'),
-                              fixedWidth: 100,
+                              label: Text(
+                                'Fecha de registro',
+                                style: AppTextStyles(context).small13Bold,
+                              ),
+                              size: ColumnSize.M,
+                              minWidth: 100,
                             ),
                             DataColumn2(
-                              label: Text('Teléfono'),
-                              fixedWidth: 100,
+                              label: Text(
+                                'Sucursal',
+                                style: AppTextStyles(context).small13Bold,
+                              ),
+                              size: ColumnSize.M,
+                              minWidth: 90,
                             ),
                             DataColumn2(
-                              label: Text('Acciones'),
-                              fixedWidth: 50,
+                              label: Text(
+                                'Teléfono',
+                                style: AppTextStyles(context).small13Bold,
+                              ),
+                              size: ColumnSize.M,
+                              minWidth: 100,
+                            ),
+                            DataColumn2(
+                              label: Text(
+                                'Acciones',
+                                style: AppTextStyles(context).small13Bold,
+                              ),
+                              size: ColumnSize.S,
                             ),
                           ],
                           source: PatientsDataSource(
@@ -159,7 +188,6 @@ class _SellViewState extends ConsumerState<SellView> {
                         ),
                       )
                       .box(
-                        width: MediaQuery.sizeOf(context).width * .9,
                         height: 350,
                       )
                       .padding(top: 10),
@@ -463,7 +491,7 @@ class _SellViewState extends ConsumerState<SellView> {
                                             ).hasMatch(v)
                                             ? null
                                             : 'Ingresa una fecha valida',
-                              ).box(width: 170),
+                              ).box(width: 120),
                             ),
                           ],
                         ),
@@ -516,30 +544,32 @@ class _SellViewState extends ConsumerState<SellView> {
                                             .itemsToSell[index]
                                             .description ??
                                         '',
+                                    style: AppTextStyles(context).small13Bold,
                                   ),
                                   subtitle: Text(
                                     sellState.itemsToSell[index].mountModel ??
                                         sellState.itemsToSell[index].design ??
                                         '',
+                                    style: AppTextStyles(context).small13,
                                   ),
                                   trailing: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     mainAxisSize: MainAxisSize.min,
                                     spacing: 20,
                                     children: [
                                       Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Text(
                                             's/.${sellState.itemsToSell[index].mountPrice?.toStringAsFixed(2) ?? sellState.itemsToSell[index].price?.toStringAsFixed(2) ?? ''}',
                                             style:
-                                                ShadTheme.of(
+                                                AppTextStyles(
                                                   context,
-                                                ).textTheme.large,
+                                                ).small14Bold,
                                           ),
                                           Text(
-                                            sellState
-                                                    .itemsToSell[index]
-                                                    .mountQuantity ??
-                                                '',
+                                            'Cant. ${sellState.itemsToSell[index].mountQuantity ?? sellState.itemsToSell[index].quantity ?? ''}',
                                           ),
                                         ],
                                       ),
@@ -573,7 +603,10 @@ class _SellViewState extends ConsumerState<SellView> {
                           Row(
                             spacing: 10,
                             children: [
-                              Text('Motivo de descuento'),
+                              Text(
+                                'Motivo de descuento:',
+                                style: AppTextStyles(context).small13Bold,
+                              ),
                               ShadSelect<String>(
                                 placeholder: Text(AppStrings.select),
                                 selectedOptionBuilder:
@@ -597,64 +630,54 @@ class _SellViewState extends ConsumerState<SellView> {
                               ),
                             ],
                           ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Wrap(
+                          // mainAxisSize: MainAxisSize.min,
+                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          runSpacing: 10,
                           spacing: 10,
                           children: [
-                            Flexible(
-                              child: ShadInputFormField(
-                                readOnly: true,
-                                label: Text(
-                                  'Importe',
-                                  style: AppTextStyles(context).small13Bold,
-                                ), //la suma de todo
-                                controller: sellNotifier.importController,
-                              ),
-                            ),
-                            Flexible(
-                              child: ShadInputFormField(
-                                readOnly: sellState.itemsToSell.isEmpty,
-                                label: Text(
-                                  'Descuento',
-                                  style: AppTextStyles(context).small13Bold,
-                                ), //el descuento de todo
-                                controller: sellNotifier.discountController,
-                                onSubmitted:
-                                    (_) => sellNotifier.applyDiscount(),
-                              ),
-                            ),
-                            Flexible(
-                              child: ShadInputFormField(
-                                readOnly: true,
-                                label: Text(
-                                  'Total',
-                                  style: AppTextStyles(context).small13Bold,
-                                ), //la suma de todo - el descuento
-                                controller: sellNotifier.totalController,
-                              ),
-                            ),
-                            Flexible(
-                              child: ShadInputFormField(
-                                readOnly: sellState.itemsToSell.isEmpty,
-                                label: Text(
-                                  'A cuenta',
-                                  style: AppTextStyles(context).small13Bold,
-                                ), //el dinero que se paga
-                                controller: sellNotifier.accountController,
-                                onSubmitted: (_) => sellNotifier.leaveAccount(),
-                              ),
-                            ),
-                            Flexible(
-                              child: ShadInputFormField(
-                                readOnly: true,
-                                label: Text(
-                                  'Resto',
-                                  style: AppTextStyles(context).small13Bold,
-                                ), //el dinero que se debe
-                                controller: sellNotifier.restController,
-                              ),
-                            ),
+                            ShadInputFormField(
+                              readOnly: true,
+                              label: Text(
+                                'Importe',
+                                style: AppTextStyles(context).small13Bold,
+                              ), //la suma de todo
+                              controller: sellNotifier.importController,
+                            ).constrained(width: 100),
+                            ShadInputFormField(
+                              readOnly: sellState.itemsToSell.isEmpty,
+                              label: Text(
+                                'Descuento',
+                                style: AppTextStyles(context).small13Bold,
+                              ), //el descuento de todo
+                              controller: sellNotifier.discountController,
+                              onSubmitted: (_) => sellNotifier.applyDiscount(),
+                            ).constrained(width: 100),
+                            ShadInputFormField(
+                              readOnly: true,
+                              label: Text(
+                                'Total',
+                                style: AppTextStyles(context).small13Bold,
+                              ), //la suma de todo - el descuento
+                              controller: sellNotifier.totalController,
+                            ).constrained(width: 100),
+                            ShadInputFormField(
+                              readOnly: sellState.itemsToSell.isEmpty,
+                              label: Text(
+                                'A cuenta',
+                                style: AppTextStyles(context).small13Bold,
+                              ), //el dinero que se paga
+                              controller: sellNotifier.accountController,
+                              onSubmitted: (_) => sellNotifier.leaveAccount(),
+                            ).constrained(width: 100),
+                            ShadInputFormField(
+                              readOnly: true,
+                              label: Text(
+                                'Resto',
+                                style: AppTextStyles(context).small13Bold,
+                              ), //el dinero que se debe
+                              controller: sellNotifier.restController,
+                            ).constrained(width: 100),
                           ],
                         ),
                         Row(

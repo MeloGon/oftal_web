@@ -9,7 +9,6 @@ class SellState {
   final List<PatientModel> patients;
   final PatientModel? selectedPatient;
   final SellItemOptionsEnum? selectedItemOption;
-  final PatientModel? patientToSell;
   final List<ReviewModel> reviews;
   final List<MountModel> mounts;
   SnackbarConfigModel? snackbarConfig;
@@ -29,7 +28,6 @@ class SellState {
     this.errorMessage = '',
     this.patients = const [],
     this.selectedPatient,
-    this.patientToSell,
     this.selectedItemOption,
     this.reviews = const [],
     this.mounts = const [],
@@ -51,7 +49,6 @@ class SellState {
     String? errorMessage,
     List<PatientModel>? patients,
     PatientModel? selectedPatient,
-    PatientModel? patientToSell,
     SellItemOptionsEnum? selectedItemOption,
     List<ReviewModel>? reviews,
     List<MountModel>? mounts,
@@ -66,13 +63,14 @@ class SellState {
     GlobalKey<ShadFormState>? formKey,
     List<SellerModel>? sellers,
     SellerModel? selectedSeller,
+    //esta bandera quiero que al presionar un boton , regrese todo mi sellstate como estaba al inicio
+    bool resetState = false,
   }) {
     return SellState(
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage ?? this.errorMessage,
       patients: patients ?? this.patients,
       selectedPatient: selectedPatient ?? this.selectedPatient,
-      patientToSell: patientToSell ?? this.patientToSell,
       selectedItemOption: selectedItemOption ?? this.selectedItemOption,
       reviews: reviews ?? this.reviews,
       mounts: mounts ?? this.mounts,

@@ -52,6 +52,21 @@ class Sell extends _$Sell {
     return SellState();
   }
 
+  void resetState() {
+    searchController.clear();
+    searchItemToSellController.clear();
+    importController.clear();
+    discountController.clear();
+    totalController.clear();
+    accountController.clear();
+    restController.clear();
+    dateController.text = DateFormat(
+      'dd-MM-yyyy',
+      'es_ES',
+    ).format(DateTime.now());
+    state = SellState();
+  }
+
   Future<void> searchPatient() async {
     state = state.copyWith(isLoading: true);
     try {
@@ -343,7 +358,7 @@ class Sell extends _$Sell {
   }
 
   Future<void> _createShortSale() async {
-    final customerData = await LocalStorage.getProfile();
+    // final customerData = await LocalStorage.getProfile();
     try {
       await Supabase.instance.client
           .from('ventas cortas')
