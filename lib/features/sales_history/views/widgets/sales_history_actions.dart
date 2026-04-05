@@ -8,28 +8,99 @@ class SalesHistoryActions extends StatelessWidget {
     required this.onViewDetails,
     required this.onDeleteSale,
     required this.onPrintSale,
+    required this.onEditSale,
+    required this.onFinalizeSale,
   });
   final SalesModel sale;
   final Function() onViewDetails;
   final Function() onDeleteSale;
   final Function() onPrintSale;
+  final Function() onEditSale;
+  final Function() onFinalizeSale;
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      spacing: 10,
+      spacing: 8,
       children: [
-        InkWell(
-          onTap: onViewDetails,
-          child: Icon(Icons.remove_red_eye_outlined),
+        Tooltip(
+          message: 'Ver detalles',
+          child: Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              onTap: onViewDetails,
+              borderRadius: BorderRadius.circular(4),
+              child: const Padding(
+                padding: EdgeInsets.all(2),
+                child: Icon(Icons.remove_red_eye_outlined, size: 18),
+              ),
+            ),
+          ),
         ),
-        InkWell(
-          onTap: onPrintSale,
-          child: Icon(Icons.print_outlined),
+        Tooltip(
+          message: 'Imprimir',
+          child: Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              onTap: onPrintSale,
+              borderRadius: BorderRadius.circular(4),
+              child: const Padding(
+                padding: EdgeInsets.all(2),
+                child: Icon(Icons.print_outlined, size: 18),
+              ),
+            ),
+          ),
         ),
-        InkWell(
-          onTap: onDeleteSale,
-          child: Icon(Icons.delete_outlined),
+        Tooltip(
+          message: 'Editar venta',
+          child: Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              onTap: onEditSale,
+              borderRadius: BorderRadius.circular(4),
+              child: const Padding(
+                padding: EdgeInsets.all(2),
+                child: Icon(
+                  Icons.edit_outlined,
+                  size: 18,
+                  color: Color(0xff0EA5E9),
+                ),
+              ),
+            ),
+          ),
+        ),
+        if ((sale.rest ?? 0) > 0)
+          Tooltip(
+            message: 'Finalizar venta',
+            child: Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                onTap: onFinalizeSale,
+                borderRadius: BorderRadius.circular(4),
+                child: const Padding(
+                  padding: EdgeInsets.all(2),
+                  child: Icon(
+                    Icons.check_circle_outline,
+                    size: 18,
+                    color: Color(0xff16A34A),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        Tooltip(
+          message: 'Eliminar',
+          child: Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              onTap: onDeleteSale,
+              borderRadius: BorderRadius.circular(4),
+              child: const Padding(
+                padding: EdgeInsets.all(2),
+                child: Icon(Icons.delete_outlined, size: 18),
+              ),
+            ),
+          ),
         ),
       ],
     );

@@ -168,6 +168,130 @@ class SalesHistory extends _$SalesHistory {
     );
   }
 
+  void selectSaleForEdit(SalesModel sale) {
+    state = state.copyWith(saleToEdit: sale, isEditSaleDialogOpen: true);
+    _getSaleDetailsForEdit(sale);
+  }
+
+  Future<void> _getSaleDetailsForEdit(SalesModel sale) async {
+    state = state.copyWith(isLoading: true);
+    final result = await ref
+        .read(saleRepositoryProvider)
+        .getSaleDetails(sale.folioSale!);
+    result.fold(
+      (failure) => state = state.copyWith(
+        isLoading: false,
+        errorMessage: failure.message,
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+      ),
+      (details) => state = state.copyWith(
+        saleDetails: details,
+        isLoading: false,
+      ),
+    );
+  }
+
+  void closeEditSaleDialog() {
+    state = state.copyWith(isEditSaleDialogOpen: false, saleToEdit: null);
+  }
+
+  Future<void> updateSale(
+    SalesModel updatedSale,
+    List<SalesDetailsModel> updatedDetails,
+  ) async {
+    state = state.copyWith(isLoading: true);
+    for (final detail in updatedDetails) {
+      final result = await ref
+          .read(saleRepositoryProvider)
+          .updateSaleDetail(detail);
+      bool hasError = false;
+      result.fold(
+        (failure) {
+          state = state.copyWith(
+            isLoading: false,
+            errorMessage: failure.message,
+            snackbarConfig: SnackbarConfigModel(
+              title: 'Error',
+              type: SnackbarEnum.error,
+            ),
+          );
+          hasError = true;
+        },
+        (_) {},
+      );
+      if (hasError) return;
+    }
+    final result = await ref
+        .read(saleRepositoryProvider)
+        .updateShortSale(updatedSale);
+    result.fold(
+      (failure) => state = state.copyWith(
+        isLoading: false,
+        errorMessage: failure.message,
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+      ),
+      (_) {
+        getSales();
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: 'Venta actualizada correctamente',
+          snackbarConfig: SnackbarConfigModel(
+            title: 'Aviso',
+            type: SnackbarEnum.success,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> finalizeSale(SalesModel sale) async {
+    state = state.copyWith(isLoading: true);
+    final updated = SalesModel(
+      id: sale.id,
+      branch: sale.branch,
+      date: sale.date,
+      patient: sale.patient,
+      authorName: sale.authorName,
+      total: sale.total,
+      discount: sale.discount,
+      totalWithDiscount: sale.totalWithDiscount,
+      account: sale.totalWithDiscount,
+      rest: 0,
+      folioSale: sale.folioSale,
+      updatedDate: sale.updatedDate,
+    );
+    final result = await ref
+        .read(saleRepositoryProvider)
+        .updateShortSale(updated);
+    result.fold(
+      (failure) => state = state.copyWith(
+        isLoading: false,
+        errorMessage: failure.message,
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+      ),
+      (_) {
+        getSales();
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: 'Venta finalizada correctamente',
+          snackbarConfig: SnackbarConfigModel(
+            title: 'Aviso',
+            type: SnackbarEnum.success,
+          ),
+        );
+      },
+    );
+  }
+
   void clearErrorMessage() {
     state = state.copyWith(errorMessage: '', snackbarConfig: null);
   }

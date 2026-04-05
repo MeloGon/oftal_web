@@ -39,6 +39,7 @@ class SalesHistoryDataSource extends DataTableSource {
       onSelectChanged: (value) {},
       index: index,
       cells: [
+        DataCell(_StatusBadge(isPaid: (sale.rest ?? 0) == 0)),
         DataCell(
           Text(
             sale.folioSale.toString(),
@@ -126,6 +127,10 @@ class SalesHistoryDataSource extends DataTableSource {
             onDeleteSale: () async {
               await ref.read(salesHistoryProvider.notifier).deleteSale(sale);
             },
+            onEditSale: () =>
+                ref.read(salesHistoryProvider.notifier).selectSaleForEdit(sale),
+            onFinalizeSale: () =>
+                ref.read(salesHistoryProvider.notifier).finalizeSale(sale),
           ),
         ),
       ],
@@ -140,4 +145,30 @@ class SalesHistoryDataSource extends DataTableSource {
 
   @override
   int get selectedRowCount => 0;
+}
+
+// ─── Status badge ─────────────────────────────────────────────────────────────
+
+class _StatusBadge extends StatelessWidget {
+  const _StatusBadge({required this.isPaid});
+  final bool isPaid;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+      decoration: BoxDecoration(
+        color: isPaid ? const Color(0xffDCFCE7) : const Color(0xffFFF3CD),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        isPaid ? 'C' : 'P',
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+          color: isPaid ? const Color(0xff16A34A) : const Color(0xffD97706),
+        ),
+      ),
+    );
+  }
 }

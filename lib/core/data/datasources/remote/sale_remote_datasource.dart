@@ -16,6 +16,8 @@ abstract class SaleRemoteDataSource {
   Future<void> insertShortSale(SalesModel sale);
   Future<void> deleteShortSale(String folioSale);
   Future<void> deleteSaleDetails(String idRemision);
+  Future<void> updateShortSale(SalesModel sale);
+  Future<void> updateSaleDetail(SalesDetailsModel detail);
 }
 
 class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
@@ -102,5 +104,24 @@ class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
   @override
   Future<void> deleteSaleDetails(String idRemision) async {
     await client.from('ventas').delete().eq('ID REMISION', idRemision);
+  }
+
+  @override
+  Future<void> updateShortSale(SalesModel sale) async {
+    await client.from('ventas cortas').update({
+      'TOTAL': sale.total,
+      'DESCUENTO': sale.discount,
+      'TOTAL CON DESCUENTO': sale.totalWithDiscount,
+      'A CUENTA': sale.account,
+      'RESTA': sale.rest,
+    }).eq('FOLIO REMISION', sale.folioSale!);
+  }
+
+  @override
+  Future<void> updateSaleDetail(SalesDetailsModel detail) async {
+    await client.from('ventas').update({
+      'PRECIO': detail.price,
+      'MONTURA PRECIO': detail.mountPrice,
+    }).eq('ID', detail.id!);
   }
 }

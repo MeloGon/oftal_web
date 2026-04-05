@@ -15,5 +15,7 @@ abstract class SalesHistoryState with _$SalesHistoryState {
     @Default('') String errorMessage,
     @Default(20) int rowsPerPage,
     FilterToSalesHistory? selectedFilter,
+    @Default(false) bool isEditSaleDialogOpen,
+    SalesModel? saleToEdit,
   }) = _SalesHistoryState;
 }

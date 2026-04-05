@@ -103,4 +103,24 @@ class SaleRepositoryImpl implements SaleRepository {
       return Left(Failure.server(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, Unit>> updateShortSale(SalesModel sale) async {
+    try {
+      await _dataSource.updateShortSale(sale);
+      return const Right(unit);
+    } catch (e) {
+      return Left(Failure.server(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> updateSaleDetail(SalesDetailsModel detail) async {
+    try {
+      await _dataSource.updateSaleDetail(detail);
+      return const Right(unit);
+    } catch (e) {
+      return Left(Failure.server(e.toString()));
+    }
+  }
 }
