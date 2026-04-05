@@ -8,4 +8,5 @@ abstract class PatientRepository {
   Future<Either<Failure, int>> countByBranch(String branch);
   Future<Either<Failure, Unit>> insertPatient(PatientModel patient);
   Future<Either<Failure, Unit>> deletePatient(int id);
+  Future<Either<Failure, Unit>> updatePatient(PatientModel patient);
 }

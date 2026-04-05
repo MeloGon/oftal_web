@@ -59,6 +59,11 @@ class PatientsDataSource extends DataTableSource {
             onViewMeasurements: () {
               ref.read(searchPatientProvider.notifier).getReviews(patient.name);
             },
+            onEditPatient: () {
+              ref
+                  .read(searchPatientProvider.notifier)
+                  .openEditDialog(patient);
+            },
             onDeletePatient: () {
               ref
                   .read(searchPatientProvider.notifier)

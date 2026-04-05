@@ -13,6 +13,8 @@ abstract class SearchPatientState with _$SearchPatientState {
     @Default([]) List<ReviewModel> reviews,
     @Default(false) bool isAddViewMeasureDialogOpen,
     @Default(false) bool isReviewDialogOpen,
+    @Default(false) bool isEditDialogOpen,
+    PatientModel? patientToEdit,
     @Default(10) int rowsPerPage,
     @Default('') String patientName,
   }) = _SearchPatientState;

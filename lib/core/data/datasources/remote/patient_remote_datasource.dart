@@ -7,6 +7,7 @@ abstract class PatientRemoteDataSource {
   Future<int> countByBranch(String branch);
   Future<void> insertPatient(PatientModel patient);
   Future<void> deletePatient(int id);
+  Future<void> updatePatient(PatientModel patient);
 }
 
 class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
@@ -50,5 +51,17 @@ class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
   @override
   Future<void> deletePatient(int id) async {
     await client.from('pacientes').delete().eq('ID PACIENTE', id);
+  }
+
+  @override
+  Future<void> updatePatient(PatientModel patient) async {
+    await client.from('pacientes').update({
+      'NOMBRE COMPLETO': patient.name,
+      'TELEFONO CEL': patient.phone,
+      'GENERO': patient.gender,
+      'FECHA DE NACIMIENTO': patient.birthDate,
+      'SUCURSAL': patient.branch,
+      'OBSERVACIONES': patient.observations,
+    }).eq('ID PACIENTE', patient.id);
   }
 }

@@ -58,4 +58,14 @@ class PatientRepositoryImpl implements PatientRepository {
       return Left(Failure.server(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, Unit>> updatePatient(PatientModel patient) async {
+    try {
+      await _dataSource.updatePatient(patient);
+      return const Right(unit);
+    } catch (e) {
+      return Left(Failure.server(e.toString()));
+    }
+  }
 }

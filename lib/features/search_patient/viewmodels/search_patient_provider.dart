@@ -176,6 +176,42 @@ class SearchPatient extends _$SearchPatient {
     state = state.copyWith(errorMessage: '', snackbarConfig: null);
   }
 
+  void openEditDialog(PatientModel patient) {
+    state = state.copyWith(isEditDialogOpen: true, patientToEdit: patient);
+  }
+
+  void closeEditDialog() {
+    state = state.copyWith(isEditDialogOpen: false, patientToEdit: null);
+  }
+
+  Future<void> updatePatient(PatientModel patient) async {
+    state = state.copyWith(isLoading: true);
+    final result = await ref
+        .read(patientRepositoryProvider)
+        .updatePatient(patient);
+    result.fold(
+      (failure) => state = state.copyWith(
+        errorMessage: failure.message,
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+        isLoading: false,
+      ),
+      (_) {
+        getPatients();
+        state = state.copyWith(
+          errorMessage: 'Paciente actualizado correctamente',
+          snackbarConfig: SnackbarConfigModel(
+            title: 'Aviso',
+            type: SnackbarEnum.success,
+          ),
+          isLoading: false,
+        );
+      },
+    );
+  }
+
   void clearAddReviewForm() {
     reasonConsultController.clear();
     clinicHistoryController.clear();

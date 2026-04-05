@@ -8,6 +8,7 @@ import 'package:oftal_web/shared/models/snackbar_config_model.dart';
 import 'package:oftal_web/shared/widgets/custom_snackbar.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_provider.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/add_review_dialog.dart';
+import 'package:oftal_web/features/search_patient/views/widgets/edit_patient_dialog.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/review_details_dialog.dart';
 import 'package:oftal_web/shared/widgets/loading_dialog.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -70,6 +71,12 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
         if (context.mounted) {
           ref.read(searchPatientProvider.notifier).closeReviewDialog();
           ReviewDetailsDialog().show(context, next);
+        }
+      }
+      if (next.isEditDialogOpen && !(previous?.isEditDialogOpen ?? false)) {
+        if (context.mounted && next.patientToEdit != null) {
+          ref.read(searchPatientProvider.notifier).closeEditDialog();
+          EditPatientDialog().show(context, ref, next.patientToEdit!);
         }
       }
     });
