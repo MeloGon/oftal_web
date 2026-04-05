@@ -496,6 +496,24 @@ class Sell extends _$Sell {
     state = state.copyWith(rowsPerPage: value);
   }
 
+  void updateItemPrice(int index, double newPrice) {
+    final items = List<SalesDetailsModel>.from(state.itemsToSell);
+    final item = items[index];
+    final updated = item.mountPrice != null
+        ? item.copyWith(mountPrice: newPrice)
+        : item.copyWith(price: newPrice);
+    items[index] = updated;
+    state = state.copyWith(itemsToSell: items);
+    // Recalculate keeping existing discount and account
+    final total = items.fold(0.0, (prev, e) => prev + (e.mountPrice ?? e.price ?? 0.0));
+    importController.text = total.toString();
+    final discount = double.tryParse(discountController.text) ?? 0;
+    final totalWithDiscount = total - discount;
+    totalController.text = totalWithDiscount.toString();
+    final account = double.tryParse(accountController.text) ?? 0;
+    restController.text = (totalWithDiscount - account).toString();
+  }
+
   void removeItemToSell(int index) {
     state = state.copyWith(
       itemsToSell: List.from(state.itemsToSell)..removeAt(index),
