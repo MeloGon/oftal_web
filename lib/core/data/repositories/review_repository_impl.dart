@@ -28,4 +28,14 @@ class ReviewRepositoryImpl implements ReviewRepository {
       return Left(Failure.server(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, Unit>> updateReview(ReviewModel review) async {
+    try {
+      await _dataSource.updateReview(review);
+      return const Right(unit);
+    } catch (e) {
+      return Left(Failure.server(e.toString()));
+    }
+  }
 }

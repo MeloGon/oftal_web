@@ -184,6 +184,31 @@ class SearchPatient extends _$SearchPatient {
     state = state.copyWith(isEditDialogOpen: false, patientToEdit: null);
   }
 
+  Future<void> updateReview(ReviewModel review) async {
+    state = state.copyWith(isLoading: true);
+    final result = await ref
+        .read(reviewRepositoryProvider)
+        .updateReview(review);
+    result.fold(
+      (failure) => state = state.copyWith(
+        errorMessage: failure.message,
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+        isLoading: false,
+      ),
+      (_) => state = state.copyWith(
+        errorMessage: 'Medición actualizada correctamente',
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Aviso',
+          type: SnackbarEnum.success,
+        ),
+        isLoading: false,
+      ),
+    );
+  }
+
   Future<void> updatePatient(PatientModel patient) async {
     state = state.copyWith(isLoading: true);
     final result = await ref

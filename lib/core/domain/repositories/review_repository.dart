@@ -7,4 +7,5 @@ abstract class ReviewRepository {
     String patientName,
   );
   Future<Either<Failure, Unit>> insertReview(ReviewModel review);
+  Future<Either<Failure, Unit>> updateReview(ReviewModel review);
 }

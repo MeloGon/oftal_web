@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_state.dart';
+import 'package:oftal_web/features/search_patient/views/widgets/edit_review_dialog.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class ReviewDetailsDialog {
-  Future<void> show(BuildContext context, SearchPatientState state) async {
+  Future<void> show(
+    BuildContext context,
+    SearchPatientState state,
+    WidgetRef ref,
+  ) async {
     final reviews = state.reviews;
     return showShadDialog(
       context: context,
@@ -38,6 +44,7 @@ class ReviewDetailsDialog {
                     review: e.value,
                     index: e.key + 1,
                     total: reviews.length,
+                    ref: ref,
                   );
                 }).toList(),
               ),
@@ -56,11 +63,13 @@ class _ReviewCard extends StatelessWidget {
     required this.review,
     required this.index,
     required this.total,
+    required this.ref,
   });
 
   final ReviewModel review;
   final int index;
   final int total;
+  final WidgetRef ref;
 
   @override
   Widget build(BuildContext context) {
@@ -106,25 +115,53 @@ class _ReviewCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (total > 1)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xffEEECFE),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    '$index / $total',
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xff7A6BF5),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 8,
+                children: [
+                  if (total > 1)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xffEEECFE),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        '$index / $total',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xff7A6BF5),
+                        ),
+                      ),
+                    ),
+                  Tooltip(
+                    message: 'Editar medición',
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(6),
+                        onTap: () => EditReviewDialog().show(
+                          context,
+                          ref,
+                          review,
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Icon(
+                            Icons.edit_outlined,
+                            size: 16,
+                            color: Color(0xff0EA5E9),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
+              ),
             ],
           ),
 

@@ -70,7 +70,7 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
       if (next.isReviewDialogOpen && !(previous?.isReviewDialogOpen ?? false)) {
         if (context.mounted) {
           ref.read(searchPatientProvider.notifier).closeReviewDialog();
-          ReviewDetailsDialog().show(context, next);
+          ReviewDetailsDialog().show(context, next, ref);
         }
       }
       if (next.isEditDialogOpen && !(previous?.isEditDialogOpen ?? false)) {
