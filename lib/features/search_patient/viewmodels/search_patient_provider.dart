@@ -88,7 +88,24 @@ class SearchPatient extends _$SearchPatient {
         ),
         isLoading: false,
       ),
-      (reviews) => state = state.copyWith(reviews: reviews, isLoading: false),
+      (reviews) {
+        if (reviews.isEmpty) {
+          state = state.copyWith(
+            isLoading: false,
+            errorMessage: 'Este paciente no tiene medidas registradas',
+            snackbarConfig: SnackbarConfigModel(
+              title: 'Aviso',
+              type: SnackbarEnum.info,
+            ),
+          );
+        } else {
+          state = state.copyWith(
+            reviews: reviews,
+            isLoading: false,
+            isReviewDialogOpen: true,
+          );
+        }
+      },
     );
   }
 
@@ -149,6 +166,14 @@ class SearchPatient extends _$SearchPatient {
       isAddViewMeasureDialogOpen: false,
       patientName: '',
     );
+  }
+
+  void closeReviewDialog() {
+    state = state.copyWith(isReviewDialogOpen: false);
+  }
+
+  void clearErrorMessage() {
+    state = state.copyWith(errorMessage: '', snackbarConfig: null);
   }
 
   void clearAddReviewForm() {

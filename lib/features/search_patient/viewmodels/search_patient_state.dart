@@ -12,6 +12,7 @@ abstract class SearchPatientState with _$SearchPatientState {
     SnackbarConfigModel? snackbarConfig,
     @Default([]) List<ReviewModel> reviews,
     @Default(false) bool isAddViewMeasureDialogOpen,
+    @Default(false) bool isReviewDialogOpen,
     @Default(10) int rowsPerPage,
     @Default('') String patientName,
   }) = _SearchPatientState;

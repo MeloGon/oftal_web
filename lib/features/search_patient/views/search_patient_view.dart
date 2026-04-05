@@ -2,7 +2,10 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/datatables/datatables.dart';
+import 'package:oftal_web/shared/models/snackbar_config_model.dart';
+import 'package:oftal_web/shared/widgets/custom_snackbar.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_provider.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/add_review_dialog.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/review_details_dialog.dart';
@@ -32,6 +35,20 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
     final searchPatientNotifier = ref.watch(searchPatientProvider.notifier);
 
     ref.listen(searchPatientProvider, (previous, next) {
+      if (next.errorMessage.isNotEmpty &&
+          previous?.errorMessage != next.errorMessage) {
+        CustomSnackbar().show(
+          context,
+          next.snackbarConfig ??
+              SnackbarConfigModel(title: 'Error', type: SnackbarEnum.error),
+          next.errorMessage,
+        );
+        Future.microtask(
+          () => ref
+              .read(searchPatientProvider.notifier)
+              .clearErrorMessage(),
+        );
+      }
       if (next.isAddViewMeasureDialogOpen &&
           previous?.isAddViewMeasureDialogOpen !=
               next.isAddViewMeasureDialogOpen) {
@@ -47,13 +64,12 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
         LoadingDialog().show(context);
       }
       if (!next.isLoading && (previous?.isLoading ?? false) == true) {
+        if (context.mounted) context.pop();
+      }
+      if (next.isReviewDialogOpen && !(previous?.isReviewDialogOpen ?? false)) {
         if (context.mounted) {
-          context.pop();
-          if (next.reviews.isNotEmpty && previous?.reviews != next.reviews) {
-            if (context.mounted) {
-              ReviewDetailsDialog().show(context, next);
-            }
-          }
+          ref.read(searchPatientProvider.notifier).closeReviewDialog();
+          ReviewDetailsDialog().show(context, next);
         }
       }
     });
