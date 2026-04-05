@@ -1,9 +1,7 @@
-// import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/features/dashboard/viewmodels/dashboard_provider.dart';
 import 'package:oftal_web/features/dashboard/views/widgets/card_statistic_item.dart';
-// import 'package:oftal_web/shared/providers/providers.dart';
 
 class DashboardView extends ConsumerWidget {
   const DashboardView({super.key});
@@ -11,62 +9,69 @@ class DashboardView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final dashboardState = ref.watch(dashboardProviderProvider);
-    // final dashboardNotifier = ref.read(dashboardProviderProvider.notifier);
 
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      width: MediaQuery.sizeOf(context).width * .9,
+    return Padding(
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 24,
         children: [
-          Wrap(
-            spacing: 20,
-            runSpacing: 20,
+          // ─── Page header ─────────────────────────────────
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 4,
             children: [
-              CardStatisticItem(
-                title: 'Ventas del día',
-                content: '${dashboardState.salesToday}',
+              const Text(
+                'Panel principal',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xff18181B),
+                ),
               ),
-              CardStatisticItem(
-                title: 'Clientes de la sucursal',
-                content: '${dashboardState.clientsByBranch}',
-              ),
-              CardStatisticItem(
-                title: 'Sucursal de trabajo',
-                content: dashboardState.branchName,
+              Text(
+                'Resumen de actividad de la sucursal',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey.shade500,
+                ),
               ),
             ],
           ),
-          // SizedBox(
-          //   height: 300,
-          //   width: MediaQuery.sizeOf(context).width * .9,
-          //   child: LineChart(
-          //     LineChartData(
-          //       // lineBarsData: [
-          //       //   LineChartBarData(
-          //       //     spots: [
-          //       //       FlSpot(0, 0),
-          //       //       FlSpot(1, 1),
-          //       //       FlSpot(2, 2),
-          //       //     ],
-          //       //   ),
-          //       // ],
-          //       gridData: FlGridData(
-          //         show: true,
-          //         drawVerticalLine: true,
-          //         drawHorizontalLine: true,
-          //       ),
-          //       titlesData: FlTitlesData(
-          //         rightTitles: const AxisTitles(
-          //           sideTitles: SideTitles(showTitles: false),
-          //         ),
-          //         topTitles: const AxisTitles(
-          //           sideTitles: SideTitles(showTitles: false),
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
+
+          // ─── Stats cards ─────────────────────────────────
+          Row(
+            spacing: 16,
+            children: [
+              Expanded(
+                child: CardStatisticItem(
+                  title: 'Ventas del día',
+                  content: '${dashboardState.salesToday}',
+                  icon: Icons.receipt_long_outlined,
+                  iconColor: const Color(0xff7A6BF5),
+                  iconBgColor: const Color(0xffEEECFE),
+                ),
+              ),
+              Expanded(
+                child: CardStatisticItem(
+                  title: 'Clientes de la sucursal',
+                  content: '${dashboardState.clientsByBranch}',
+                  icon: Icons.people_outline_rounded,
+                  iconColor: const Color(0xff0EA5E9),
+                  iconBgColor: const Color(0xffE0F2FE),
+                ),
+              ),
+              Expanded(
+                child: CardStatisticItem(
+                  title: 'Sucursal de trabajo',
+                  content: dashboardState.branchName,
+                  icon: Icons.store_outlined,
+                  iconColor: const Color(0xff10B981),
+                  iconBgColor: const Color(0xffD1FAE5),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

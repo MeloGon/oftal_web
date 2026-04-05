@@ -6,7 +6,6 @@ import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/datatables/resins_inventory_datasource.dart';
 import 'package:oftal_web/features/settings/viewmodels/resins/resins_provider.dart';
 import 'package:oftal_web/features/settings/views/resins/widgets/add_resin_dialog.dart';
-import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -24,12 +23,11 @@ class ResinsView extends ConsumerWidget {
       if (next.isAddResinDialogOpen &&
           previous?.isAddResinDialogOpen != next.isAddResinDialogOpen) {
         if (context.mounted) {
-          AddResinDialog().show(context, ref).then((value) {
+          AddResinDialog().show(context, ref).then((_) {
             ref.read(resinsProvider.notifier).closeAddResinDialog();
           });
         }
       }
-
       if (next.errorMessage.isNotEmpty &&
           previous?.errorMessage != next.errorMessage) {
         _showSnackbar(context, next.snackbarConfig, next.errorMessage);
@@ -39,95 +37,180 @@ class ResinsView extends ConsumerWidget {
       }
     });
 
-    return ShadCard(
-      width: width * .9,
-
+    return Padding(
+      padding: const EdgeInsets.all(24),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 20,
         children: [
+          // ─── Page header ─────────────────────────────────
           Row(
-            spacing: 10,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               IconButton(
-                onPressed: () {
-                  context.pop();
-                },
-                icon: Icon(Icons.arrow_back_ios_new_outlined),
+                onPressed: () => context.pop(),
+                icon: const Icon(Icons.arrow_back_ios_rounded, size: 16),
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  side: const BorderSide(color: Color(0xffE4E4E7)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
               ),
-              Text('Resinas', style: ShadTheme.of(context).textTheme.h3),
-              Spacer(),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 2,
+                  children: [
+                    Text(
+                      'Inventario · Resinas',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xff18181B),
+                      ),
+                    ),
+                    Text(
+                      'Gestiona el catálogo de resinas y lentes',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xff71717A),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               ShadButton(
-                child: Text('Añadir resina'),
-                onPressed: () {
-                  resinsNotifier.openAddResinDialog();
-                },
+                onPressed: resinsNotifier.openAddResinDialog,
+                child: const Row(
+                  spacing: 6,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.add, size: 16),
+                    Text('Añadir resina'),
+                  ],
+                ),
               ),
             ],
           ),
-          Stack(
-            children: [
-              SizedBox(
-                width: width * .9,
-                height: 600,
-                child: PaginatedDataTable2(
-                  // headingRowHeight: 42,
-                  wrapInCard: false,
-                  columnSpacing: 12,
-                  horizontalMargin: 12,
-                  minWidth: width * .9,
-                  isHorizontalScrollBarVisible: true,
-                  isVerticalScrollBarVisible: true,
-                  columns: const [
-                    DataColumn2(label: Text('Descripción'), fixedWidth: 250),
-                    DataColumn2(label: Text('Diseño'), size: ColumnSize.M),
-                    DataColumn2(label: Text('Linea'), size: ColumnSize.M),
-                    DataColumn2(label: Text('Material'), size: ColumnSize.L),
-                    DataColumn2(label: Text('Tecnologia'), size: ColumnSize.L),
-                    DataColumn2(label: Text('Cantidad'), size: ColumnSize.S),
-                    DataColumn2(
-                      label: Text('Precio interno'),
-                      size: ColumnSize.M,
+
+          // ─── Table card ───────────────────────────────────
+          ShadCard(
+            padding: EdgeInsets.zero,
+            child: Stack(
+              children: [
+                SizedBox(
+                  width: width * 0.9,
+                  height: 600,
+                  child: PaginatedDataTable2(
+                    wrapInCard: false,
+                    columnSpacing: 12,
+                    horizontalMargin: 16,
+                    headingRowHeight: 40,
+                    minWidth: width * 0.88,
+                    isHorizontalScrollBarVisible: true,
+                    isVerticalScrollBarVisible: true,
+                    headingRowColor: WidgetStateProperty.all(
+                      const Color(0xffFAFAFA),
                     ),
-                    DataColumn2(label: Text('Precio'), size: ColumnSize.M),
-                    DataColumn2(label: Text('Acciones'), size: ColumnSize.M),
-                  ],
-                  source: ResinInventoryDataSource(
-                    pageItems: resinsState.resins,
-                    totalItems: resinsState.totalCount,
-                    currentOffset: resinsState.offset,
-                    isLoading: resinsState.isLoading,
-                    context: context,
-                    ref: ref,
+                    columns: const [
+                      DataColumn2(
+                        label: _ColHeader('Descripción'),
+                        fixedWidth: 230,
+                      ),
+                      DataColumn2(
+                        label: _ColHeader('Diseño'),
+                        size: ColumnSize.M,
+                      ),
+                      DataColumn2(
+                        label: _ColHeader('Linea'),
+                        size: ColumnSize.M,
+                      ),
+                      DataColumn2(
+                        label: _ColHeader('Material'),
+                        size: ColumnSize.L,
+                      ),
+                      DataColumn2(
+                        label: _ColHeader('Tecnología'),
+                        size: ColumnSize.L,
+                      ),
+                      DataColumn2(
+                        label: _ColHeader('Cant.'),
+                        size: ColumnSize.S,
+                      ),
+                      DataColumn2(
+                        label: _ColHeader('P. Interno'),
+                        size: ColumnSize.M,
+                      ),
+                      DataColumn2(
+                        label: _ColHeader('Precio'),
+                        size: ColumnSize.M,
+                      ),
+                      DataColumn2(
+                        label: _ColHeader('Acciones'),
+                        size: ColumnSize.M,
+                      ),
+                    ],
+                    source: ResinInventoryDataSource(
+                      pageItems: resinsState.resins,
+                      totalItems: resinsState.totalCount,
+                      currentOffset: resinsState.offset,
+                      isLoading: resinsState.isLoading,
+                      context: context,
+                      ref: ref,
+                    ),
+                    availableRowsPerPage: const [10, 20, 30, 50],
+                    rowsPerPage: resinsState.rowsPerPage,
+                    onRowsPerPageChanged: (value) =>
+                        resinsNotifier.changeRowsPerPage(value ?? 10),
+                    onPageChanged: (rowIndex) => resinsNotifier.fetchPage(
+                      offset: rowIndex,
+                      limit: resinsState.rowsPerPage,
+                    ),
                   ),
-                  availableRowsPerPage: const [10, 20, 30, 50],
-                  rowsPerPage: resinsState.rowsPerPage,
-                  onRowsPerPageChanged: (value) {
-                    resinsNotifier.changeRowsPerPage(value ?? 5);
-                  },
-                  onPageChanged: (rowIndex) {
-                    final limit = resinsState.rowsPerPage;
-                    resinsNotifier.fetchPage(offset: rowIndex, limit: limit);
-                  },
                 ),
-              ),
-              if (resinsState.isLoading)
-                Positioned.fill(
-                  child: IgnorePointer(
-                    ignoring: true,
-                    child: Container(
-                      color: Colors.black26,
-                      child: const Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
+                if (resinsState.isLoading)
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.7),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xff7A6BF5),
+                            strokeWidth: 2.5,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
-    ).paddingSymmetric(horizontal: 20, vertical: 10);
+    );
+  }
+}
+
+class _ColHeader extends StatelessWidget {
+  const _ColHeader(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+        color: Color(0xff52525B),
+      ),
+    );
   }
 }
 

@@ -2,12 +2,10 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:oftal_web/core/theme/app_text_styles.dart';
 import 'package:oftal_web/datatables/datatables.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_provider.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/add_review_dialog.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/review_details_dialog.dart';
-import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/widgets/loading_dialog.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -29,7 +27,6 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
     final height = MediaQuery.sizeOf(context).height;
     final searchPatientState = ref.watch(searchPatientProvider);
     final searchPatientNotifier = ref.watch(searchPatientProvider.notifier);
@@ -39,22 +36,16 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
           previous?.isAddViewMeasureDialogOpen !=
               next.isAddViewMeasureDialogOpen) {
         if (context.mounted) {
-          AddReviewDialog()
-              .show(
-                context,
-                ref,
-              )
-              .then((value) {
-                ref
-                    .read(searchPatientProvider.notifier)
-                    .closeAddViewMeasureDialog();
-              });
+          AddReviewDialog().show(context, ref).then((_) {
+            ref
+                .read(searchPatientProvider.notifier)
+                .closeAddViewMeasureDialog();
+          });
         }
       }
       if (next.isLoading && (previous?.isLoading ?? false) == false) {
         LoadingDialog().show(context);
       }
-
       if (!next.isLoading && (previous?.isLoading ?? false) == true) {
         if (context.mounted) {
           context.pop();
@@ -67,29 +58,59 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
       }
     });
 
-    return Column(
-      spacing: 24,
-      children: [
-        ShadCard(
-          width: width * .9,
-          height: height * .8,
-          child: Column(
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 20,
+        children: [
+          // ─── Page header ─────────────────────────────────
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 4,
             children: [
-              ShadInputFormField(
-                padding: EdgeInsets.symmetric(vertical: 6, horizontal: 6),
-                placeholder: Text('Ingrese el nombre del paciente'),
-                controller: searchPatientNotifier.searchController,
-                leading: Icon(LucideIcons.search),
-                onSubmitted: (_) {
-                  searchPatientNotifier.getPatients();
-                  if (_paginatorController.isAttached) {
-                    _paginatorController.goToFirstPage();
-                  }
-                },
-                trailing:
-                    searchPatientNotifier.searchIsEmpty
-                        ? null
-                        : ShadButton(
+              const Text(
+                'Buscar Paciente',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xff18181B),
+                ),
+              ),
+              Text(
+                'Busca y gestiona los registros de pacientes',
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+              ),
+            ],
+          ),
+
+          // ─── Search card ─────────────────────────────────
+          ShadCard(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              spacing: 4,
+              children: [
+                ShadInput(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 10,
+                  ),
+                  placeholder:
+                      const Text('Buscar por nombre del paciente...'),
+                  controller: searchPatientNotifier.searchController,
+                  leading: const Icon(LucideIcons.search, size: 16),
+                  onSubmitted: (_) {
+                    searchPatientNotifier.getPatients();
+                    if (_paginatorController.isAttached) {
+                      _paginatorController.goToFirstPage();
+                    }
+                  },
+                  trailing: searchPatientNotifier.searchIsEmpty
+                      ? null
+                      : ShadButton.ghost(
+                          height: 28,
+                          width: 28,
+                          padding: EdgeInsets.zero,
                           onPressed: () {
                             searchPatientNotifier.searchController.clear();
                             searchPatientNotifier.getPatients();
@@ -97,62 +118,57 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
                               _paginatorController.goToFirstPage();
                             }
                           },
-                          height: 30,
-                          child: Icon(Icons.close),
+                          child: const Icon(LucideIcons.x, size: 14),
                         ),
-              ),
-              if (searchPatientState.patients.isNotEmpty)
-                TooltipVisibility(
+                ),
+              ],
+            ),
+          ),
+
+          // ─── Results table ───────────────────────────────
+          if (searchPatientState.patients.isNotEmpty)
+            ShadCard(
+              padding: EdgeInsets.zero,
+              child: SizedBox(
+                height: height * 0.65,
+                child: TooltipVisibility(
                   visible: false,
                   child: PaginatedDataTable2(
                     controller: _paginatorController,
                     wrapInCard: false,
                     columnSpacing: 12,
-                    horizontalMargin: 12,
+                    horizontalMargin: 16,
                     isHorizontalScrollBarVisible: true,
                     isVerticalScrollBarVisible: true,
-                    headingRowHeight: 42,
-                    headingRowColor: WidgetStateProperty.all(Colors.black12),
+                    headingRowHeight: 44,
+                    headingRowColor: WidgetStateProperty.all(
+                      const Color(0xffFAFAFA),
+                    ),
                     columns: [
                       DataColumn2(
-                        label: Text(
-                          'Nombre',
-                          style: AppTextStyles(context).small13Bold,
-                        ),
+                        label: _ColHeader('Nombre'),
                         size: ColumnSize.L,
                         minWidth: 200,
                       ),
                       DataColumn2(
-                        label: Text(
-                          'Fecha de registro',
-                          style: AppTextStyles(context).small13Bold,
-                        ),
-                        size: ColumnSize.S,
-                        minWidth: 100,
-                      ),
-                      DataColumn2(
-                        label: Text(
-                          'Sucursal',
-                          style: AppTextStyles(context).small13Bold,
-                        ),
-                        size: ColumnSize.S,
-                        minWidth: 60,
-                      ),
-                      DataColumn2(
-                        label: Text(
-                          'Teléfono',
-                          style: AppTextStyles(context).small13Bold,
-                        ),
-                        size: ColumnSize.S,
-                        minWidth: 100,
-                      ),
-                      DataColumn2(
-                        label: Text(
-                          'Acciones',
-                          style: AppTextStyles(context).small14Bold,
-                        ),
+                        label: _ColHeader('Fecha de registro'),
                         size: ColumnSize.S,
                         minWidth: 120,
+                      ),
+                      DataColumn2(
+                        label: _ColHeader('Sucursal'),
+                        size: ColumnSize.S,
+                        minWidth: 80,
+                      ),
+                      DataColumn2(
+                        label: _ColHeader('Teléfono'),
+                        size: ColumnSize.S,
+                        minWidth: 110,
+                      ),
+                      DataColumn2(
+                        label: _ColHeader('Acciones'),
+                        size: ColumnSize.S,
+                        minWidth: 130,
                       ),
                     ],
                     source: PatientsDataSource(
@@ -160,18 +176,56 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
                       context: context,
                       ref: ref,
                     ),
-                    availableRowsPerPage: [10],
+                    availableRowsPerPage: const [10],
                     rowsPerPage: searchPatientState.rowsPerPage,
-                    onRowsPerPageChanged:
-                        (value) => searchPatientNotifier.changeRowsPerPage(
-                          value ?? 10,
-                        ),
-                  ).paddingOnly(top: 20),
-                ).expanded(),
-            ],
-          ),
-        ),
-      ],
-    ).paddingSymmetric(horizontal: 16, vertical: 16);
+                    onRowsPerPageChanged: (value) =>
+                        searchPatientNotifier.changeRowsPerPage(value ?? 10),
+                  ),
+                ),
+              ),
+            )
+          else
+            ShadCard(
+              padding: const EdgeInsets.symmetric(vertical: 40),
+              child: Center(
+                child: Column(
+                  spacing: 8,
+                  children: [
+                    Icon(
+                      LucideIcons.users,
+                      size: 36,
+                      color: Colors.grey.shade300,
+                    ),
+                    Text(
+                      'Busca un paciente por su nombre',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ColHeader extends StatelessWidget {
+  const _ColHeader(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+        color: Color(0xff52525B),
+      ),
+    );
   }
 }

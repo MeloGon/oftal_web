@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:oftal_web/core/constants/constants.dart';
 import 'package:oftal_web/core/enums/enums.dart';
-import 'package:oftal_web/core/theme/app_text_styles.dart';
 import 'package:oftal_web/datatables/datatables.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_provider.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_state.dart';
@@ -41,672 +40,783 @@ class _SellViewState extends ConsumerState<SellView> {
         LoadingDialog().show(context);
       }
       if (!next.isLoading && (previous?.isLoading ?? false) == true) {
-        if (context.mounted) {
-          context.pop();
-        }
+        if (context.mounted) context.pop();
       }
     });
 
-    return SizedBox(
+    return Padding(
+      padding: const EdgeInsets.all(24),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 20,
         children: [
-          // ShadCard(
-          //   child: ShadAccordion<int>(
-          //     children: [
-          //       ShadAccordionItem(
-          //         value: 1,
-          //         title: Column(
-          //           crossAxisAlignment: CrossAxisAlignment.start,
-          //           children: [
-          //             Text(
-          //               'Vender',
-          //               style: ShadTheme.of(context).textTheme.h2,
-          //             ),
-          //             Text('Presiona para desplegar o contraer el contenido'),
-          //           ],
-          //         ),
-          //         child: Column(
-          //           crossAxisAlignment: CrossAxisAlignment.start,
-          //           spacing: 6,
-          //           children: [
-          //             Text(
-          //               'Para realizar una venta, debes de seguir los siguientes pasos:',
-          //             ),
-          //             Text(
-          //               '\u2022 Buscar un paciente por su nombre completo o un aproximado (Ingresa en el campo de busqueda el nombre del paciente)',
-          //             ),
-          //             Text(
-          //               '\u2022 Seleccionar el paciente a vender (Selecciona el paciente de la lista de pacientes en la columna de acciones)',
-          //             ),
-          //             Text(
-          //               '\u2022 Buscar los productos a vender (Ingresa en el campo de busqueda el nombre del producto)',
-          //             ),
-          //             Text(
-          //               '\u2022 Seleccionar los productos a vender (Selecciona el producto de la lista de productos en la columna de acciones)',
-          //             ),
-          //             Text('\u2022 Crear la nota de venta'),
-          //             Text(
-          //               '\u2022 Ingresar el importe, descuento y a cuenta en caso hubiera',
-          //             ),
-          //             Text('\u2022 Realiza la venta'),
-          //           ],
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
-          ShadCard(
-            width: size.width * 9,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ShadInput(
-                  placeholder: Text('Ingrese el nombre del paciente a vender'),
-                  padding: EdgeInsets.symmetric(vertical: 6, horizontal: 6),
-                  leading: Icon(LucideIcons.search),
-                  controller: sellNotifier.searchController,
-                  trailing: ShadButton(
-                    height: 29,
-                    onPressed: () => sellNotifier.searchPatient(),
-                    child: Text(
-                      AppStrings.search,
-                    ),
-                  ),
-                  onSubmitted: (_) => sellNotifier.searchPatient(),
-                ),
-                if (sellState.patients.isNotEmpty &&
-                    !sellState.isLoading &&
-                    sellState.selectedPatient == null)
-                  TooltipVisibility(
-                        visible: false,
-                        child: PaginatedDataTable2(
-                          headingRowHeight: 25,
-                          wrapInCard: false,
-                          columnSpacing: 12,
-                          columnResizingParameters: ColumnResizingParameters(
-                            desktopMode: true,
-                            realTime: true,
-                            widgetColor: Theme.of(context).primaryColor,
-                          ),
-                          horizontalMargin: 12,
-                          isHorizontalScrollBarVisible: true,
-                          isVerticalScrollBarVisible: true,
-                          headingRowColor: WidgetStateProperty.all(
-                            Colors.black12,
-                          ),
-                          columns: [
-                            DataColumn2(
-                              label: Text(
-                                'Nombre',
-                                style: AppTextStyles(context).small13Bold,
-                              ),
-                              size: ColumnSize.L,
-                              minWidth: 100,
-                            ),
-                            DataColumn2(
-                              label: Text(
-                                'Fecha de registro',
-                                style: AppTextStyles(context).small13Bold,
-                              ),
-                              size: ColumnSize.M,
-                              minWidth: 100,
-                            ),
-                            DataColumn2(
-                              label: Text(
-                                'Sucursal',
-                                style: AppTextStyles(context).small13Bold,
-                              ),
-                              size: ColumnSize.M,
-                              minWidth: 90,
-                            ),
-                            DataColumn2(
-                              label: Text(
-                                'Teléfono',
-                                style: AppTextStyles(context).small13Bold,
-                              ),
-                              size: ColumnSize.M,
-                              minWidth: 100,
-                            ),
-                            DataColumn2(
-                              label: Text(
-                                'Acciones',
-                                style: AppTextStyles(context).small13Bold,
-                              ),
-                              size: ColumnSize.S,
-                            ),
-                          ],
-                          source: PatientsDataSource(
-                            patients: sellState.patients,
-                            context: context,
-                            isForSell: true,
-                            ref: ref,
-                          ),
-                          availableRowsPerPage: [5, 10, 20, 50],
-                          rowsPerPage: sellState.rowsPerPage,
-                          onRowsPerPageChanged:
-                              (value) =>
-                                  sellNotifier.changeRowsPerPage(value ?? 5),
-                        ),
-                      )
-                      .box(
-                        height: 350,
-                      )
-                      .padding(top: 10),
+          // ─── Page header ─────────────────────────────────
+          const _PageHeader(),
 
-                if (sellState.patients.isEmpty && !sellState.isLoading)
-                  ShadCard(
-                    height: 70,
-                    child: const Center(
-                      child: Text(
-                        AppStrings.noPatientsFound,
-                      ),
+          // ─── Step 1: Patient search ───────────────────────
+          _StepCard(
+            step: 1,
+            title: 'Seleccionar paciente',
+            subtitle: sellState.selectedPatient != null
+                ? 'Paciente: ${sellState.selectedPatient!.name}'
+                : 'Busca al paciente al que deseas vender',
+            isCompleted: sellState.selectedPatient != null,
+            action: sellState.selectedPatient != null
+                ? ShadButton.outline(
+                    height: 32,
+                    onPressed: sellNotifier.cancelSale,
+                    child: const Row(
+                      spacing: 6,
+                      children: [
+                        Icon(LucideIcons.x, size: 14),
+                        Text('Cambiar paciente'),
+                      ],
                     ),
-                  ).paddingOnly(top: 20),
-              ],
-            ),
-          ),
-          if (sellState.selectedPatient != null &&
-              sellState.selectedItemOption != null &&
-              sellState.selectedItemOption == SellItemOptionsEnum.sell) ...[
-            ShadCard(
-              width: MediaQuery.sizeOf(context).width * .9,
-              child: Column(
-                spacing: 20,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Seleccione los productos a vender',
-                    style: AppTextStyles(context).largeBold,
+                  )
+                : null,
+            child: sellState.selectedPatient != null
+                ? const SizedBox.shrink()
+                : Column(
+                    spacing: 10,
+                    children: [
+                      ShadInput(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 10,
+                        ),
+                        placeholder: const Text(
+                          'Ingrese el nombre del paciente a vender',
+                        ),
+                        leading: const Icon(LucideIcons.search, size: 16),
+                        controller: sellNotifier.searchController,
+                        trailing: ShadButton(
+                          height: 30,
+                          onPressed: sellNotifier.searchPatient,
+                          child: Text(AppStrings.search),
+                        ),
+                        onSubmitted: (_) => sellNotifier.searchPatient(),
+                      ),
+                      if (sellState.patients.isNotEmpty && !sellState.isLoading)
+                        SizedBox(
+                          height: 320,
+                          child: TooltipVisibility(
+                            visible: false,
+                            child: PaginatedDataTable2(
+                              headingRowHeight: 36,
+                              wrapInCard: false,
+                              columnSpacing: 12,
+                              horizontalMargin: 12,
+                              isHorizontalScrollBarVisible: true,
+                              isVerticalScrollBarVisible: true,
+                              headingRowColor: WidgetStateProperty.all(
+                                const Color(0xffFAFAFA),
+                              ),
+                              columns: const [
+                                DataColumn2(
+                                  label: Text('Nombre'),
+                                  size: ColumnSize.L,
+                                  minWidth: 100,
+                                ),
+                                DataColumn2(
+                                  label: Text('Fecha de registro'),
+                                  size: ColumnSize.M,
+                                  minWidth: 100,
+                                ),
+                                DataColumn2(
+                                  label: Text('Sucursal'),
+                                  size: ColumnSize.M,
+                                  minWidth: 90,
+                                ),
+                                DataColumn2(
+                                  label: Text('Teléfono'),
+                                  size: ColumnSize.M,
+                                  minWidth: 100,
+                                ),
+                                DataColumn2(
+                                  label: Text('Acciones'),
+                                  size: ColumnSize.S,
+                                ),
+                              ],
+                              source: PatientsDataSource(
+                                patients: sellState.patients,
+                                context: context,
+                                isForSell: true,
+                                ref: ref,
+                              ),
+                              availableRowsPerPage: const [5, 10, 20, 50],
+                              rowsPerPage: sellState.rowsPerPage,
+                              onRowsPerPageChanged: (value) =>
+                                  sellNotifier.changeRowsPerPage(value ?? 5),
+                            ),
+                          ),
+                        ),
+                      if (sellState.patients.isEmpty && !sellState.isLoading)
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          child: Center(
+                            child: Text(
+                              AppStrings.noPatientsFound,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey.shade500,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
+          ),
+
+          // ─── Step 2: Product selection ────────────────────
+          if (sellState.selectedPatient != null &&
+              sellState.selectedItemOption == SellItemOptionsEnum.sell) ...[
+            _StepCard(
+              step: 2,
+              title: 'Seleccionar productos',
+              subtitle: 'Elige la categoría y busca el producto',
+              isCompleted: sellState.itemsToSell.isNotEmpty,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 16,
+                children: [
                   Wrap(
                     spacing: 16,
-                    runSpacing: 8,
-                    direction: Axis.horizontal,
+                    runSpacing: 10,
+                    crossAxisAlignment: WrapCrossAlignment.end,
                     children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 8,
+                        spacing: 6,
                         children: [
-                          Text(
+                          const Text(
                             'Clasificación',
-                            style: AppTextStyles(context).small13Bold,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xff52525B),
+                            ),
                           ),
                           ShadSelect<String>(
                             placeholder: Text(AppStrings.select),
                             selectedOptionBuilder:
                                 (context, value) => Text(value),
-                            options:
-                                OptionsToSellEnum.values
-                                    .map(
-                                      (e) => ShadOption(
-                                        value: e.name,
-                                        child: Text(e.name),
-                                      ),
-                                    )
-                                    .toList(),
+                            options: OptionsToSellEnum.values
+                                .map(
+                                  (e) => ShadOption(
+                                    value: e.name,
+                                    child: Text(e.name),
+                                  ),
+                                )
+                                .toList(),
                             onChanged: (value) {
-                              sellNotifier.selectOptionToSell(
-                                OptionsToSellEnum.values.firstWhere(
-                                  (e) => e.name == value,
-                                ),
-                              );
+                              if (value != null) {
+                                sellNotifier.selectOptionToSell(
+                                  OptionsToSellEnum.values.firstWhere(
+                                    (e) => e.name == value,
+                                  ),
+                                );
+                              }
                             },
                           ),
                         ],
                       ),
                       ConstrainedBox(
                         constraints: BoxConstraints(
-                          maxWidth: MediaQuery.sizeOf(context).width * .9,
+                          maxWidth: size.width * 0.5,
                         ),
-                        child: Column(
-                          spacing: 10,
-                          children: [
-                            ShadInputFormField(
-                              placeholder: Text('Ingrese'),
-                              label: Text(
-                                'Nombre del producto',
-                                style: AppTextStyles(context).small13Bold,
-                              ),
-                              controller:
-                                  sellNotifier.searchItemToSellController,
-                              onSubmitted: (_) {
-                                if (sellState.selectedOptionToSell ==
-                                    OptionsToSellEnum.mount) {
-                                  sellNotifier.getMounts();
-                                }
-                                if (sellState.selectedOptionToSell ==
-                                    OptionsToSellEnum.resin) {
-                                  sellNotifier.getResin();
-                                }
-                                if (sellState.selectedOptionToSell ==
-                                    OptionsToSellEnum.others) {}
-                              },
-                            ),
-                            if (sellState.mounts.isNotEmpty &&
-                                !sellState.isLoading)
-                              TooltipVisibility(
-                                visible: false,
-                                child: PaginatedDataTable2(
-                                  wrapInCard: false,
-                                  columnSpacing: 12,
-                                  horizontalMargin: 12,
-                                  minWidth: 100000,
-                                  isHorizontalScrollBarVisible: true,
-                                  isVerticalScrollBarVisible: true,
-                                  headingRowHeight: 42,
-                                  headingRowColor: WidgetStateProperty.all(
-                                    Colors.black12,
-                                  ),
-                                  columns: const [
-                                    DataColumn2(
-                                      label: Text('Marca'),
-                                      fixedWidth: 120,
-                                      isResizable: true,
-                                    ),
-                                    DataColumn2(
-                                      label: Text('Modelo'),
-                                      fixedWidth: 100,
-                                      isResizable: true,
-                                    ),
-                                    DataColumn2(
-                                      label: Text('Color'),
-                                      fixedWidth: 120,
-                                      isResizable: true,
-                                    ),
-                                    DataColumn2(
-                                      label: Text('Descripción'),
-                                      fixedWidth: 150,
-                                      isResizable: true,
-                                    ),
-                                    DataColumn2(
-                                      label: Text('Optica'),
-                                      fixedWidth: 100,
-                                      isResizable: true,
-                                    ),
-                                    DataColumn2(
-                                      label: Text('Precio'),
-                                      fixedWidth: 100,
-                                      isResizable: true,
-                                    ),
-                                    DataColumn2(
-                                      label: Text('Acciones'),
-                                      fixedWidth: 100,
-                                      isResizable: true,
-                                    ),
-                                  ],
-                                  source: MountsDataSource(
-                                    mounts: sellState.mounts,
-                                    context: context,
-                                    ref: ref,
-                                  ),
-                                  availableRowsPerPage: [5, 10, 20, 50],
-                                  rowsPerPage: sellState.rowsPerPage,
-                                  onRowsPerPageChanged:
-                                      (value) => sellNotifier.changeRowsPerPage(
-                                        value ?? 5,
-                                      ),
-                                ),
-                              ).box(
-                                width: MediaQuery.sizeOf(context).width * .9,
-                                height: 350,
-                              ),
-
-                            if (sellState.resins.isNotEmpty &&
-                                !sellState.isLoading)
-                              TooltipVisibility(
-                                visible: false,
-                                child: PaginatedDataTable2(
-                                  wrapInCard: false,
-                                  columnSpacing: 12,
-                                  horizontalMargin: 12,
-                                  minWidth: 100000,
-                                  isHorizontalScrollBarVisible: true,
-                                  isVerticalScrollBarVisible: true,
-                                  headingRowHeight: 42,
-                                  headingRowColor: WidgetStateProperty.all(
-                                    Colors.black12,
-                                  ),
-                                  columns: const [
-                                    DataColumn2(
-                                      label: Text('Descripción'),
-                                      fixedWidth: 120,
-                                      isResizable: true,
-                                    ),
-                                    DataColumn2(
-                                      label: Text('Diseño'),
-                                      fixedWidth: 200,
-                                      isResizable: true,
-                                    ),
-                                    DataColumn2(
-                                      label: Text('Linea'),
-                                      fixedWidth: 120,
-                                      isResizable: true,
-                                    ),
-                                    DataColumn2(
-                                      label: Text('Material'),
-                                      fixedWidth: 120,
-                                      isResizable: true,
-                                    ),
-                                    DataColumn2(
-                                      label: Text('Tecnología'),
-                                      fixedWidth: 150,
-                                      isResizable: true,
-                                    ),
-                                    DataColumn2(
-                                      label: Text('Cantidad'),
-                                      fixedWidth: 20,
-                                      isResizable: true,
-                                    ),
-                                    DataColumn2(
-                                      label: Text('Precio Interno'),
-                                      fixedWidth: 100,
-                                      isResizable: true,
-                                    ),
-                                    DataColumn2(
-                                      label: Text('Precio Publico'),
-                                      fixedWidth: 100,
-                                      isResizable: true,
-                                    ),
-                                    DataColumn2(
-                                      label: Text('Acciones'),
-                                      fixedWidth: 100,
-                                      isResizable: true,
-                                    ),
-                                  ],
-                                  source: ResinDataSource(
-                                    resins: sellState.resins,
-                                    context: context,
-                                    ref: ref,
-                                  ),
-                                  availableRowsPerPage: [5, 10, 20, 50],
-                                  rowsPerPage: sellState.rowsPerPage,
-                                  onRowsPerPageChanged:
-                                      (value) => sellNotifier.changeRowsPerPage(
-                                        value ?? 5,
-                                      ),
-                                ),
-                              ).box(
-                                width: MediaQuery.sizeOf(context).width * .9,
-                                height: 350,
-                              ),
-                          ],
+                        child: ShadInputFormField(
+                          placeholder: const Text(
+                            'Nombre del producto a buscar',
+                          ),
+                          label: const Text('Producto'),
+                          controller: sellNotifier.searchItemToSellController,
+                          onSubmitted: (_) {
+                            if (sellState.selectedOptionToSell ==
+                                OptionsToSellEnum.mount) {
+                              sellNotifier.getMounts();
+                            } else if (sellState.selectedOptionToSell ==
+                                OptionsToSellEnum.resin) {
+                              sellNotifier.getResin();
+                            }
+                          },
                         ),
                       ),
                     ],
                   ),
+                  if (sellState.mounts.isNotEmpty && !sellState.isLoading)
+                    SizedBox(
+                      width: double.infinity,
+                      height: 320,
+                      child: TooltipVisibility(
+                        visible: false,
+                        child: PaginatedDataTable2(
+                          wrapInCard: false,
+                          columnSpacing: 12,
+                          horizontalMargin: 12,
+                          minWidth: 800,
+                          isHorizontalScrollBarVisible: true,
+                          isVerticalScrollBarVisible: true,
+                          headingRowHeight: 38,
+                          headingRowColor: WidgetStateProperty.all(
+                            const Color(0xffFAFAFA),
+                          ),
+                          columns: const [
+                            DataColumn2(
+                              label: Text('Marca'),
+                              fixedWidth: 120,
+                              isResizable: true,
+                            ),
+                            DataColumn2(
+                              label: Text('Modelo'),
+                              fixedWidth: 100,
+                              isResizable: true,
+                            ),
+                            DataColumn2(
+                              label: Text('Color'),
+                              fixedWidth: 120,
+                              isResizable: true,
+                            ),
+                            DataColumn2(
+                              label: Text('Descripción'),
+                              fixedWidth: 150,
+                              isResizable: true,
+                            ),
+                            DataColumn2(
+                              label: Text('Optica'),
+                              fixedWidth: 100,
+                              isResizable: true,
+                            ),
+                            DataColumn2(
+                              label: Text('Precio'),
+                              fixedWidth: 90,
+                              isResizable: true,
+                            ),
+                            DataColumn2(
+                              label: Text('Acciones'),
+                              fixedWidth: 90,
+                              isResizable: true,
+                            ),
+                          ],
+                          source: MountsDataSource(
+                            mounts: sellState.mounts,
+                            context: context,
+                            ref: ref,
+                          ),
+                          availableRowsPerPage: const [5, 10, 20, 50],
+                          rowsPerPage: sellState.rowsPerPage,
+                          onRowsPerPageChanged: (value) =>
+                              sellNotifier.changeRowsPerPage(value ?? 5),
+                        ),
+                      ),
+                    ),
+                  if (sellState.resins.isNotEmpty && !sellState.isLoading)
+                    SizedBox(
+                      width: double.infinity,
+                      height: 320,
+                      child: TooltipVisibility(
+                        visible: false,
+                        child: PaginatedDataTable2(
+                          wrapInCard: false,
+                          columnSpacing: 12,
+                          horizontalMargin: 12,
+                          minWidth: 900,
+                          isHorizontalScrollBarVisible: true,
+                          isVerticalScrollBarVisible: true,
+                          headingRowHeight: 38,
+                          headingRowColor: WidgetStateProperty.all(
+                            const Color(0xffFAFAFA),
+                          ),
+                          columns: const [
+                            DataColumn2(
+                              label: Text('Descripción'),
+                              fixedWidth: 120,
+                              isResizable: true,
+                            ),
+                            DataColumn2(
+                              label: Text('Diseño'),
+                              fixedWidth: 180,
+                              isResizable: true,
+                            ),
+                            DataColumn2(
+                              label: Text('Linea'),
+                              fixedWidth: 100,
+                              isResizable: true,
+                            ),
+                            DataColumn2(
+                              label: Text('Material'),
+                              fixedWidth: 100,
+                              isResizable: true,
+                            ),
+                            DataColumn2(
+                              label: Text('Tecnología'),
+                              fixedWidth: 130,
+                              isResizable: true,
+                            ),
+                            DataColumn2(
+                              label: Text('Cant.'),
+                              fixedWidth: 60,
+                              isResizable: true,
+                            ),
+                            DataColumn2(
+                              label: Text('P. Interno'),
+                              fixedWidth: 90,
+                              isResizable: true,
+                            ),
+                            DataColumn2(
+                              label: Text('P. Público'),
+                              fixedWidth: 90,
+                              isResizable: true,
+                            ),
+                            DataColumn2(
+                              label: Text('Acciones'),
+                              fixedWidth: 80,
+                              isResizable: true,
+                            ),
+                          ],
+                          source: ResinDataSource(
+                            resins: sellState.resins,
+                            context: context,
+                            ref: ref,
+                          ),
+                          availableRowsPerPage: const [5, 10, 20, 50],
+                          rowsPerPage: sellState.rowsPerPage,
+                          onRowsPerPageChanged: (value) =>
+                              sellNotifier.changeRowsPerPage(value ?? 5),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
 
-            ShadCard(
-              width: MediaQuery.sizeOf(context).width * .9,
+            // ─── Step 3: Invoice ──────────────────────────
+            _StepCard(
+              step: 3,
+              title: 'Nota de venta',
+              subtitle: 'Revisa los productos y confirma la venta',
+              isCompleted: false,
               child: Column(
-                spacing: 20,
                 crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 16,
                 children: [
-                  Text(
-                    'Nota de venta',
-                    style: AppTextStyles(context).largeBold,
-                  ),
-                  ShadCard(
-                    width: MediaQuery.sizeOf(context).width * .9,
-                    child: Column(
-                      spacing: 10,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // Patient + date row
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 4,
                           children: [
-                            RichText(
-                              text: TextSpan(
+                            const Text(
+                              'Paciente',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Color(0xff71717A),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              sellState.selectedPatient?.name ?? '',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xff18181B),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      ShadForm(
+                        key: _formKey,
+                        autovalidateMode:
+                            ShadAutovalidateMode.onUserInteraction,
+                        child: ShadInputFormField(
+                          label: const Text('Fecha'),
+                          inputFormatters: [sellNotifier.mask],
+                          controller: sellNotifier.dateController,
+                          validator: (v) =>
+                              RegExp(
+                                r'^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(19|20)\d{2}$',
+                              ).hasMatch(v)
+                                  ? null
+                                  : 'Ingresa una fecha válida',
+                        ).constrained(width: 130),
+                      ),
+                    ],
+                  ),
+
+                  // Seller row
+                  Row(
+                    spacing: 10,
+                    children: [
+                      const Text(
+                        'Vendedor:',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xff3F3F46),
+                        ),
+                      ),
+                      if (sellState.sellers.isNotEmpty)
+                        ShadSelect<SellerModel>(
+                          placeholder: Text(AppStrings.select),
+                          initialValue: sellState.selectedSeller,
+                          selectedOptionBuilder:
+                              (context, value) => Text(value.name),
+                          options: sellState.sellers
+                              .map(
+                                (e) =>
+                                    ShadOption(value: e, child: Text(e.name)),
+                              )
+                              .toList(),
+                          onChanged: sellNotifier.updateSelectedSeller,
+                        ).constrained(width: 200),
+                    ],
+                  ),
+
+                  const Divider(height: 1),
+
+                  // Items list
+                  const Text(
+                    'Productos en la nota',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xff3F3F46),
+                    ),
+                  ),
+                  if (sellState.itemsToSell.isNotEmpty)
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      separatorBuilder: (_, __) =>
+                          const SizedBox(height: 8),
+                      itemCount: sellState.itemsToSell.length,
+                      itemBuilder: (context, index) {
+                        final item = sellState.itemsToSell[index];
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xffFAFAFA),
+                            border: Border.all(
+                              color: const Color(0xffE4E4E7),
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  spacing: 2,
+                                  children: [
+                                    Text(
+                                      item.mountBrand ??
+                                          item.description ??
+                                          '',
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xff18181B),
+                                      ),
+                                    ),
+                                    Text(
+                                      item.mountModel ??
+                                          item.design ??
+                                          '',
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Color(0xff71717A),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                spacing: 2,
                                 children: [
-                                  TextSpan(
-                                    text: 'Paciente: ',
-                                    style: AppTextStyles(context).small13Bold,
+                                  Text(
+                                    's/.${item.mountPrice?.toStringAsFixed(2) ?? item.price?.toStringAsFixed(2) ?? ''}',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xff18181B),
+                                    ),
                                   ),
-                                  TextSpan(
-                                    text: '  ',
-                                  ),
-                                  TextSpan(
-                                    text: sellState.selectedPatient?.name ?? '',
-                                    style: AppTextStyles(context).largeBold,
+                                  Text(
+                                    'Cant. ${item.mountQuantity ?? item.quantity ?? ''}',
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      color: Color(0xff71717A),
+                                    ),
                                   ),
                                 ],
                               ),
-                            ),
-                            ShadForm(
-                              key: _formKey,
-                              autovalidateMode:
-                                  ShadAutovalidateMode.onUserInteraction,
-                              child: ShadInputFormField(
-                                label: Text(
-                                  'Fecha',
-                                  style: AppTextStyles(context).small13Bold,
-                                ),
-                                inputFormatters: [sellNotifier.mask],
-                                controller: sellNotifier.dateController,
-                                validator:
-                                    (v) =>
-                                        RegExp(
-                                              r'^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(19|20)\d{2}$',
-                                            ).hasMatch(v)
-                                            ? null
-                                            : 'Ingresa una fecha valida',
-                              ).box(width: 120),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          spacing: 10,
-                          children: [
-                            Text(
-                              'Vendedor:',
-                              style: AppTextStyles(context).small13Bold,
-                            ),
-                            if (sellState.sellers?.isNotEmpty ?? false)
-                              ShadSelect<SellerModel>(
-                                placeholder: Text(AppStrings.select),
-                                initialValue: sellState.selectedSeller,
-                                selectedOptionBuilder:
-                                    (context, value) => Text(value.name),
-                                options:
-                                    sellState.sellers
-                                        ?.map(
-                                          (e) => ShadOption(
-                                            value: e,
-                                            child: Text(e.name),
-                                          ),
-                                        )
-                                        .toList(),
-                                onChanged: (value) {
-                                  sellNotifier.updateSelectedSeller(value);
-                                },
-                              ).constrained(width: 180),
-                          ],
-                        ),
-                        Text(
-                          'Items a vender',
-                          style: AppTextStyles(context).small13Bold,
-                        ).paddingOnly(bottom: 20),
-                        // Enviar el item cuando se seleccione y solo crear un modelo detalle de ventas e ir llenando con lo que se pueda, se crea un detalle de venta por cada item
-                        // el venta corto es la union de los detalles de las ventas
-                        if (sellState.itemsToSell.isNotEmpty)
-                          ListView.separated(
-                            shrinkWrap: true,
-                            separatorBuilder:
-                                (context, index) => const Divider(),
-                            itemCount: sellState.itemsToSell.length,
-                            itemBuilder: (context, index) {
-                              return ShadCard(
-                                child: ListTile(
-                                  title: Text(
-                                    sellState.itemsToSell[index].mountBrand ??
-                                        sellState
-                                            .itemsToSell[index]
-                                            .description ??
-                                        '',
-                                    style: AppTextStyles(context).small13Bold,
-                                  ),
-                                  subtitle: Text(
-                                    sellState.itemsToSell[index].mountModel ??
-                                        sellState.itemsToSell[index].design ??
-                                        '',
-                                    style: AppTextStyles(context).small13,
-                                  ),
-                                  trailing: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    spacing: 20,
-                                    children: [
-                                      Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            's/.${sellState.itemsToSell[index].mountPrice?.toStringAsFixed(2) ?? sellState.itemsToSell[index].price?.toStringAsFixed(2) ?? ''}',
-                                            style:
-                                                AppTextStyles(
-                                                  context,
-                                                ).small14Bold,
-                                          ),
-                                          Text(
-                                            'Cant. ${sellState.itemsToSell[index].mountQuantity ?? sellState.itemsToSell[index].quantity ?? ''}',
-                                          ),
-                                        ],
-                                      ),
-                                      InkWell(
-                                        onTap:
-                                            () => sellNotifier.removeItemToSell(
-                                              index,
-                                            ),
-                                        child: Icon(
-                                          Icons.delete_outline,
-                                          size: 20,
-                                          color: Colors.red,
-                                        ),
-                                      ),
-                                    ],
+                              const SizedBox(width: 12),
+                              InkWell(
+                                onTap: () =>
+                                    sellNotifier.removeItemToSell(index),
+                                borderRadius: BorderRadius.circular(6),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4),
+                                  child: Icon(
+                                    Icons.delete_outline,
+                                    size: 18,
+                                    color: Colors.red.shade400,
                                   ),
                                 ),
-                              );
-                            },
-                          )
-                        else
-                          ShadCard(
-                            width: size.width,
-                            child: Text(
-                              'Aun no ha agregado algun producto para vender',
-                              style: AppTextStyles(context).small13,
-                            ),
-                          ),
-                        SizedBox(height: 20),
-                        if (sellState.itemsToSell.isNotEmpty)
-                          Row(
-                            spacing: 10,
-                            children: [
-                              Text(
-                                'Motivo de descuento:',
-                                style: AppTextStyles(context).small13Bold,
-                              ),
-                              ShadSelect<String>(
-                                placeholder: Text(AppStrings.select),
-                                selectedOptionBuilder:
-                                    (context, value) => Text(value),
-                                options:
-                                    DiscountReasonEnum.values
-                                        .map(
-                                          (e) => ShadOption(
-                                            value: e.name,
-                                            child: Text(e.name),
-                                          ),
-                                        )
-                                        .toList(),
-                                onChanged: (value) {
-                                  sellNotifier.selectDiscountReason(
-                                    DiscountReasonEnum.values.firstWhere(
-                                      (e) => e.name == value,
-                                    ),
-                                  );
-                                },
                               ),
                             ],
                           ),
-                        Wrap(
-                          // mainAxisSize: MainAxisSize.min,
-                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          runSpacing: 10,
-                          spacing: 10,
-                          children: [
-                            ShadInputFormField(
-                              readOnly: true,
-                              label: Text(
-                                'Importe',
-                                style: AppTextStyles(context).small13Bold,
-                              ), //la suma de todo
-                              controller: sellNotifier.importController,
-                            ).constrained(width: 100),
-                            ShadInputFormField(
-                              readOnly: sellState.itemsToSell.isEmpty,
-                              label: Text(
-                                'Descuento',
-                                style: AppTextStyles(context).small13Bold,
-                              ), //el descuento de todo
-                              controller: sellNotifier.discountController,
-                              onSubmitted: (_) => sellNotifier.applyDiscount(),
-                            ).constrained(width: 100),
-                            ShadInputFormField(
-                              readOnly: true,
-                              label: Text(
-                                'Total',
-                                style: AppTextStyles(context).small13Bold,
-                              ), //la suma de todo - el descuento
-                              controller: sellNotifier.totalController,
-                            ).constrained(width: 100),
-                            ShadInputFormField(
-                              readOnly: sellState.itemsToSell.isEmpty,
-                              label: Text(
-                                'A cuenta',
-                                style: AppTextStyles(context).small13Bold,
-                              ), //el dinero que se paga
-                              controller: sellNotifier.accountController,
-                              onSubmitted: (_) => sellNotifier.leaveAccount(),
-                            ).constrained(width: 100),
-                            ShadInputFormField(
-                              readOnly: true,
-                              label: Text(
-                                'Resto',
-                                style: AppTextStyles(context).small13Bold,
-                              ), //el dinero que se debe
-                              controller: sellNotifier.restController,
-                            ).constrained(width: 100),
-                          ],
+                        );
+                      },
+                    )
+                  else
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
+                      child: Center(
+                        child: Text(
+                          'Aún no has agregado productos',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey.shade500,
+                          ),
                         ),
-                        Row(
-                          spacing: 10,
-                          children: [
-                            ShadButton(
-                              size: ShadButtonSize.lg,
-                              onPressed: () => sellNotifier.createSale(),
-                              child: Text('Crear venta'),
-                            ),
-                            ShadButton.outline(
-                              size: ShadButtonSize.lg,
-                              onPressed: () => sellNotifier.cancelSale(),
-                              child: Text('Cancelar'),
-                            ),
-                          ],
-                        ).paddingOnly(top: 20),
+                      ),
+                    ),
+
+                  if (sellState.itemsToSell.isNotEmpty) ...[
+                    const Divider(height: 1),
+
+                    // Discount reason
+                    Row(
+                      spacing: 10,
+                      children: [
+                        const Text(
+                          'Motivo de descuento:',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xff3F3F46),
+                          ),
+                        ),
+                        ShadSelect<String>(
+                          placeholder: Text(AppStrings.select),
+                          selectedOptionBuilder:
+                              (context, value) => Text(value),
+                          options: DiscountReasonEnum.values
+                              .map(
+                                (e) => ShadOption(
+                                  value: e.name,
+                                  child: Text(e.name),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              sellNotifier.selectDiscountReason(
+                                DiscountReasonEnum.values.firstWhere(
+                                  (e) => e.name == value,
+                                ),
+                              );
+                            }
+                          },
+                        ),
                       ],
                     ),
-                  ),
+
+                    // Totals grid
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xffFAFAFA),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xffE4E4E7)),
+                      ),
+                      child: Wrap(
+                        spacing: 12,
+                        runSpacing: 12,
+                        children: [
+                          ShadInputFormField(
+                            readOnly: true,
+                            label: const Text('Importe'),
+                            controller: sellNotifier.importController,
+                          ).constrained(width: 110),
+                          ShadInputFormField(
+                            readOnly: sellState.itemsToSell.isEmpty,
+                            label: const Text('Descuento'),
+                            controller: sellNotifier.discountController,
+                            onSubmitted: (_) => sellNotifier.applyDiscount(),
+                          ).constrained(width: 110),
+                          ShadInputFormField(
+                            readOnly: true,
+                            label: const Text('Total'),
+                            controller: sellNotifier.totalController,
+                          ).constrained(width: 110),
+                          ShadInputFormField(
+                            readOnly: sellState.itemsToSell.isEmpty,
+                            label: const Text('A cuenta'),
+                            controller: sellNotifier.accountController,
+                            onSubmitted: (_) => sellNotifier.leaveAccount(),
+                          ).constrained(width: 110),
+                          ShadInputFormField(
+                            readOnly: true,
+                            label: const Text('Resto'),
+                            controller: sellNotifier.restController,
+                          ).constrained(width: 110),
+                        ],
+                      ),
+                    ),
+
+                    // Action buttons
+                    Row(
+                      spacing: 12,
+                      children: [
+                        ShadButton(
+                          size: ShadButtonSize.lg,
+                          onPressed: sellNotifier.createSale,
+                          child: const Row(
+                            spacing: 8,
+                            children: [
+                              Icon(Icons.check_circle_outline, size: 16),
+                              Text('Crear venta'),
+                            ],
+                          ),
+                        ),
+                        ShadButton.outline(
+                          size: ShadButtonSize.lg,
+                          onPressed: sellNotifier.cancelSale,
+                          child: const Text('Cancelar'),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
           ],
         ],
       ),
-    ).marginOnly(top: 20).paddingSymmetric(horizontal: 20);
+    );
+  }
+}
+
+// ─── Local widgets ──────────────────────────────────────────────────────────
+
+class _PageHeader extends StatelessWidget {
+  const _PageHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 4,
+      children: [
+        const Text(
+          'Nueva Venta',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            color: Color(0xff18181B),
+          ),
+        ),
+        Text(
+          'Sigue los pasos para registrar una venta',
+          style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+        ),
+      ],
+    );
+  }
+}
+
+class _StepCard extends StatelessWidget {
+  const _StepCard({
+    required this.step,
+    required this.title,
+    required this.subtitle,
+    required this.isCompleted,
+    required this.child,
+    this.action,
+  });
+
+  final int step;
+  final String title;
+  final String subtitle;
+  final bool isCompleted;
+  final Widget child;
+  final Widget? action;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadCard(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 16,
+        children: [
+          // Step header
+          Row(
+            spacing: 12,
+            children: [
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: isCompleted
+                      ? const Color(0xff10B981)
+                      : const Color(0xff7A6BF5),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: isCompleted
+                      ? const Icon(Icons.check, size: 14, color: Colors.white)
+                      : Text(
+                          '$step',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 2,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xff18181B),
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xff71717A),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (action != null) action!,
+            ],
+          ),
+          const Divider(height: 1),
+          child,
+        ],
+      ),
+    );
   }
 }
 

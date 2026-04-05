@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:oftal_web/core/constants/app_strings.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 

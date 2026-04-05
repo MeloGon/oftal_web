@@ -27,9 +27,7 @@ class DashboardLayout extends ConsumerWidget {
                     Navbar(onMenuTap: navigationNotifier.openMenu),
                     Expanded(
                       child: SingleChildScrollView(
-                        child: Center(
-                          child: child,
-                        ),
+                        child: child,
                       ),
                     ),
                   ],

@@ -1,38 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+const _kBrand = Color(0xff7A6BF5);
+const _kBrandLight = Color(0xffEEECFE);
+
 class CardStatisticItem extends StatelessWidget {
   const CardStatisticItem({
     super.key,
     required this.title,
     required this.content,
+    this.icon = Icons.bar_chart_outlined,
+    this.iconColor = _kBrand,
+    this.iconBgColor = _kBrandLight,
   });
+
   final String title;
   final String content;
+  final IconData icon;
+  final Color iconColor;
+  final Color iconBgColor;
 
   @override
   Widget build(BuildContext context) {
     return ShadCard(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        spacing: 15,
-        children: [
-          Container(
-            width: 2,
-            height: 100,
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(10),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          spacing: 12,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: iconBgColor,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(icon, size: 16, color: iconColor),
+                ),
+              ],
             ),
-          ),
-          Column(
-            children: [
-              Text(title, style: ShadTheme.of(context).textTheme.h3),
-              Text(content, style: ShadTheme.of(context).textTheme.h2),
-            ],
-          ),
-        ],
-      ),
+            Text(
+              content.isEmpty ? '—' : content,
+              style: const TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w700,
+                color: Color(0xff18181B),
+                height: 1,
+              ),
+            ),
+          ],
+        ),
     );
   }
 }

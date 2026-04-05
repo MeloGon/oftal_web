@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:oftal_web/core/theme/app_text_styles.dart';
-import 'package:oftal_web/shared/extensions/extensions.dart';
+
+const _kBrand = Color(0xff7A6BF5);
 
 class MenuItem extends StatefulWidget {
   final String text;
@@ -21,48 +21,66 @@ class MenuItem extends StatefulWidget {
 }
 
 class MenuItemState extends State<MenuItem> {
-  bool isHovered = false;
+  bool _isHovered = false;
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color:
-            isHovered
-                ? Colors.white.withValues(alpha: 0.1)
-                : widget.isActive
-                ? Colors.white.withValues(alpha: 0.1)
-                : Colors.transparent,
-      ),
+    final highlighted = widget.isActive || _isHovered;
 
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: widget.isActive ? null : () => widget.onPressed(),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-            child: MouseRegion(
-              onEnter: (_) => setState(() => isHovered = true),
-              onExit: (_) => setState(() => isHovered = false),
-              child: Row(
-                spacing: 10,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(widget.icon, color: Colors.white.withValues(alpha: 0.3)),
-                  Text(
-                    widget.text,
-                    style: AppTextStyles(context).small12.copyWith(
-                      color: Colors.white.withValues(alpha: 0.8),
-                    ),
-                  ),
-                ],
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: GestureDetector(
+        onTap: widget.isActive ? null : () => widget.onPressed(),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+          decoration: BoxDecoration(
+            color: highlighted
+                ? Colors.white.withValues(alpha: 0.08)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            spacing: 10,
+            children: [
+              Icon(
+                widget.icon,
+                size: 16,
+                color: widget.isActive
+                    ? _kBrand
+                    : Colors.white.withValues(alpha: 0.45),
               ),
-            ),
+              Expanded(
+                child: Text(
+                  widget.text,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: widget.isActive
+                        ? Colors.white
+                        : Colors.white.withValues(alpha: 0.65),
+                    fontWeight: widget.isActive
+                        ? FontWeight.w600
+                        : FontWeight.normal,
+                  ),
+                ),
+              ),
+              if (widget.isActive)
+                Container(
+                  width: 6,
+                  height: 6,
+                  decoration: const BoxDecoration(
+                    color: _kBrand,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+            ],
           ),
         ),
       ),
-    ).marginOnly(left: 5, right: 5);
+    );
   }
 }

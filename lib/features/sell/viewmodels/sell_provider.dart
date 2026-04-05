@@ -32,7 +32,10 @@ class Sell extends _$Sell {
 
   @override
   SellState build() {
-    dateController.text = DateFormat('dd-MM-yyyy', 'es_ES').format(DateTime.now());
+    dateController.text = DateFormat(
+      'dd-MM-yyyy',
+      'es_ES',
+    ).format(DateTime.now());
     ref.onDispose(() {
       searchController.dispose();
       searchItemToSellController.dispose();
@@ -54,7 +57,10 @@ class Sell extends _$Sell {
     totalController.clear();
     accountController.clear();
     restController.clear();
-    dateController.text = DateFormat('dd-MM-yyyy', 'es_ES').format(DateTime.now());
+    dateController.text = DateFormat(
+      'dd-MM-yyyy',
+      'es_ES',
+    ).format(DateTime.now());
     state = const SellState();
   }
 
@@ -64,16 +70,18 @@ class Sell extends _$Sell {
         .read(patientRepositoryProvider)
         .searchPatients(searchController.text);
     result.fold(
-      (failure) => state = state.copyWith(
-        errorMessage: failure.message,
-        isLoading: false,
-        patients: [],
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Error',
-          type: SnackbarEnum.error,
-        ),
-      ),
-      (patients) => state = state.copyWith(patients: patients, isLoading: false),
+      (failure) =>
+          state = state.copyWith(
+            errorMessage: failure.message,
+            isLoading: false,
+            patients: [],
+            snackbarConfig: SnackbarConfigModel(
+              title: 'Error',
+              type: SnackbarEnum.error,
+            ),
+          ),
+      (patients) =>
+          state = state.copyWith(patients: patients, isLoading: false),
     );
   }
 
@@ -86,10 +94,11 @@ class Sell extends _$Sell {
     );
   }
 
-  void selectPatientAndOption(
+  Future<void> selectPatientAndOption(
     PatientModel patient,
     SellItemOptionsEnum itemOption,
-  ) {
+  ) async {
+    await _getSellers();
     state = state.copyWith(
       selectedPatient: patient,
       selectedItemOption: itemOption,
@@ -219,20 +228,21 @@ class Sell extends _$Sell {
     state = state.copyWith(isLoading: true);
     _checkDate();
     try {
-      print('VENTA ${state.itemsToSell[0].folioSale}');
+      //print('VENTA ${state.itemsToSell[0].folioSale}');
       await _deleteItemsInDatabase();
       final insertResult = await ref
           .read(saleRepositoryProvider)
           .insertSalesDetails(state.itemsToSell);
       insertResult.fold(
-        (failure) => state = state.copyWith(
-          errorMessage: failure.message,
-          snackbarConfig: SnackbarConfigModel(
-            title: 'Error',
-            type: SnackbarEnum.error,
-          ),
-          isLoading: false,
-        ),
+        (failure) =>
+            state = state.copyWith(
+              errorMessage: failure.message,
+              snackbarConfig: SnackbarConfigModel(
+                title: 'Error',
+                type: SnackbarEnum.error,
+              ),
+              isLoading: false,
+            ),
         (_) => _createShortSale(),
       );
     } catch (e) {
@@ -268,24 +278,25 @@ class Sell extends _$Sell {
   }
 
   void _checkDate() {
-    final updatedDate = state.itemsToSell
-        .map(
-          (item) => item.copyWith(
-            updatedDate:
-                DateFormat('yyyy-MM-dd')
-                    .format(
-                      DateFormat('dd-MM-yyyy').parse(dateController.text),
-                    )
-                    .toString(),
-            dateSale:
-                DateFormat('dd-MMM-yy')
-                    .format(
-                      DateFormat('dd-MM-yyyy').parse(dateController.text),
-                    )
-                    .toString(),
-          ),
-        )
-        .toList();
+    final updatedDate =
+        state.itemsToSell
+            .map(
+              (item) => item.copyWith(
+                updatedDate:
+                    DateFormat('yyyy-MM-dd')
+                        .format(
+                          DateFormat('dd-MM-yyyy').parse(dateController.text),
+                        )
+                        .toString(),
+                dateSale:
+                    DateFormat('dd-MMM-yy')
+                        .format(
+                          DateFormat('dd-MM-yyyy').parse(dateController.text),
+                        )
+                        .toString(),
+              ),
+            )
+            .toList();
     state = state.copyWith(itemsToSell: updatedDate);
   }
 
@@ -315,24 +326,28 @@ class Sell extends _$Sell {
         rest: double.parse(restController.text),
         folioSale: state.itemsToSell[0].folioSale,
       );
-      final result = await ref.read(saleRepositoryProvider).insertShortSale(sale);
+      final result = await ref
+          .read(saleRepositoryProvider)
+          .insertShortSale(sale);
       result.fold(
-        (failure) => state = state.copyWith(
-          errorMessage: failure.message,
-          snackbarConfig: SnackbarConfigModel(
-            title: 'Error',
-            type: SnackbarEnum.error,
-          ),
-          isLoading: false,
-        ),
-        (_) => state = state.copyWith(
-          isLoading: false,
-          snackbarConfig: SnackbarConfigModel(
-            title: 'Aviso',
-            type: SnackbarEnum.success,
-          ),
-          errorMessage: 'Venta realizada correctamente',
-        ),
+        (failure) =>
+            state = state.copyWith(
+              errorMessage: failure.message,
+              snackbarConfig: SnackbarConfigModel(
+                title: 'Error',
+                type: SnackbarEnum.error,
+              ),
+              isLoading: false,
+            ),
+        (_) =>
+            state = state.copyWith(
+              isLoading: false,
+              snackbarConfig: SnackbarConfigModel(
+                title: 'Aviso',
+                type: SnackbarEnum.success,
+              ),
+              errorMessage: 'Venta realizada correctamente',
+            ),
       );
     } catch (e) {
       state = state.copyWith(
@@ -350,13 +365,15 @@ class Sell extends _$Sell {
 
   void cancelSale() {
     state = state.copyWith(
+      selectedPatient: null,
+      patients: [],
       itemsToSell: [],
       selectedDiscountReason: null,
       selectedItemOption: null,
       selectedOptionToSell: null,
     );
-    searchController.text = '';
-    searchItemToSellController.text = '';
+    searchController.clear();
+    searchItemToSellController.clear();
     importController.text = '0';
     discountController.text = '0';
     totalController.text = '0';
@@ -370,14 +387,15 @@ class Sell extends _$Sell {
         .read(reviewRepositoryProvider)
         .getReviewsByPatient(state.selectedPatient?.name ?? '');
     result.fold(
-      (failure) => state = state.copyWith(
-        errorMessage: failure.message,
-        isLoading: false,
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Error',
-          type: SnackbarEnum.error,
-        ),
-      ),
+      (failure) =>
+          state = state.copyWith(
+            errorMessage: failure.message,
+            isLoading: false,
+            snackbarConfig: SnackbarConfigModel(
+              title: 'Error',
+              type: SnackbarEnum.error,
+            ),
+          ),
       (reviews) {
         if (reviews.isNotEmpty) {
           state = state.copyWith(reviews: reviews, isLoading: false);
@@ -401,14 +419,15 @@ class Sell extends _$Sell {
         .read(mountRepositoryProvider)
         .searchMounts(searchItemToSellController.text);
     result.fold(
-      (failure) => state = state.copyWith(
-        errorMessage: failure.message,
-        isLoading: false,
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Error',
-          type: SnackbarEnum.error,
-        ),
-      ),
+      (failure) =>
+          state = state.copyWith(
+            errorMessage: failure.message,
+            isLoading: false,
+            snackbarConfig: SnackbarConfigModel(
+              title: 'Error',
+              type: SnackbarEnum.error,
+            ),
+          ),
       (mounts) => state = state.copyWith(mounts: mounts, isLoading: false),
     );
   }
@@ -419,14 +438,15 @@ class Sell extends _$Sell {
         .read(resinRepositoryProvider)
         .searchResins(searchItemToSellController.text);
     result.fold(
-      (failure) => state = state.copyWith(
-        errorMessage: failure.message,
-        isLoading: false,
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Error',
-          type: SnackbarEnum.error,
-        ),
-      ),
+      (failure) =>
+          state = state.copyWith(
+            errorMessage: failure.message,
+            isLoading: false,
+            snackbarConfig: SnackbarConfigModel(
+              title: 'Error',
+              type: SnackbarEnum.error,
+            ),
+          ),
       (resins) => state = state.copyWith(resins: resins, isLoading: false),
     );
   }
@@ -500,14 +520,15 @@ class Sell extends _$Sell {
     state = state.copyWith(isLoading: true);
     final result = await ref.read(sellerRepositoryProvider).getSellers();
     result.fold(
-      (failure) => state = state.copyWith(
-        errorMessage: failure.message,
-        isLoading: false,
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Error',
-          type: SnackbarEnum.error,
-        ),
-      ),
+      (failure) =>
+          state = state.copyWith(
+            errorMessage: failure.message,
+            isLoading: false,
+            snackbarConfig: SnackbarConfigModel(
+              title: 'Error',
+              type: SnackbarEnum.error,
+            ),
+          ),
       (sellers) => state = state.copyWith(sellers: sellers, isLoading: false),
     );
   }
