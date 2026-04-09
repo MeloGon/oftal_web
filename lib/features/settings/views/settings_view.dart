@@ -5,6 +5,8 @@ import 'package:oftal_web/features/settings/viewmodels/settings_provider.dart';
 import 'package:oftal_web/router/app_router.dart';
 import 'package:oftal_web/router/router_name.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
+import 'package:oftal_web/shared/services/authorization_service.dart';
+import 'package:oftal_web/shared/widgets/authorization_dialog.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
 
 class SettingsView extends ConsumerWidget {
@@ -68,8 +70,16 @@ class SettingsView extends ConsumerWidget {
                   icon: Icons.lens_outlined,
                   iconColor: const Color(0xff0EA5E9),
                   iconBgColor: const Color(0xffE0F2FE),
-                  onTap: () =>
-                      ref.read(appRouterProvider).go(RouterName.resins),
+                  onTap: () async {
+                    final authorized = await showAuthorizationDialog(
+                      context: context,
+                      requiredRole: AuthorizationRole.admin,
+                      actionName: 'acceder a Resinas',
+                    );
+                    if (authorized) {
+                      ref.read(appRouterProvider).go(RouterName.resins);
+                    }
+                  },
                 ),
               ),
               Expanded(
@@ -79,8 +89,9 @@ class SettingsView extends ConsumerWidget {
                   icon: Icons.visibility_outlined,
                   iconColor: const Color(0xff7A6BF5),
                   iconBgColor: const Color(0xffEEECFE),
-                  onTap: () =>
-                      ref.read(appRouterProvider).go(RouterName.mounts),
+                  onTap:
+                      () async =>
+                          ref.read(appRouterProvider).go(RouterName.mounts),
                 ),
               ),
             ],
@@ -106,7 +117,7 @@ class _SettingsNavCard extends StatefulWidget {
   final IconData icon;
   final Color iconColor;
   final Color iconBgColor;
-  final VoidCallback onTap;
+  final Future<void> Function() onTap;
 
   @override
   State<_SettingsNavCard> createState() => _SettingsNavCardState();
@@ -130,20 +141,22 @@ class _SettingsNavCardState extends State<_SettingsNavCard> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: _hovered
-                  ? widget.iconColor.withValues(alpha: 0.4)
-                  : const Color(0xffE4E4E7),
+              color:
+                  _hovered
+                      ? widget.iconColor.withValues(alpha: 0.4)
+                      : const Color(0xffE4E4E7),
               width: 1.5,
             ),
-            boxShadow: _hovered
-                ? [
-                    BoxShadow(
-                      color: widget.iconColor.withValues(alpha: 0.08),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                : [],
+            boxShadow:
+                _hovered
+                    ? [
+                      BoxShadow(
+                        color: widget.iconColor.withValues(alpha: 0.08),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                    : [],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
