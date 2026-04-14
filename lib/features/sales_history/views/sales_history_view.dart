@@ -1,13 +1,13 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/datatables/datatables.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
-import 'package:oftal_web/features/sales_history/views/widgets/filter_history_sales.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/edit_sale_dialog.dart';
+import 'package:oftal_web/features/sales_history/views/widgets/filter_history_sales.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/sales_details_dialog.dart';
+import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -21,32 +21,32 @@ class SalesHistoryView extends ConsumerWidget {
     final salesState = ref.watch(salesHistoryProvider);
     final salesNotifier = ref.watch(salesHistoryProvider.notifier);
 
-    ref.listen(salesHistoryProvider, (previous, next) {
-      if (next.isLoading && (previous?.isLoading ?? false) == false) {
-        LoadingDialog().show(context);
-      }
-      if (!next.isLoading && (previous?.isLoading ?? false) == true) {
-        if (context.mounted) {
-          context.pop();
-          if (next.saleSelectedForDetails != null) {
-            SalesDetailsDialog().show(
-              context,
-              next.saleDetails,
-              next.saleSelectedForDetails!,
-              ref,
-            );
-          }
-          if (next.isEditSaleDialogOpen && next.saleToEdit != null) {
-            ref.read(salesHistoryProvider.notifier).closeEditSaleDialog();
-            EditSaleDialog().show(
-              context,
-              ref,
-              next.saleToEdit!,
-              next.saleDetails,
-            );
-          }
+    ref.listenLoading(
+      salesHistoryProvider.select((s) => s.isLoading),
+      context,
+      onHidden: () {
+        final state = ref.read(salesHistoryProvider);
+        if (state.saleSelectedForDetails != null) {
+          SalesDetailsDialog().show(
+            context,
+            state.saleDetails,
+            state.saleSelectedForDetails!,
+            ref,
+          );
         }
-      }
+        if (state.isEditSaleDialogOpen && state.saleToEdit != null) {
+          ref.read(salesHistoryProvider.notifier).closeEditSaleDialog();
+          EditSaleDialog().show(
+            context,
+            ref,
+            state.saleToEdit!,
+            state.saleDetails,
+          );
+        }
+      },
+    );
+
+    ref.listen(salesHistoryProvider, (previous, next) {
       if (next.errorMessage.isNotEmpty &&
           previous?.errorMessage != next.errorMessage) {
         _showSnackbar(context, next.snackbarConfig, next.errorMessage);

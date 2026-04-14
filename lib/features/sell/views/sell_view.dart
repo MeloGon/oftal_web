@@ -28,6 +28,8 @@ class _SellViewState extends ConsumerState<SellView> {
     final sellState = ref.watch(sellProvider);
     final size = MediaQuery.sizeOf(context);
 
+    ref.listenLoading(sellProvider.select((s) => s.isLoading), context);
+
     ref.listen<SellState>(sellProvider, (previous, next) {
       if (next.errorMessage.isNotEmpty &&
           previous?.errorMessage != next.errorMessage) {
@@ -35,12 +37,6 @@ class _SellViewState extends ConsumerState<SellView> {
         Future.microtask(
           () => ref.read(sellProvider.notifier).clearErrorMessage(),
         );
-      }
-      if (next.isLoading && (previous?.isLoading ?? false) == false) {
-        LoadingDialog().show(context);
-      }
-      if (!next.isLoading && (previous?.isLoading ?? false) == true) {
-        if (context.mounted) context.pop();
       }
     });
 

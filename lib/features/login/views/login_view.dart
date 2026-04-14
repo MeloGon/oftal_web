@@ -158,14 +158,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                             ),
                     child:
                         loginState.isLoading
-                            ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
+                            ? const AppSpinner(size: 16, color: Colors.white)
                             : Text(AppStrings.loginButton),
                   ),
                 ),

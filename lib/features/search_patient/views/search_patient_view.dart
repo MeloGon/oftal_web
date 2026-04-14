@@ -10,7 +10,7 @@ import 'package:oftal_web/features/search_patient/viewmodels/search_patient_prov
 import 'package:oftal_web/features/search_patient/views/widgets/add_review_dialog.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/edit_patient_dialog.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/review_details_dialog.dart';
-import 'package:oftal_web/shared/widgets/loading_dialog.dart';
+import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SearchPatientView extends ConsumerStatefulWidget {
@@ -34,6 +34,11 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
     final height = MediaQuery.sizeOf(context).height;
     final searchPatientState = ref.watch(searchPatientProvider);
     final searchPatientNotifier = ref.watch(searchPatientProvider.notifier);
+
+    ref.listenLoading(
+      searchPatientProvider.select((s) => s.isLoading),
+      context,
+    );
 
     ref.listen(searchPatientProvider, (previous, next) {
       if (next.errorMessage.isNotEmpty &&
@@ -60,12 +65,6 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
                 .closeAddViewMeasureDialog();
           });
         }
-      }
-      if (next.isLoading && (previous?.isLoading ?? false) == false) {
-        LoadingDialog().show(context);
-      }
-      if (!next.isLoading && (previous?.isLoading ?? false) == true) {
-        if (context.mounted) context.pop();
       }
       if (next.isReviewDialogOpen && !(previous?.isReviewDialogOpen ?? false)) {
         if (context.mounted) {

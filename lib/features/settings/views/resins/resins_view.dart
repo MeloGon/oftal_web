@@ -99,96 +99,78 @@ class ResinsView extends ConsumerWidget {
           // ─── Table card ───────────────────────────────────
           ShadCard(
             padding: EdgeInsets.zero,
-            child: Stack(
-              children: [
-                SizedBox(
-                  width: width * 0.9,
-                  height: 600,
-                  child: PaginatedDataTable2(
-                    wrapInCard: false,
-                    columnSpacing: 12,
-                    horizontalMargin: 16,
-                    headingRowHeight: 40,
-                    minWidth: width * 0.88,
-                    isHorizontalScrollBarVisible: true,
-                    isVerticalScrollBarVisible: true,
-                    headingRowColor: WidgetStateProperty.all(
-                      const Color(0xffFAFAFA),
+            child: LoadingOverlay(
+              isLoading: resinsState.isLoading,
+              child: SizedBox(
+                width: width * 0.9,
+                height: 600,
+                child: PaginatedDataTable2(
+                  wrapInCard: false,
+                  columnSpacing: 12,
+                  horizontalMargin: 16,
+                  headingRowHeight: 40,
+                  minWidth: width * 0.88,
+                  isHorizontalScrollBarVisible: true,
+                  isVerticalScrollBarVisible: true,
+                  headingRowColor: WidgetStateProperty.all(
+                    const Color(0xffFAFAFA),
+                  ),
+                  columns: const [
+                    DataColumn2(
+                      label: _ColHeader('Descripción'),
+                      fixedWidth: 230,
                     ),
-                    columns: const [
-                      DataColumn2(
-                        label: _ColHeader('Descripción'),
-                        fixedWidth: 230,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Diseño'),
-                        size: ColumnSize.M,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Linea'),
-                        size: ColumnSize.M,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Material'),
-                        size: ColumnSize.L,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Tecnología'),
-                        size: ColumnSize.L,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Cant.'),
-                        size: ColumnSize.S,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('P. Interno'),
-                        size: ColumnSize.M,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Precio'),
-                        size: ColumnSize.M,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Acciones'),
-                        size: ColumnSize.M,
-                      ),
-                    ],
-                    source: ResinInventoryDataSource(
-                      pageItems: resinsState.resins,
-                      totalItems: resinsState.totalCount,
-                      currentOffset: resinsState.offset,
-                      isLoading: resinsState.isLoading,
-                      context: context,
-                      ref: ref,
+                    DataColumn2(
+                      label: _ColHeader('Diseño'),
+                      size: ColumnSize.M,
                     ),
-                    availableRowsPerPage: const [10, 20, 30, 50],
-                    rowsPerPage: resinsState.rowsPerPage,
-                    onRowsPerPageChanged: (value) =>
-                        resinsNotifier.changeRowsPerPage(value ?? 10),
-                    onPageChanged: (rowIndex) => resinsNotifier.fetchPage(
-                      offset: rowIndex,
-                      limit: resinsState.rowsPerPage,
+                    DataColumn2(
+                      label: _ColHeader('Linea'),
+                      size: ColumnSize.M,
                     ),
+                    DataColumn2(
+                      label: _ColHeader('Material'),
+                      size: ColumnSize.L,
+                    ),
+                    DataColumn2(
+                      label: _ColHeader('Tecnología'),
+                      size: ColumnSize.L,
+                    ),
+                    DataColumn2(
+                      label: _ColHeader('Cant.'),
+                      size: ColumnSize.S,
+                    ),
+                    DataColumn2(
+                      label: _ColHeader('P. Interno'),
+                      size: ColumnSize.M,
+                    ),
+                    DataColumn2(
+                      label: _ColHeader('Precio'),
+                      size: ColumnSize.M,
+                    ),
+                    DataColumn2(
+                      label: _ColHeader('Acciones'),
+                      size: ColumnSize.M,
+                    ),
+                  ],
+                  source: ResinInventoryDataSource(
+                    pageItems: resinsState.resins,
+                    totalItems: resinsState.totalCount,
+                    currentOffset: resinsState.offset,
+                    isLoading: resinsState.isLoading,
+                    context: context,
+                    ref: ref,
+                  ),
+                  availableRowsPerPage: const [10, 20, 30, 50],
+                  rowsPerPage: resinsState.rowsPerPage,
+                  onRowsPerPageChanged: (value) =>
+                      resinsNotifier.changeRowsPerPage(value ?? 10),
+                  onPageChanged: (rowIndex) => resinsNotifier.fetchPage(
+                    offset: rowIndex,
+                    limit: resinsState.rowsPerPage,
                   ),
                 ),
-                if (resinsState.isLoading)
-                  Positioned.fill(
-                    child: IgnorePointer(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.7),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Center(
-                          child: CircularProgressIndicator(
-                            color: Color(0xff7A6BF5),
-                            strokeWidth: 2.5,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
+              ),
             ),
           ),
         ],
