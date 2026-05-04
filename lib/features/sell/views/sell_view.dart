@@ -40,162 +40,531 @@ class _SellViewState extends ConsumerState<SellView> {
       }
     });
 
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 20,
-        children: [
-          // ─── Page header ─────────────────────────────────
-          const _PageHeader(),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 20,
+          children: [
+            // ─── Page header ─────────────────────────────────
+            const _PageHeader(),
 
-          // ─── Step 1: Patient search ───────────────────────
-          _StepCard(
-            step: 1,
-            title: 'Seleccionar paciente',
-            subtitle:
-                sellState.selectedPatient != null
-                    ? 'Paciente: ${sellState.selectedPatient!.name}'
-                    : 'Busca al paciente al que deseas vender',
-            isCompleted: sellState.selectedPatient != null,
-            action:
-                sellState.selectedPatient != null
-                    ? ShadButton.outline(
-                      height: 32,
-                      onPressed: sellNotifier.cancelSale,
-                      child: const Row(
-                        spacing: 6,
+            // ─── Step 1: Patient search ───────────────────────
+            _StepCard(
+              step: 1,
+              title: 'Seleccionar paciente',
+              subtitle:
+                  sellState.selectedPatient != null
+                      ? 'Paciente: ${sellState.selectedPatient!.name}'
+                      : 'Busca al paciente al que deseas vender',
+              isCompleted: sellState.selectedPatient != null,
+              action:
+                  sellState.selectedPatient != null
+                      ? ShadButton.outline(
+                        height: 32,
+                        onPressed: sellNotifier.cancelSale,
+                        child: const Row(
+                          spacing: 6,
+                          children: [
+                            Icon(LucideIcons.x, size: 14),
+                            Text('Cambiar paciente'),
+                          ],
+                        ),
+                      )
+                      : null,
+              child:
+                  sellState.selectedPatient != null
+                      ? const SizedBox.shrink()
+                      : Column(
+                        spacing: 10,
                         children: [
-                          Icon(LucideIcons.x, size: 14),
-                          Text('Cambiar paciente'),
+                          ShadInput(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 10,
+                            ),
+                            placeholder: const Text(
+                              'Ingrese el nombre del paciente a vender',
+                            ),
+                            leading: const Icon(LucideIcons.search, size: 16),
+                            controller: sellNotifier.searchController,
+                            trailing: ShadButton(
+                              height: 30,
+                              onPressed: sellNotifier.searchPatient,
+                              child: Text(AppStrings.search),
+                            ),
+                            onSubmitted: (_) => sellNotifier.searchPatient(),
+                          ),
+                          if (sellState.patients.isNotEmpty &&
+                              !sellState.isLoading)
+                            SizedBox(
+                              height: 320,
+                              child: TooltipVisibility(
+                                visible: false,
+                                child: PaginatedDataTable2(
+                                  headingRowHeight: 36,
+                                  wrapInCard: false,
+                                  columnSpacing: 12,
+                                  horizontalMargin: 12,
+                                  isHorizontalScrollBarVisible: true,
+                                  isVerticalScrollBarVisible: true,
+                                  headingRowColor: WidgetStateProperty.all(
+                                    const Color(0xffFAFAFA),
+                                  ),
+                                  columns: const [
+                                    DataColumn2(
+                                      label: Text('Nombre'),
+                                      size: ColumnSize.L,
+                                      minWidth: 100,
+                                    ),
+                                    DataColumn2(
+                                      label: Text('Fecha de registro'),
+                                      size: ColumnSize.M,
+                                      minWidth: 100,
+                                    ),
+                                    DataColumn2(
+                                      label: Text('Sucursal'),
+                                      size: ColumnSize.M,
+                                      minWidth: 90,
+                                    ),
+                                    DataColumn2(
+                                      label: Text('Teléfono'),
+                                      size: ColumnSize.M,
+                                      minWidth: 100,
+                                    ),
+                                    DataColumn2(
+                                      label: Text('Acciones'),
+                                      size: ColumnSize.S,
+                                    ),
+                                  ],
+                                  source: PatientsDataSource(
+                                    patients: sellState.patients,
+                                    context: context,
+                                    isForSell: true,
+                                    ref: ref,
+                                  ),
+                                  availableRowsPerPage: const [5, 10, 20, 50],
+                                  rowsPerPage: sellState.rowsPerPage,
+                                  onRowsPerPageChanged:
+                                      (value) => sellNotifier.changeRowsPerPage(
+                                        value ?? 5,
+                                      ),
+                                ),
+                              ),
+                            ),
+                          if (sellState.patients.isEmpty &&
+                              !sellState.isLoading)
+                            Container(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              child: Center(
+                                child: Text(
+                                  AppStrings.noPatientsFound,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.grey.shade500,
+                                  ),
+                                ),
+                              ),
+                            ),
                         ],
                       ),
-                    )
-                    : null,
-            child:
-                sellState.selectedPatient != null
-                    ? const SizedBox.shrink()
-                    : Column(
-                      spacing: 10,
+            ),
+
+            // ─── Step 2: Product selection ────────────────────
+            if (sellState.selectedPatient != null &&
+                sellState.selectedItemOption == SellItemOptionsEnum.sell) ...[
+              _StepCard(
+                step: 2,
+                title: 'Seleccionar productos',
+                subtitle: 'Elige la categoría y busca el producto',
+                isCompleted: sellState.itemsToSell.isNotEmpty,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 16,
+                  children: [
+                    Wrap(
+                      spacing: 16,
+                      runSpacing: 10,
+                      crossAxisAlignment: WrapCrossAlignment.end,
                       children: [
-                        ShadInput(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 10,
-                          ),
-                          placeholder: const Text(
-                            'Ingrese el nombre del paciente a vender',
-                          ),
-                          leading: const Icon(LucideIcons.search, size: 16),
-                          controller: sellNotifier.searchController,
-                          trailing: ShadButton(
-                            height: 30,
-                            onPressed: sellNotifier.searchPatient,
-                            child: Text(AppStrings.search),
-                          ),
-                          onSubmitted: (_) => sellNotifier.searchPatient(),
-                        ),
-                        if (sellState.patients.isNotEmpty &&
-                            !sellState.isLoading)
-                          SizedBox(
-                            height: 320,
-                            child: TooltipVisibility(
-                              visible: false,
-                              child: PaginatedDataTable2(
-                                headingRowHeight: 36,
-                                wrapInCard: false,
-                                columnSpacing: 12,
-                                horizontalMargin: 12,
-                                isHorizontalScrollBarVisible: true,
-                                isVerticalScrollBarVisible: true,
-                                headingRowColor: WidgetStateProperty.all(
-                                  const Color(0xffFAFAFA),
-                                ),
-                                columns: const [
-                                  DataColumn2(
-                                    label: Text('Nombre'),
-                                    size: ColumnSize.L,
-                                    minWidth: 100,
-                                  ),
-                                  DataColumn2(
-                                    label: Text('Fecha de registro'),
-                                    size: ColumnSize.M,
-                                    minWidth: 100,
-                                  ),
-                                  DataColumn2(
-                                    label: Text('Sucursal'),
-                                    size: ColumnSize.M,
-                                    minWidth: 90,
-                                  ),
-                                  DataColumn2(
-                                    label: Text('Teléfono'),
-                                    size: ColumnSize.M,
-                                    minWidth: 100,
-                                  ),
-                                  DataColumn2(
-                                    label: Text('Acciones'),
-                                    size: ColumnSize.S,
-                                  ),
-                                ],
-                                source: PatientsDataSource(
-                                  patients: sellState.patients,
-                                  context: context,
-                                  isForSell: true,
-                                  ref: ref,
-                                ),
-                                availableRowsPerPage: const [5, 10, 20, 50],
-                                rowsPerPage: sellState.rowsPerPage,
-                                onRowsPerPageChanged:
-                                    (value) => sellNotifier.changeRowsPerPage(
-                                      value ?? 5,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 6,
+                          children: [
+                            const Text(
+                              'Clasificación',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xff52525B),
+                              ),
+                            ),
+                            ShadSelect<String>(
+                              placeholder: Text(AppStrings.select),
+                              selectedOptionBuilder:
+                                  (context, value) => Text(value),
+                              options:
+                                  OptionsToSellEnum.values
+                                      .map(
+                                        (e) => ShadOption(
+                                          value: e.name,
+                                          child: Text(e.name),
+                                        ),
+                                      )
+                                      .toList(),
+                              onChanged: (value) {
+                                if (value != null) {
+                                  sellNotifier.selectOptionToSell(
+                                    OptionsToSellEnum.values.firstWhere(
+                                      (e) => e.name == value,
                                     ),
-                              ),
+                                  );
+                                }
+                              },
                             ),
+                          ],
+                        ),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: size.width * 0.5,
                           ),
-                        if (sellState.patients.isEmpty && !sellState.isLoading)
-                          Container(
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                            child: Center(
-                              child: Text(
-                                AppStrings.noPatientsFound,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.grey.shade500,
-                                ),
-                              ),
+                          child: ShadInputFormField(
+                            placeholder: const Text(
+                              'Nombre del producto a buscar',
                             ),
+                            label: const Text('Producto'),
+                            controller: sellNotifier.searchItemToSellController,
+                            onSubmitted: (_) {
+                              if (sellState.selectedOptionToSell ==
+                                  OptionsToSellEnum.mount) {
+                                sellNotifier.getMounts();
+                              } else if (sellState.selectedOptionToSell ==
+                                  OptionsToSellEnum.resin) {
+                                sellNotifier.getResin();
+                              }
+                            },
                           ),
+                        ),
                       ],
                     ),
-          ),
+                    if (sellState.mounts.isNotEmpty && !sellState.isLoading)
+                      SizedBox(
+                        width: double.infinity,
+                        height: 320,
+                        child: TooltipVisibility(
+                          visible: false,
+                          child: PaginatedDataTable2(
+                            wrapInCard: false,
+                            columnSpacing: 12,
+                            horizontalMargin: 12,
+                            minWidth: 800,
+                            isHorizontalScrollBarVisible: true,
+                            isVerticalScrollBarVisible: true,
+                            headingRowHeight: 38,
+                            headingRowColor: WidgetStateProperty.all(
+                              const Color(0xffFAFAFA),
+                            ),
+                            columns: const [
+                              DataColumn2(
+                                label: Text('Marca'),
+                                fixedWidth: 120,
+                                isResizable: true,
+                              ),
+                              DataColumn2(
+                                label: Text('Modelo'),
+                                fixedWidth: 100,
+                                isResizable: true,
+                              ),
+                              DataColumn2(
+                                label: Text('Color'),
+                                fixedWidth: 120,
+                                isResizable: true,
+                              ),
+                              DataColumn2(
+                                label: Text('Descripción'),
+                                fixedWidth: 150,
+                                isResizable: true,
+                              ),
+                              DataColumn2(
+                                label: Text('Optica'),
+                                fixedWidth: 100,
+                                isResizable: true,
+                              ),
+                              DataColumn2(
+                                label: Text('Precio'),
+                                fixedWidth: 90,
+                                isResizable: true,
+                              ),
+                              DataColumn2(
+                                label: Text('Acciones'),
+                                fixedWidth: 90,
+                                isResizable: true,
+                              ),
+                            ],
+                            source: MountsDataSource(
+                              mounts: sellState.mounts,
+                              context: context,
+                              ref: ref,
+                            ),
+                            availableRowsPerPage: const [5, 10, 20, 50],
+                            rowsPerPage: sellState.rowsPerPage,
+                            onRowsPerPageChanged:
+                                (value) =>
+                                    sellNotifier.changeRowsPerPage(value ?? 5),
+                          ),
+                        ),
+                      ),
+                    if (sellState.resins.isNotEmpty && !sellState.isLoading)
+                      SizedBox(
+                        width: double.infinity,
+                        height: 320,
+                        child: TooltipVisibility(
+                          visible: false,
+                          child: PaginatedDataTable2(
+                            wrapInCard: false,
+                            columnSpacing: 12,
+                            horizontalMargin: 12,
+                            minWidth: 900,
+                            isHorizontalScrollBarVisible: true,
+                            isVerticalScrollBarVisible: true,
+                            headingRowHeight: 38,
+                            headingRowColor: WidgetStateProperty.all(
+                              const Color(0xffFAFAFA),
+                            ),
+                            columns: const [
+                              DataColumn2(
+                                label: Text('Descripción'),
+                                fixedWidth: 120,
+                                isResizable: true,
+                              ),
+                              DataColumn2(
+                                label: Text('Diseño'),
+                                fixedWidth: 180,
+                                isResizable: true,
+                              ),
+                              DataColumn2(
+                                label: Text('Linea'),
+                                fixedWidth: 100,
+                                isResizable: true,
+                              ),
+                              DataColumn2(
+                                label: Text('Material'),
+                                fixedWidth: 100,
+                                isResizable: true,
+                              ),
+                              DataColumn2(
+                                label: Text('Tecnología'),
+                                fixedWidth: 130,
+                                isResizable: true,
+                              ),
+                              DataColumn2(
+                                label: Text('Cant.'),
+                                fixedWidth: 60,
+                                isResizable: true,
+                              ),
+                              DataColumn2(
+                                label: Text('P. Interno'),
+                                fixedWidth: 90,
+                                isResizable: true,
+                              ),
+                              DataColumn2(
+                                label: Text('P. Público'),
+                                fixedWidth: 90,
+                                isResizable: true,
+                              ),
+                              DataColumn2(
+                                label: Text('Acciones'),
+                                fixedWidth: 80,
+                                isResizable: true,
+                              ),
+                            ],
+                            source: ResinDataSource(
+                              resins: sellState.resins,
+                              context: context,
+                              ref: ref,
+                            ),
+                            availableRowsPerPage: const [5, 10, 20, 50],
+                            rowsPerPage: sellState.rowsPerPage,
+                            onRowsPerPageChanged:
+                                (value) =>
+                                    sellNotifier.changeRowsPerPage(value ?? 5),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
 
-          // ─── Step 2: Product selection ────────────────────
-          if (sellState.selectedPatient != null &&
-              sellState.selectedItemOption == SellItemOptionsEnum.sell) ...[
-            _StepCard(
-              step: 2,
-              title: 'Seleccionar productos',
-              subtitle: 'Elige la categoría y busca el producto',
-              isCompleted: sellState.itemsToSell.isNotEmpty,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 16,
-                children: [
-                  Wrap(
-                    spacing: 16,
-                    runSpacing: 10,
-                    crossAxisAlignment: WrapCrossAlignment.end,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 6,
+              // ─── Step 3: Invoice ──────────────────────────
+              _StepCard(
+                step: 3,
+                title: 'Nota de venta',
+                subtitle: 'Revisa los productos y confirma la venta',
+                isCompleted: false,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 16,
+                  children: [
+                    // Patient + date row
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            spacing: 4,
+                            children: [
+                              const Text(
+                                'Paciente',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Color(0xff71717A),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              Text(
+                                sellState.selectedPatient?.name ?? '',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xff18181B),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        ShadForm(
+                          key: _formKey,
+                          autovalidateMode:
+                              ShadAutovalidateMode.onUserInteraction,
+                          child: ShadInputFormField(
+                            label: const Text('Fecha'),
+                            inputFormatters: [sellNotifier.mask],
+                            controller: sellNotifier.dateController,
+                            validator:
+                                (v) =>
+                                    RegExp(
+                                          r'^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(19|20)\d{2}$',
+                                        ).hasMatch(v)
+                                        ? null
+                                        : 'Ingresa una fecha válida',
+                          ).constrained(width: 130),
+                        ),
+                      ],
+                    ),
+
+                    // Seller row
+                    Row(
+                      spacing: 10,
+                      children: [
+                        RichText(
+                          text: const TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Vendedor',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xff3F3F46),
+                                ),
+                              ),
+                              TextSpan(
+                                text: ' *',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xffEF4444),
+                                ),
+                              ),
+                              TextSpan(
+                                text: ':',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xff3F3F46),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (sellState.sellers.isNotEmpty)
+                          ShadSelect<SellerModel>(
+                            placeholder: Text(AppStrings.select),
+                            initialValue: sellState.selectedSeller,
+                            selectedOptionBuilder:
+                                (context, value) => Text(value.name),
+                            options:
+                                sellState.sellers
+                                    .map(
+                                      (e) => ShadOption(
+                                        value: e,
+                                        child: Text(e.name),
+                                      ),
+                                    )
+                                    .toList(),
+                            onChanged: sellNotifier.updateSelectedSeller,
+                          ).constrained(width: 200),
+                      ],
+                    ),
+
+                    const Divider(height: 1),
+
+                    // Items list
+                    const Text(
+                      'Productos en la nota',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xff3F3F46),
+                      ),
+                    ),
+                    if (sellState.itemsToSell.isNotEmpty)
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        separatorBuilder: (_, __) => const SizedBox(height: 8),
+                        itemCount: sellState.itemsToSell.length,
+                        itemBuilder: (context, index) {
+                          final item = sellState.itemsToSell[index];
+                          return _SellItemCard(
+                            key: ValueKey(item.id),
+                            item: item,
+                            onRemove:
+                                () => sellNotifier.removeItemToSell(index),
+                            onPriceChanged:
+                                (price) =>
+                                    sellNotifier.updateItemPrice(index, price),
+                          );
+                        },
+                      )
+                    else
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 24),
+                        child: Center(
+                          child: Text(
+                            'Aún no has agregado productos',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    if (sellState.itemsToSell.isNotEmpty) ...[
+                      const Divider(height: 1),
+
+                      // Discount reason
+                      Row(
+                        spacing: 10,
                         children: [
                           const Text(
-                            'Clasificación',
+                            'Motivo de descuento:',
                             style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xff52525B),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xff3F3F46),
                             ),
                           ),
                           ShadSelect<String>(
@@ -203,7 +572,7 @@ class _SellViewState extends ConsumerState<SellView> {
                             selectedOptionBuilder:
                                 (context, value) => Text(value),
                             options:
-                                OptionsToSellEnum.values
+                                DiscountReasonEnum.values
                                     .map(
                                       (e) => ShadOption(
                                         value: e.name,
@@ -213,8 +582,8 @@ class _SellViewState extends ConsumerState<SellView> {
                                     .toList(),
                             onChanged: (value) {
                               if (value != null) {
-                                sellNotifier.selectOptionToSell(
-                                  OptionsToSellEnum.values.firstWhere(
+                                sellNotifier.selectDiscountReason(
+                                  DiscountReasonEnum.values.firstWhere(
                                     (e) => e.name == value,
                                   ),
                                 );
@@ -223,444 +592,79 @@ class _SellViewState extends ConsumerState<SellView> {
                           ),
                         ],
                       ),
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: size.width * 0.5,
-                        ),
-                        child: ShadInputFormField(
-                          placeholder: const Text(
-                            'Nombre del producto a buscar',
-                          ),
-                          label: const Text('Producto'),
-                          controller: sellNotifier.searchItemToSellController,
-                          onSubmitted: (_) {
-                            if (sellState.selectedOptionToSell ==
-                                OptionsToSellEnum.mount) {
-                              sellNotifier.getMounts();
-                            } else if (sellState.selectedOptionToSell ==
-                                OptionsToSellEnum.resin) {
-                              sellNotifier.getResin();
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (sellState.mounts.isNotEmpty && !sellState.isLoading)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 320,
-                      child: TooltipVisibility(
-                        visible: false,
-                        child: PaginatedDataTable2(
-                          wrapInCard: false,
-                          columnSpacing: 12,
-                          horizontalMargin: 12,
-                          minWidth: 800,
-                          isHorizontalScrollBarVisible: true,
-                          isVerticalScrollBarVisible: true,
-                          headingRowHeight: 38,
-                          headingRowColor: WidgetStateProperty.all(
-                            const Color(0xffFAFAFA),
-                          ),
-                          columns: const [
-                            DataColumn2(
-                              label: Text('Marca'),
-                              fixedWidth: 120,
-                              isResizable: true,
-                            ),
-                            DataColumn2(
-                              label: Text('Modelo'),
-                              fixedWidth: 100,
-                              isResizable: true,
-                            ),
-                            DataColumn2(
-                              label: Text('Color'),
-                              fixedWidth: 120,
-                              isResizable: true,
-                            ),
-                            DataColumn2(
-                              label: Text('Descripción'),
-                              fixedWidth: 150,
-                              isResizable: true,
-                            ),
-                            DataColumn2(
-                              label: Text('Optica'),
-                              fixedWidth: 100,
-                              isResizable: true,
-                            ),
-                            DataColumn2(
-                              label: Text('Precio'),
-                              fixedWidth: 90,
-                              isResizable: true,
-                            ),
-                            DataColumn2(
-                              label: Text('Acciones'),
-                              fixedWidth: 90,
-                              isResizable: true,
-                            ),
-                          ],
-                          source: MountsDataSource(
-                            mounts: sellState.mounts,
-                            context: context,
-                            ref: ref,
-                          ),
-                          availableRowsPerPage: const [5, 10, 20, 50],
-                          rowsPerPage: sellState.rowsPerPage,
-                          onRowsPerPageChanged:
-                              (value) =>
-                                  sellNotifier.changeRowsPerPage(value ?? 5),
-                        ),
-                      ),
-                    ),
-                  if (sellState.resins.isNotEmpty && !sellState.isLoading)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 320,
-                      child: TooltipVisibility(
-                        visible: false,
-                        child: PaginatedDataTable2(
-                          wrapInCard: false,
-                          columnSpacing: 12,
-                          horizontalMargin: 12,
-                          minWidth: 900,
-                          isHorizontalScrollBarVisible: true,
-                          isVerticalScrollBarVisible: true,
-                          headingRowHeight: 38,
-                          headingRowColor: WidgetStateProperty.all(
-                            const Color(0xffFAFAFA),
-                          ),
-                          columns: const [
-                            DataColumn2(
-                              label: Text('Descripción'),
-                              fixedWidth: 120,
-                              isResizable: true,
-                            ),
-                            DataColumn2(
-                              label: Text('Diseño'),
-                              fixedWidth: 180,
-                              isResizable: true,
-                            ),
-                            DataColumn2(
-                              label: Text('Linea'),
-                              fixedWidth: 100,
-                              isResizable: true,
-                            ),
-                            DataColumn2(
-                              label: Text('Material'),
-                              fixedWidth: 100,
-                              isResizable: true,
-                            ),
-                            DataColumn2(
-                              label: Text('Tecnología'),
-                              fixedWidth: 130,
-                              isResizable: true,
-                            ),
-                            DataColumn2(
-                              label: Text('Cant.'),
-                              fixedWidth: 60,
-                              isResizable: true,
-                            ),
-                            DataColumn2(
-                              label: Text('P. Interno'),
-                              fixedWidth: 90,
-                              isResizable: true,
-                            ),
-                            DataColumn2(
-                              label: Text('P. Público'),
-                              fixedWidth: 90,
-                              isResizable: true,
-                            ),
-                            DataColumn2(
-                              label: Text('Acciones'),
-                              fixedWidth: 80,
-                              isResizable: true,
-                            ),
-                          ],
-                          source: ResinDataSource(
-                            resins: sellState.resins,
-                            context: context,
-                            ref: ref,
-                          ),
-                          availableRowsPerPage: const [5, 10, 20, 50],
-                          rowsPerPage: sellState.rowsPerPage,
-                          onRowsPerPageChanged:
-                              (value) =>
-                                  sellNotifier.changeRowsPerPage(value ?? 5),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
 
-            // ─── Step 3: Invoice ──────────────────────────
-            _StepCard(
-              step: 3,
-              title: 'Nota de venta',
-              subtitle: 'Revisa los productos y confirma la venta',
-              isCompleted: false,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 16,
-                children: [
-                  // Patient + date row
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          spacing: 4,
+                      // Totals grid
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffFAFAFA),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xffE4E4E7)),
+                        ),
+                        child: Wrap(
+                          spacing: 12,
+                          runSpacing: 12,
                           children: [
-                            const Text(
-                              'Paciente',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: Color(0xff71717A),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            Text(
-                              sellState.selectedPatient?.name ?? '',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xff18181B),
-                              ),
-                            ),
+                            ShadInputFormField(
+                              readOnly: true,
+                              label: const Text('Importe'),
+                              controller: sellNotifier.importController,
+                            ).constrained(width: 110),
+                            ShadInputFormField(
+                              readOnly: sellState.itemsToSell.isEmpty,
+                              label: const Text('Descuento'),
+                              controller: sellNotifier.discountController,
+                              onSubmitted: (_) => sellNotifier.applyDiscount(),
+                            ).constrained(width: 110),
+                            ShadInputFormField(
+                              readOnly: true,
+                              label: const Text('Total'),
+                              controller: sellNotifier.totalController,
+                            ).constrained(width: 110),
+                            ShadInputFormField(
+                              readOnly: sellState.itemsToSell.isEmpty,
+                              label: const Text('A cuenta'),
+                              controller: sellNotifier.accountController,
+                              onSubmitted: (_) => sellNotifier.leaveAccount(),
+                            ).constrained(width: 110),
+                            ShadInputFormField(
+                              readOnly: true,
+                              label: const Text('Resto'),
+                              controller: sellNotifier.restController,
+                            ).constrained(width: 110),
                           ],
                         ),
                       ),
-                      ShadForm(
-                        key: _formKey,
-                        autovalidateMode:
-                            ShadAutovalidateMode.onUserInteraction,
-                        child: ShadInputFormField(
-                          label: const Text('Fecha'),
-                          inputFormatters: [sellNotifier.mask],
-                          controller: sellNotifier.dateController,
-                          validator:
-                              (v) =>
-                                  RegExp(
-                                        r'^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(19|20)\d{2}$',
-                                      ).hasMatch(v)
-                                      ? null
-                                      : 'Ingresa una fecha válida',
-                        ).constrained(width: 130),
-                      ),
-                    ],
-                  ),
 
-                  // Seller row
-                  Row(
-                    spacing: 10,
-                    children: [
-                      RichText(
-                        text: const TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Vendedor',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xff3F3F46),
-                              ),
-                            ),
-                            TextSpan(
-                              text: ' *',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xffEF4444),
-                              ),
-                            ),
-                            TextSpan(
-                              text: ':',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xff3F3F46),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (sellState.sellers.isNotEmpty)
-                        ShadSelect<SellerModel>(
-                          placeholder: Text(AppStrings.select),
-                          initialValue: sellState.selectedSeller,
-                          selectedOptionBuilder:
-                              (context, value) => Text(value.name),
-                          options:
-                              sellState.sellers
-                                  .map(
-                                    (e) => ShadOption(
-                                      value: e,
-                                      child: Text(e.name),
-                                    ),
-                                  )
-                                  .toList(),
-                          onChanged: sellNotifier.updateSelectedSeller,
-                        ).constrained(width: 200),
-                    ],
-                  ),
-
-                  const Divider(height: 1),
-
-                  // Items list
-                  const Text(
-                    'Productos en la nota',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xff3F3F46),
-                    ),
-                  ),
-                  if (sellState.itemsToSell.isNotEmpty)
-                    ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      separatorBuilder: (_, __) => const SizedBox(height: 8),
-                      itemCount: sellState.itemsToSell.length,
-                      itemBuilder: (context, index) {
-                        final item = sellState.itemsToSell[index];
-                        return _SellItemCard(
-                          key: ValueKey(item.id),
-                          item: item,
-                          onRemove: () => sellNotifier.removeItemToSell(index),
-                          onPriceChanged:
-                              (price) =>
-                                  sellNotifier.updateItemPrice(index, price),
-                        );
-                      },
-                    )
-                  else
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 24),
-                      child: Center(
-                        child: Text(
-                          'Aún no has agregado productos',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey.shade500,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                  if (sellState.itemsToSell.isNotEmpty) ...[
-                    const Divider(height: 1),
-
-                    // Discount reason
-                    Row(
-                      spacing: 10,
-                      children: [
-                        const Text(
-                          'Motivo de descuento:',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff3F3F46),
-                          ),
-                        ),
-                        ShadSelect<String>(
-                          placeholder: Text(AppStrings.select),
-                          selectedOptionBuilder:
-                              (context, value) => Text(value),
-                          options:
-                              DiscountReasonEnum.values
-                                  .map(
-                                    (e) => ShadOption(
-                                      value: e.name,
-                                      child: Text(e.name),
-                                    ),
-                                  )
-                                  .toList(),
-                          onChanged: (value) {
-                            if (value != null) {
-                              sellNotifier.selectDiscountReason(
-                                DiscountReasonEnum.values.firstWhere(
-                                  (e) => e.name == value,
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-
-                    // Totals grid
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: const Color(0xffFAFAFA),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xffE4E4E7)),
-                      ),
-                      child: Wrap(
+                      // Action buttons
+                      Row(
                         spacing: 12,
-                        runSpacing: 12,
                         children: [
-                          ShadInputFormField(
-                            readOnly: true,
-                            label: const Text('Importe'),
-                            controller: sellNotifier.importController,
-                          ).constrained(width: 110),
-                          ShadInputFormField(
-                            readOnly: sellState.itemsToSell.isEmpty,
-                            label: const Text('Descuento'),
-                            controller: sellNotifier.discountController,
-                            onSubmitted: (_) => sellNotifier.applyDiscount(),
-                          ).constrained(width: 110),
-                          ShadInputFormField(
-                            readOnly: true,
-                            label: const Text('Total'),
-                            controller: sellNotifier.totalController,
-                          ).constrained(width: 110),
-                          ShadInputFormField(
-                            readOnly: sellState.itemsToSell.isEmpty,
-                            label: const Text('A cuenta'),
-                            controller: sellNotifier.accountController,
-                            onSubmitted: (_) => sellNotifier.leaveAccount(),
-                          ).constrained(width: 110),
-                          ShadInputFormField(
-                            readOnly: true,
-                            label: const Text('Resto'),
-                            controller: sellNotifier.restController,
-                          ).constrained(width: 110),
+                          ShadButton(
+                            size: ShadButtonSize.lg,
+                            onPressed: sellNotifier.createSale,
+                            child: const Row(
+                              spacing: 8,
+                              children: [
+                                Icon(Icons.check_circle_outline, size: 16),
+                                Text('Crear venta'),
+                              ],
+                            ),
+                          ),
+                          ShadButton.outline(
+                            size: ShadButtonSize.lg,
+                            onPressed: sellNotifier.cancelSale,
+                            child: const Text('Cancelar'),
+                          ),
                         ],
                       ),
-                    ),
-
-                    // Action buttons
-                    Row(
-                      spacing: 12,
-                      children: [
-                        ShadButton(
-                          size: ShadButtonSize.lg,
-                          onPressed: sellNotifier.createSale,
-                          child: const Row(
-                            spacing: 8,
-                            children: [
-                              Icon(Icons.check_circle_outline, size: 16),
-                              Text('Crear venta'),
-                            ],
-                          ),
-                        ),
-                        ShadButton.outline(
-                          size: ShadButtonSize.lg,
-                          onPressed: sellNotifier.cancelSale,
-                          child: const Text('Cancelar'),
-                        ),
-                      ],
-                    ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

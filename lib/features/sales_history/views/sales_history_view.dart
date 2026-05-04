@@ -17,7 +17,6 @@ class SalesHistoryView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final height = MediaQuery.sizeOf(context).height;
     final salesState = ref.watch(salesHistoryProvider);
     final salesNotifier = ref.watch(salesHistoryProvider.notifier);
 
@@ -103,11 +102,10 @@ class SalesHistoryView extends ConsumerWidget {
           ),
 
           // ─── Table card ───────────────────────────────────
-          ShadCard(
+          Expanded(
+            child: ShadCard(
             padding: EdgeInsets.zero,
-            child: SizedBox(
-              height: height * 0.68,
-              child: TooltipVisibility(
+            child: TooltipVisibility(
                 visible: false,
                 child: PaginatedDataTable2(
                   headingRowHeight: 40,

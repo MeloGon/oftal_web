@@ -36,7 +36,8 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
     return ShadForm(
       key: _formKey,
       autovalidateMode: ShadAutovalidateMode.onUserInteraction,
-      child: Padding(
+      child: SingleChildScrollView(
+        child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -320,6 +321,7 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
               const LastPatientsAdded(),
           ],
         ),
+      ),
       ),
     );
   }

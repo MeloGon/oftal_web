@@ -31,7 +31,6 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.sizeOf(context).height;
     final searchPatientState = ref.watch(searchPatientProvider);
     final searchPatientNotifier = ref.watch(searchPatientProvider.notifier);
 
@@ -149,11 +148,10 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
 
           // ─── Results table ───────────────────────────────
           if (searchPatientState.patients.isNotEmpty)
-            ShadCard(
+            Expanded(
+              child: ShadCard(
               padding: EdgeInsets.zero,
-              child: SizedBox(
-                height: height * 0.65,
-                child: TooltipVisibility(
+              child: TooltipVisibility(
                   visible: false,
                   child: PaginatedDataTable2(
                     controller: _paginatorController,

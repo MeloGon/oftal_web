@@ -24,32 +24,17 @@ class FilterHistorySales extends ConsumerWidget {
           children: [
             Text('Filtrar por :', style: AppTextStyles(context).small13),
             const SizedBox(width: 10),
-            DropdownButtonFormField<FilterToSalesHistory>(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-              ),
-              hint: Text(AppStrings.select),
+            ShadSelect<FilterToSalesHistory>(
+              placeholder: Text(AppStrings.select),
               initialValue: salesHistoryState.selectedFilter,
-              items:
-                  FilterToSalesHistory.values
-                      .map(
-                        (e) => DropdownMenuItem(
-                          value: e,
-                          child: Text(e.label),
-                        ),
-                      )
-                      .toList(),
+              selectedOptionBuilder: (context, value) => Text(value.label),
+              options: FilterToSalesHistory.values
+                  .map((e) => ShadOption(value: e, child: Text(e.label)))
+                  .toList(),
               onChanged: (value) {
-                if (value != null) {
-                  salesHistoryNotifier.selectFilter(value);
-                }
+                if (value != null) salesHistoryNotifier.selectFilter(value);
               },
-              isExpanded: true,
-            ).constrained(width: 200, height: 30),
+            ).constrained(width: 200),
           ],
         ),
         if (salesHistoryState.selectedFilter == FilterToSalesHistory.patient)
