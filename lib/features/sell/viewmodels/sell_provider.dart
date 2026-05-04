@@ -225,6 +225,16 @@ class Sell extends _$Sell {
   }
 
   Future<void> createSale() async {
+    if (state.selectedSeller == null) {
+      state = state.copyWith(
+        errorMessage: 'Debes seleccionar un vendedor antes de crear la venta',
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Aviso',
+          type: SnackbarEnum.error,
+        ),
+      );
+      return;
+    }
     state = state.copyWith(isLoading: true);
     _checkDate();
     try {
@@ -339,15 +349,17 @@ class Sell extends _$Sell {
               ),
               isLoading: false,
             ),
-        (_) =>
-            state = state.copyWith(
-              isLoading: false,
-              snackbarConfig: SnackbarConfigModel(
-                title: 'Aviso',
-                type: SnackbarEnum.success,
-              ),
-              errorMessage: 'Venta realizada correctamente',
+        (_) {
+          state = state.copyWith(
+            isLoading: false,
+            snackbarConfig: SnackbarConfigModel(
+              title: 'Aviso',
+              type: SnackbarEnum.success,
             ),
+            errorMessage: 'Venta realizada correctamente',
+          );
+          Future.microtask(resetState);
+        },
       );
     } catch (e) {
       state = state.copyWith(
@@ -428,7 +440,10 @@ class Sell extends _$Sell {
               type: SnackbarEnum.error,
             ),
           ),
-      (mounts) => state = state.copyWith(mounts: mounts, isLoading: false),
+      (mounts) => state = state.copyWith(
+        mounts: mounts.where((m) => m.stock > 0).toList(),
+        isLoading: false,
+      ),
     );
   }
 

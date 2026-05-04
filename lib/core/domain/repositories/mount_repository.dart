@@ -13,4 +13,5 @@ abstract class MountRepository {
   Future<Either<Failure, Unit>> updateMount(MountModel mount);
   Future<Either<Failure, Unit>> deleteMount(int id);
   Future<Either<Failure, Unit>> decrementStock(int id, int currentStock);
+  Future<Either<Failure, Unit>> incrementStock(int id);
 }

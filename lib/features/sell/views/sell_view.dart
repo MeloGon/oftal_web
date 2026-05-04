@@ -456,12 +456,34 @@ class _SellViewState extends ConsumerState<SellView> {
                   Row(
                     spacing: 10,
                     children: [
-                      const Text(
-                        'Vendedor:',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xff3F3F46),
+                      RichText(
+                        text: const TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Vendedor',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xff3F3F46),
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' *',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xffEF4444),
+                              ),
+                            ),
+                            TextSpan(
+                              text: ':',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xff3F3F46),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       if (sellState.sellers.isNotEmpty)

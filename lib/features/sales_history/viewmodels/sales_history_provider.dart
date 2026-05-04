@@ -143,6 +143,22 @@ class SalesHistory extends _$SalesHistory {
   Future<void> deleteSale(SalesModel sale) async {
     state = state.copyWith(isLoading: true);
     if (sale.folioSale == null) return;
+
+    final detailsResult = await ref
+        .read(saleRepositoryProvider)
+        .getSaleDetails(sale.folioSale!);
+    await detailsResult.fold(
+      (failure) async {},
+      (details) async {
+        for (final detail in details) {
+          final mountId = detail.idMount;
+          if (mountId != null && mountId != 0) {
+            await ref.read(mountRepositoryProvider).incrementStock(mountId);
+          }
+        }
+      },
+    );
+
     final result =
         await ref.read(saleRepositoryProvider).deleteSale(sale.folioSale!);
     result.fold(
