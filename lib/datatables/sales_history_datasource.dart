@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/theme/app_text_styles.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
+import 'package:oftal_web/features/sales_history/views/widgets/register_payment_dialog.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/sales_history_actions.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
@@ -131,6 +132,8 @@ class SalesHistoryDataSource extends DataTableSource {
                 ref.read(salesHistoryProvider.notifier).selectSaleForEdit(sale),
             onFinalizeSale: () =>
                 ref.read(salesHistoryProvider.notifier).finalizeSale(sale),
+            onRegisterPayment: () =>
+                RegisterPaymentDialog().show(context, ref, sale),
           ),
         ),
       ],

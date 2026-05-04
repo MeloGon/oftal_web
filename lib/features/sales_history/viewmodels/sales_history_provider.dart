@@ -5,6 +5,7 @@ import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
+import 'package:oftal_web/shared/providers/providers.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_state.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
@@ -159,6 +160,12 @@ class SalesHistory extends _$SalesHistory {
       },
     );
 
+    if (sale.id != null) {
+      await ref
+          .read(paymentRepositoryProvider)
+          .deletePaymentsByRemision(sale.id!);
+    }
+
     final result =
         await ref.read(saleRepositoryProvider).deleteSale(sale.folioSale!);
     result.fold(
@@ -303,6 +310,68 @@ class SalesHistory extends _$SalesHistory {
             title: 'Aviso',
             type: SnackbarEnum.success,
           ),
+        );
+      },
+    );
+  }
+
+  Future<void> registerPayment({
+    required SalesModel sale,
+    required double monto,
+    required String fechaPago,
+    required String metodoPago,
+    String? notas,
+  }) async {
+    state = state.copyWith(isLoading: true);
+    final userId = ref.read(authProvider).profile?.id;
+    final payment = PaymentModel(
+      idRemision: sale.id!,
+      monto: monto,
+      fechaPago: fechaPago,
+      metodoPago: metodoPago,
+      registradoPor: userId,
+      notas: notas,
+    );
+    final insertResult =
+        await ref.read(paymentRepositoryProvider).insertPayment(payment);
+    await insertResult.fold(
+      (failure) async => state = state.copyWith(
+        isLoading: false,
+        errorMessage: failure.message,
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+      ),
+      (_) async {
+        final newAccount = (sale.account ?? 0) + monto;
+        final newRest = ((sale.totalWithDiscount ?? 0) - newAccount).clamp(
+          0,
+          double.infinity,
+        ).toDouble();
+        final updateResult = await ref
+            .read(saleRepositoryProvider)
+            .updateAccountPayment(sale.id!, newAccount, newRest, fechaPago);
+        updateResult.fold(
+          (failure) => state = state.copyWith(
+            isLoading: false,
+            errorMessage: failure.message,
+            snackbarConfig: SnackbarConfigModel(
+              title: 'Error',
+              type: SnackbarEnum.error,
+            ),
+          ),
+          (_) {
+            state = state.copyWith(
+              isLoading: false,
+              errorMessage: 'Abono registrado correctamente',
+              snackbarConfig: SnackbarConfigModel(
+                title: 'Aviso',
+                type: SnackbarEnum.success,
+              ),
+            );
+            getSales();
+          },
         );
       },
     );

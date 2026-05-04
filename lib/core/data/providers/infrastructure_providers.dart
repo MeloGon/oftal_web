@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:oftal_web/core/data/datasources/remote/mount_remote_datasource.dart';
+import 'package:oftal_web/core/data/datasources/remote/payment_remote_datasource.dart';
+import 'package:oftal_web/core/data/repositories/payment_repository_impl.dart';
+import 'package:oftal_web/core/domain/repositories/payment_repository.dart';
 import 'package:oftal_web/core/data/datasources/remote/patient_remote_datasource.dart';
 import 'package:oftal_web/core/data/datasources/remote/resin_remote_datasource.dart';
 import 'package:oftal_web/core/data/datasources/remote/review_remote_datasource.dart';
@@ -72,4 +75,12 @@ final reviewRepositoryProvider = Provider<ReviewRepository>((ref) {
 
 final sellerRepositoryProvider = Provider<SellerRepository>((ref) {
   return SellerRepositoryImpl(ref.read(sellerRemoteDataSourceProvider));
+});
+
+final paymentRemoteDataSourceProvider = Provider<PaymentRemoteDataSource>((ref) {
+  return PaymentRemoteDataSourceImpl(ref.read(supabaseClientProvider));
+});
+
+final paymentRepositoryProvider = Provider<PaymentRepository>((ref) {
+  return PaymentRepositoryImpl(ref.read(paymentRemoteDataSourceProvider));
 });

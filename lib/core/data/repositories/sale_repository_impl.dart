@@ -123,4 +123,24 @@ class SaleRepositoryImpl implements SaleRepository {
       return Left(Failure.server(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, Unit>> updateAccountPayment(
+    String idRemision,
+    double newAccount,
+    double newRest,
+    String fechaPago,
+  ) async {
+    try {
+      await _dataSource.updateAccountPayment(
+        idRemision,
+        newAccount,
+        newRest,
+        fechaPago,
+      );
+      return const Right(unit);
+    } catch (e) {
+      return Left(Failure.server(e.toString()));
+    }
+  }
 }

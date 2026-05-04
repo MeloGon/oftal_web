@@ -191,7 +191,7 @@ class SalesHistoryView extends ConsumerWidget {
                     ),
                     DataColumn2(
                       label: _ColHeader('Acciones'),
-                      fixedWidth: 148,
+                      fixedWidth: 186,
                       isResizable: true,
                     ),
                   ],
@@ -265,6 +265,11 @@ class _ActionsLegend extends StatelessWidget {
           icon: Icons.edit_outlined,
           label: 'Editar venta (Aun en fase experimental)',
           color: const Color(0xff0EA5E9),
+        ),
+        _LegendItem(
+          icon: Icons.payments_outlined,
+          label: 'Registrar abono',
+          color: const Color(0xff7A6BF5),
         ),
         _LegendItem(
           icon: Icons.check_circle_outline,

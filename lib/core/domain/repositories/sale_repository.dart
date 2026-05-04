@@ -21,4 +21,10 @@ abstract class SaleRepository {
   Future<Either<Failure, Unit>> deleteSale(String folioSale);
   Future<Either<Failure, Unit>> updateShortSale(SalesModel sale);
   Future<Either<Failure, Unit>> updateSaleDetail(SalesDetailsModel detail);
+  Future<Either<Failure, Unit>> updateAccountPayment(
+    String idRemision,
+    double newAccount,
+    double newRest,
+    String fechaPago,
+  );
 }
