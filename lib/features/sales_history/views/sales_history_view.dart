@@ -19,18 +19,29 @@ class SalesHistoryView extends ConsumerStatefulWidget {
 }
 
 class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
+  late SalesHistoryDataSource _dataSource;
+
   @override
   void initState() {
     super.initState();
-    Future.microtask(
-      () => ref.read(salesHistoryProvider.notifier).getSales(),
+    final initialSales = ref.read(salesHistoryProvider).sales;
+    _dataSource = SalesHistoryDataSource(
+      sales: initialSales,
+      context: context,
+      ref: ref,
     );
+    if (initialSales.isEmpty) {
+      Future.microtask(
+        () => ref.read(salesHistoryProvider.notifier).getSales(),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final salesState = ref.watch(salesHistoryProvider);
-    final salesNotifier = ref.watch(salesHistoryProvider.notifier);
+    final salesNotifier = ref.read(salesHistoryProvider.notifier);
+    _dataSource.update(salesState.sales, context);
 
     ref.listenLoading(
       salesHistoryProvider.select((s) => s.isLoading),
@@ -117,7 +128,7 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
                   columnSpacing: 12,
                   columnResizingParameters: ColumnResizingParameters(
                     desktopMode: true,
-                    realTime: true,
+                    realTime: false,
                     widgetColor: Theme.of(context).primaryColor,
                   ),
                   horizontalMargin: 16,
@@ -127,11 +138,7 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
                   headingRowColor: WidgetStateProperty.all(
                     const Color(0xffFAFAFA),
                   ),
-                  source: SalesHistoryDataSource(
-                    sales: salesState.sales,
-                    context: context,
-                    ref: ref,
-                  ),
+                  source: _dataSource,
                   availableRowsPerPage: const [20],
                   rowsPerPage: salesState.rowsPerPage,
                   onRowsPerPageChanged:

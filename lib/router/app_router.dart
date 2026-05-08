@@ -70,94 +70,112 @@ GoRouter appRouter(Ref ref) {
           ),
         ],
       ),
-      ShellRoute(
-        builder: (context, state, child) => DashboardLayout(child: child),
-        routes: [
-          GoRoute(
-            path: RouterName.dashboard,
-            pageBuilder: (context, state) => _fadeRoute(const DashboardView()),
-          ),
-          GoRoute(
-            path: RouterName.searchPatient,
-            pageBuilder:
-                (context, state) => _fadeRoute(const SearchPatientView()),
-            redirect: (context, state) {
-              if (state.matchedLocation == RouterName.searchPatient) {
-                ref
-                    .read(navigationProvider.notifier)
-                    .setCurrentPage(RouterName.searchPatient);
-                return RouterName.searchPatient;
-              }
-              return null;
-            },
-          ),
-          GoRoute(
-            path: RouterName.addPatient,
-            pageBuilder: (context, state) => _fadeRoute(const AddPatientView()),
-            redirect: (context, state) {
-              if (state.matchedLocation == RouterName.addPatient) {
-                ref
-                    .read(navigationProvider.notifier)
-                    .setCurrentPage(RouterName.addPatient);
-                return RouterName.addPatient;
-              }
-              return null;
-            },
-          ),
-          GoRoute(
-            path: RouterName.settings,
-            pageBuilder: (context, state) => _fadeRoute(const SettingsView()),
-            redirect: (context, state) {
-              if (state.matchedLocation.startsWith(RouterName.settings)) {
-                ref
-                    .read(navigationProvider.notifier)
-                    .setCurrentPage(RouterName.settings);
-                return null;
-              }
-              return null;
-            },
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            DashboardLayout(child: navigationShell),
+        branches: [
+          StatefulShellBranch(
             routes: [
               GoRoute(
-                path: 'resins',
-                pageBuilder: (context, state) => _fadeRoute(const ResinsView()),
-              ),
-              GoRoute(
-                path: 'mounts',
-                pageBuilder: (context, state) => _fadeRoute(const MountsView()),
-              ),
-              GoRoute(
-                path: 'payments-report',
-                pageBuilder: (context, state) =>
-                    _fadeRoute(const PaymentsReportView()),
+                path: RouterName.dashboard,
+                pageBuilder:
+                    (context, state) => _fadeRoute(const DashboardView()),
               ),
             ],
           ),
-          GoRoute(
-            path: RouterName.sell,
-            pageBuilder: (context, state) => _fadeRoute(const SellView()),
-            redirect: (context, state) {
-              if (state.matchedLocation == RouterName.sell) {
-                ref
-                    .read(navigationProvider.notifier)
-                    .setCurrentPage(RouterName.sell);
-                return RouterName.sell;
-              }
-              return null;
-            },
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RouterName.searchPatient,
+                pageBuilder:
+                    (context, state) =>
+                        _fadeRoute(const SearchPatientView()),
+                redirect: (context, state) {
+                  ref
+                      .read(navigationProvider.notifier)
+                      .setCurrentPage(RouterName.searchPatient);
+                  return null;
+                },
+              ),
+            ],
           ),
-          GoRoute(
-            path: RouterName.salesHistory,
-            pageBuilder:
-                (context, state) => _fadeRoute(const SalesHistoryView()),
-            redirect: (context, state) {
-              if (state.matchedLocation == RouterName.salesHistory) {
-                ref
-                    .read(navigationProvider.notifier)
-                    .setCurrentPage(RouterName.salesHistory);
-                return RouterName.salesHistory;
-              }
-              return null;
-            },
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RouterName.addPatient,
+                pageBuilder:
+                    (context, state) => _fadeRoute(const AddPatientView()),
+                redirect: (context, state) {
+                  ref
+                      .read(navigationProvider.notifier)
+                      .setCurrentPage(RouterName.addPatient);
+                  return null;
+                },
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RouterName.settings,
+                pageBuilder:
+                    (context, state) => _fadeRoute(const SettingsView()),
+                redirect: (context, state) {
+                  ref
+                      .read(navigationProvider.notifier)
+                      .setCurrentPage(RouterName.settings);
+                  return null;
+                },
+                routes: [
+                  GoRoute(
+                    path: 'resins',
+                    pageBuilder:
+                        (context, state) => _fadeRoute(const ResinsView()),
+                  ),
+                  GoRoute(
+                    path: 'mounts',
+                    pageBuilder:
+                        (context, state) => _fadeRoute(const MountsView()),
+                  ),
+                  GoRoute(
+                    path: 'payments-report',
+                    pageBuilder:
+                        (context, state) =>
+                            _fadeRoute(const PaymentsReportView()),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RouterName.sell,
+                pageBuilder:
+                    (context, state) => _fadeRoute(const SellView()),
+                redirect: (context, state) {
+                  ref
+                      .read(navigationProvider.notifier)
+                      .setCurrentPage(RouterName.sell);
+                  return null;
+                },
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RouterName.salesHistory,
+                pageBuilder:
+                    (context, state) => _fadeRoute(const SalesHistoryView()),
+                redirect: (context, state) {
+                  ref
+                      .read(navigationProvider.notifier)
+                      .setCurrentPage(RouterName.salesHistory);
+                  return null;
+                },
+              ),
+            ],
           ),
         ],
       ),

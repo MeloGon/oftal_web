@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:oftal_web/core/theme/app_text_styles.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/register_payment_dialog.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/sales_history_actions.dart';
@@ -8,9 +8,15 @@ import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 
 class SalesHistoryDataSource extends DataTableSource {
-  final List<SalesModel> sales;
-  final BuildContext context;
+  List<SalesModel> sales;
+  BuildContext context;
   final WidgetRef ref;
+
+  // Cached once per class — avoids GoogleFonts + ShadTheme lookups per cell
+  static final _cellStyle = TextStyle(
+    fontSize: 13,
+    fontFamily: GoogleFonts.poppins().fontFamily,
+  );
 
   SalesHistoryDataSource({
     required this.sales,
@@ -18,23 +24,23 @@ class SalesHistoryDataSource extends DataTableSource {
     required this.ref,
   });
 
-  Widget cell(String label, SalesModel sale) => GestureDetector(
-    behavior: HitTestBehavior.opaque,
-    onDoubleTap: () {
-      ref.read(salesHistoryProvider.notifier).selectSaleForDetails(sale);
-      ref.read(salesHistoryProvider.notifier).getSalesDetails();
-    },
-    child: Text(label),
-  );
+  /// Call from build() to refresh data without recreating the source.
+  /// Only triggers notifyListeners() when the sales list actually changes.
+  void update(List<SalesModel> newSales, BuildContext ctx) {
+    context = ctx;
+    if (identical(sales, newSales)) return;
+    sales = newSales;
+    notifyListeners();
+  }
 
-  void doubleTap(SalesModel sale) {
+  void _openDetails(SalesModel sale) {
     ref.read(salesHistoryProvider.notifier).selectSaleForDetails(sale);
-    ref.read(salesHistoryProvider.notifier).getSalesDetails();
   }
 
   @override
   DataRow? getRow(int index) {
     final sale = sales[index];
+    final s = _cellStyle;
 
     return DataRow.byIndex(
       onSelectChanged: (value) {},
@@ -42,92 +48,60 @@ class SalesHistoryDataSource extends DataTableSource {
       cells: [
         DataCell(_StatusBadge(isPaid: (sale.rest ?? 0) == 0)),
         DataCell(
-          Text(
-            sale.folioSale.toString(),
-            style: AppTextStyles(context).small13,
-          ),
-          onDoubleTap: () => doubleTap(sale),
+          Text(sale.folioSale.toString(), style: s),
+          onDoubleTap: () => _openDetails(sale),
         ),
         DataCell(
-          Text(sale.patient.toString(), style: AppTextStyles(context).small13),
-          onDoubleTap: () => doubleTap(sale),
+          Text(sale.patient.toString(), style: s),
+          onDoubleTap: () => _openDetails(sale),
         ),
         DataCell(
-          Text(sale.date.toString(), style: AppTextStyles(context).small13),
-          onDoubleTap: () => doubleTap(sale),
+          Text(sale.date.toString(), style: s),
+          onDoubleTap: () => _openDetails(sale),
         ),
         DataCell(
-          Text(
-            sale.authorName.toString(),
-            style: AppTextStyles(context).small13,
-          ),
-          onDoubleTap: () => doubleTap(sale),
+          Text(sale.authorName.toString(), style: s),
+          onDoubleTap: () => _openDetails(sale),
         ),
         DataCell(
-          Text(
-            sale.account?.toCurrency() ?? '0',
-            style: AppTextStyles(context).small13,
-          ),
-          onDoubleTap: () => doubleTap(sale),
+          Text(sale.account?.toCurrency() ?? '0', style: s),
+          onDoubleTap: () => _openDetails(sale),
         ),
         DataCell(
-          Text(
-            sale.rest?.toCurrency() ?? '0',
-            style: AppTextStyles(context).small13,
-          ),
-          onDoubleTap: () => doubleTap(sale),
+          Text(sale.rest?.toCurrency() ?? '0', style: s),
+          onDoubleTap: () => _openDetails(sale),
         ),
         DataCell(
-          Text(
-            sale.discount?.toCurrency() ?? '0',
-            style: AppTextStyles(context).small13,
-          ),
-          onDoubleTap: () => doubleTap(sale),
+          Text(sale.discount?.toCurrency() ?? '0', style: s),
+          onDoubleTap: () => _openDetails(sale),
         ),
         DataCell(
-          Text(
-            sale.total?.toCurrency() ?? '0',
-            style: AppTextStyles(context).small13,
-          ),
-          onDoubleTap: () => doubleTap(sale),
+          Text(sale.total?.toCurrency() ?? '0', style: s),
+          onDoubleTap: () => _openDetails(sale),
         ),
         DataCell(
-          Text(
-            sale.totalWithDiscount?.toCurrency() ?? '0',
-            style: AppTextStyles(context).small13,
-          ),
-          onDoubleTap: () => doubleTap(sale),
+          Text(sale.totalWithDiscount?.toCurrency() ?? '0', style: s),
+          onDoubleTap: () => _openDetails(sale),
         ),
         DataCell(
-          Text(sale.branch.toString(), style: AppTextStyles(context).small13),
-          onDoubleTap: () => doubleTap(sale),
+          Text(sale.branch.toString(), style: s),
+          onDoubleTap: () => _openDetails(sale),
         ),
-
         DataCell(
           SalesHistoryActions(
             sale: sale,
-            onViewDetails: () {
-              ref
-                  .read(salesHistoryProvider.notifier)
-                  .selectSaleForDetails(sale);
-              ref.read(salesHistoryProvider.notifier).getSalesDetails();
-            },
+            onViewDetails: () => _openDetails(sale),
             onPrintSale: () async {
-              ref
-                  .read(salesHistoryProvider.notifier)
-                  .selectSaleForDetails(sale);
+              _openDetails(sale);
               await ref
                   .read(salesHistoryProvider.notifier)
                   .getSalesDetails()
-                  .then((value) async {
-                    await ref
-                        .read(salesHistoryProvider.notifier)
-                        .generatePdf(sale);
-                  });
+                  .then((_) => ref
+                      .read(salesHistoryProvider.notifier)
+                      .generatePdf(sale));
             },
-            onDeleteSale: () async {
-              await ref.read(salesHistoryProvider.notifier).deleteSale(sale);
-            },
+            onDeleteSale: () =>
+                ref.read(salesHistoryProvider.notifier).deleteSale(sale),
             onFinalizeSale: () =>
                 ref.read(salesHistoryProvider.notifier).finalizeSale(sale),
             onRegisterPayment: () =>
