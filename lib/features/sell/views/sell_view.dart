@@ -561,33 +561,57 @@ class _SellViewState extends ConsumerState<SellView> {
                               label: const Text('Importe'),
                               controller: sellNotifier.importController,
                             ).constrained(width: 110),
-                            ShadInputFormField(
-                              readOnly: sellState.itemsToSell.isEmpty,
-                              label: const Text('Descuento'),
-                              controller: sellNotifier.discountController,
-                              onSubmitted: (_) => sellNotifier.applyDiscount(),
-                            ).constrained(width: 110),
+                            Focus(
+                              onFocusChange: (hasFocus) {
+                                if (!hasFocus) sellNotifier.applyDiscount();
+                              },
+                              child: ShadInputFormField(
+                                readOnly: sellState.itemsToSell.isEmpty,
+                                label: const Text('Descuento'),
+                                controller: sellNotifier.discountController,
+                                onSubmitted: (_) => sellNotifier.applyDiscount(),
+                              ).constrained(width: 110),
+                            ),
                             ShadInputFormField(
                               readOnly: true,
                               label: const Text('Total'),
                               controller: sellNotifier.totalController,
                             ).constrained(width: 110),
-                            ShadInputFormField(
-                              readOnly: sellState.itemsToSell.isEmpty,
-                              label: const Text('A cuenta'),
-                              controller: sellNotifier.accountController,
-                              onSubmitted: (_) => sellNotifier.leaveAccount(),
-                            ).constrained(width: 110),
+                            Focus(
+                              onFocusChange: (hasFocus) {
+                                if (!hasFocus) sellNotifier.leaveAccount();
+                              },
+                              child: ShadInputFormField(
+                                readOnly: sellState.itemsToSell.isEmpty,
+                                label: const Text('A cuenta'),
+                                controller: sellNotifier.accountController,
+                                onSubmitted: (_) => sellNotifier.leaveAccount(),
+                              ).constrained(width: 110),
+                            ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               spacing: 4,
                               children: [
-                                const Text(
-                                  'Método de pago',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xff09090B),
+                                RichText(
+                                  text: const TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: 'Método de pago',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color(0xff09090B),
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: ' *',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color(0xffEF4444),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 ShadSelect<PaymentMethodEnum>(
@@ -626,7 +650,21 @@ class _SellViewState extends ConsumerState<SellView> {
                         children: [
                           ShadButton(
                             size: ShadButtonSize.lg,
-                            onPressed: sellNotifier.createSale,
+                            onPressed: () {
+                              if (sellState.selectedInitialPaymentMethod ==
+                                  null) {
+                                _showSnackbar(
+                                  context,
+                                  SnackbarConfigModel(
+                                    title: 'Campo requerido',
+                                    type: SnackbarEnum.error,
+                                  ),
+                                  'Selecciona un método de pago antes de crear la venta',
+                                );
+                                return;
+                              }
+                              sellNotifier.createSale();
+                            },
                             child: const Row(
                               spacing: 8,
                               children: [
