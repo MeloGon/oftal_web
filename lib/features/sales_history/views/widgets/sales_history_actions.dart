@@ -8,15 +8,15 @@ class SalesHistoryActions extends StatelessWidget {
     required this.onViewDetails,
     required this.onDeleteSale,
     required this.onPrintSale,
-    required this.onEditSale,
     required this.onFinalizeSale,
+    required this.onRegisterPayment,
   });
   final SalesModel sale;
   final Function() onViewDetails;
   final Function() onDeleteSale;
   final Function() onPrintSale;
-  final Function() onEditSale;
   final Function() onFinalizeSale;
+  final Function() onRegisterPayment;
 
   @override
   Widget build(BuildContext context) {
@@ -51,24 +51,25 @@ class SalesHistoryActions extends StatelessWidget {
             ),
           ),
         ),
-        Tooltip(
-          message: 'Editar venta',
-          child: Material(
-            type: MaterialType.transparency,
-            child: InkWell(
-              onTap: onEditSale,
-              borderRadius: BorderRadius.circular(4),
-              child: const Padding(
-                padding: EdgeInsets.all(2),
-                child: Icon(
-                  Icons.edit_outlined,
-                  size: 18,
-                  color: Color(0xff0EA5E9),
+        if ((sale.rest ?? 0) > 0)
+          Tooltip(
+            message: 'Registrar abono',
+            child: Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                onTap: onRegisterPayment,
+                borderRadius: BorderRadius.circular(4),
+                child: const Padding(
+                  padding: EdgeInsets.all(2),
+                  child: Icon(
+                    Icons.payments_outlined,
+                    size: 18,
+                    color: Color(0xff7A6BF5),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
         if ((sale.rest ?? 0) > 0)
           Tooltip(
             message: 'Finalizar venta',

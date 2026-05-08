@@ -99,92 +99,74 @@ class MountsView extends ConsumerWidget {
           // ─── Table card ───────────────────────────────────
           ShadCard(
             padding: EdgeInsets.zero,
-            child: Stack(
-              children: [
-                SizedBox(
-                  width: width * 0.9,
-                  height: 600,
-                  child: PaginatedDataTable2(
-                    wrapInCard: false,
-                    columnSpacing: 12,
-                    horizontalMargin: 16,
-                    headingRowHeight: 40,
-                    minWidth: width * 0.88,
-                    isHorizontalScrollBarVisible: true,
-                    isVerticalScrollBarVisible: true,
-                    headingRowColor: WidgetStateProperty.all(
-                      const Color(0xffFAFAFA),
+            child: LoadingOverlay(
+              isLoading: mountsState.isLoading,
+              child: SizedBox(
+                width: width * 0.9,
+                height: 600,
+                child: PaginatedDataTable2(
+                  wrapInCard: false,
+                  columnSpacing: 12,
+                  horizontalMargin: 16,
+                  headingRowHeight: 40,
+                  minWidth: width * 0.88,
+                  isHorizontalScrollBarVisible: true,
+                  isVerticalScrollBarVisible: true,
+                  headingRowColor: WidgetStateProperty.all(
+                    const Color(0xffFAFAFA),
+                  ),
+                  columns: const [
+                    DataColumn2(
+                      label: _ColHeader('Marca'),
+                      fixedWidth: 180,
                     ),
-                    columns: const [
-                      DataColumn2(
-                        label: _ColHeader('Marca'),
-                        fixedWidth: 180,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Modelo'),
-                        size: ColumnSize.M,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Color'),
-                        size: ColumnSize.M,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Descripción'),
-                        size: ColumnSize.L,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Optica'),
-                        size: ColumnSize.M,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Precio'),
-                        size: ColumnSize.S,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Stock'),
-                        size: ColumnSize.S,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Acciones'),
-                        size: ColumnSize.S,
-                      ),
-                    ],
-                    source: MountsInventoryDataSource(
-                      pageItems: mountsState.mounts,
-                      totalItems: mountsState.totalCount,
-                      currentOffset: mountsState.offset,
-                      isLoading: mountsState.isLoading,
-                      context: context,
-                      ref: ref,
+                    DataColumn2(
+                      label: _ColHeader('Modelo'),
+                      size: ColumnSize.M,
                     ),
-                    availableRowsPerPage: const [10, 50, 100],
-                    rowsPerPage: mountsState.rowsPerPage,
-                    onRowsPerPageChanged: (value) =>
-                        mountsNotifier.changeRowsPerPage(value ?? 10),
-                    onPageChanged: (rowIndex) => mountsNotifier.fetchPage(
-                      offset: rowIndex,
-                      limit: mountsState.rowsPerPage,
+                    DataColumn2(
+                      label: _ColHeader('Color'),
+                      size: ColumnSize.M,
                     ),
+                    DataColumn2(
+                      label: _ColHeader('Descripción'),
+                      size: ColumnSize.L,
+                    ),
+                    DataColumn2(
+                      label: _ColHeader('Optica'),
+                      size: ColumnSize.M,
+                    ),
+                    DataColumn2(
+                      label: _ColHeader('Precio'),
+                      size: ColumnSize.S,
+                    ),
+                    DataColumn2(
+                      label: _ColHeader('Stock'),
+                      size: ColumnSize.S,
+                    ),
+                    DataColumn2(
+                      label: _ColHeader('Acciones'),
+                      size: ColumnSize.S,
+                    ),
+                  ],
+                  source: MountsInventoryDataSource(
+                    pageItems: mountsState.mounts,
+                    totalItems: mountsState.totalCount,
+                    currentOffset: mountsState.offset,
+                    isLoading: mountsState.isLoading,
+                    context: context,
+                    ref: ref,
+                  ),
+                  availableRowsPerPage: const [10, 50, 100],
+                  rowsPerPage: mountsState.rowsPerPage,
+                  onRowsPerPageChanged: (value) =>
+                      mountsNotifier.changeRowsPerPage(value ?? 10),
+                  onPageChanged: (rowIndex) => mountsNotifier.fetchPage(
+                    offset: rowIndex,
+                    limit: mountsState.rowsPerPage,
                   ),
                 ),
-                if (mountsState.isLoading)
-                  Positioned.fill(
-                    child: IgnorePointer(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.7),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Center(
-                          child: CircularProgressIndicator(
-                            color: Color(0xff7A6BF5),
-                            strokeWidth: 2.5,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
+              ),
             ),
           ),
         ],

@@ -115,9 +115,38 @@ class SaleRepositoryImpl implements SaleRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> updateSaleDetail(SalesDetailsModel detail) async {
+  Future<Either<Failure, List<String>>> getSalesDatesInRange({
+    required String branch,
+    required String from,
+    required String to,
+  }) async {
     try {
-      await _dataSource.updateSaleDetail(detail);
+      return Right(
+        await _dataSource.getSalesDatesInRange(
+          branch: branch,
+          from: from,
+          to: to,
+        ),
+      );
+    } catch (e) {
+      return Left(Failure.server(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> updateAccountPayment(
+    String idRemision,
+    double newAccount,
+    double newRest,
+    String fechaPago,
+  ) async {
+    try {
+      await _dataSource.updateAccountPayment(
+        idRemision,
+        newAccount,
+        newRest,
+        fechaPago,
+      );
       return const Right(unit);
     } catch (e) {
       return Left(Failure.server(e.toString()));

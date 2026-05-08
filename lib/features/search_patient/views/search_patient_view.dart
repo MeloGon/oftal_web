@@ -1,16 +1,15 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/datatables/datatables.dart';
-import 'package:oftal_web/shared/models/snackbar_config_model.dart';
-import 'package:oftal_web/shared/widgets/custom_snackbar.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_provider.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/add_review_dialog.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/edit_patient_dialog.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/review_details_dialog.dart';
-import 'package:oftal_web/shared/widgets/loading_dialog.dart';
+import 'package:oftal_web/shared/extensions/extensions.dart';
+import 'package:oftal_web/shared/models/snackbar_config_model.dart';
+import 'package:oftal_web/shared/widgets/custom_snackbar.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SearchPatientView extends ConsumerStatefulWidget {
@@ -31,9 +30,13 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.sizeOf(context).height;
     final searchPatientState = ref.watch(searchPatientProvider);
     final searchPatientNotifier = ref.watch(searchPatientProvider.notifier);
+
+    ref.listenLoading(
+      searchPatientProvider.select((s) => s.isLoading),
+      context,
+    );
 
     ref.listen(searchPatientProvider, (previous, next) {
       if (next.errorMessage.isNotEmpty &&
@@ -45,9 +48,7 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
           next.errorMessage,
         );
         Future.microtask(
-          () => ref
-              .read(searchPatientProvider.notifier)
-              .clearErrorMessage(),
+          () => ref.read(searchPatientProvider.notifier).clearErrorMessage(),
         );
       }
       if (next.isAddViewMeasureDialogOpen &&
@@ -60,12 +61,6 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
                 .closeAddViewMeasureDialog();
           });
         }
-      }
-      if (next.isLoading && (previous?.isLoading ?? false) == false) {
-        LoadingDialog().show(context);
-      }
-      if (!next.isLoading && (previous?.isLoading ?? false) == true) {
-        if (context.mounted) context.pop();
       }
       if (next.isReviewDialogOpen && !(previous?.isReviewDialogOpen ?? false)) {
         if (context.mounted) {
@@ -118,8 +113,7 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
                     vertical: 8,
                     horizontal: 10,
                   ),
-                  placeholder:
-                      const Text('Buscar por nombre del paciente...'),
+                  placeholder: const Text('Buscar por nombre del paciente...'),
                   controller: searchPatientNotifier.searchController,
                   leading: const Icon(LucideIcons.search, size: 16),
                   onSubmitted: (_) {
@@ -128,21 +122,22 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
                       _paginatorController.goToFirstPage();
                     }
                   },
-                  trailing: searchPatientNotifier.searchIsEmpty
-                      ? null
-                      : ShadButton.ghost(
-                          height: 28,
-                          width: 28,
-                          padding: EdgeInsets.zero,
-                          onPressed: () {
-                            searchPatientNotifier.searchController.clear();
-                            searchPatientNotifier.getPatients();
-                            if (_paginatorController.isAttached) {
-                              _paginatorController.goToFirstPage();
-                            }
-                          },
-                          child: const Icon(LucideIcons.x, size: 14),
-                        ),
+                  trailing:
+                      searchPatientNotifier.searchIsEmpty
+                          ? null
+                          : ShadButton.ghost(
+                            height: 28,
+                            width: 28,
+                            padding: EdgeInsets.zero,
+                            onPressed: () {
+                              searchPatientNotifier.searchController.clear();
+                              searchPatientNotifier.getPatients();
+                              if (_paginatorController.isAttached) {
+                                _paginatorController.goToFirstPage();
+                              }
+                            },
+                            child: const Icon(LucideIcons.x, size: 14),
+                          ),
                 ),
               ],
             ),
@@ -150,10 +145,9 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
 
           // ─── Results table ───────────────────────────────
           if (searchPatientState.patients.isNotEmpty)
-            ShadCard(
-              padding: EdgeInsets.zero,
-              child: SizedBox(
-                height: height * 0.65,
+            Expanded(
+              child: ShadCard(
+                padding: EdgeInsets.zero,
                 child: TooltipVisibility(
                   visible: false,
                   child: PaginatedDataTable2(
@@ -201,8 +195,10 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
                     ),
                     availableRowsPerPage: const [10],
                     rowsPerPage: searchPatientState.rowsPerPage,
-                    onRowsPerPageChanged: (value) =>
-                        searchPatientNotifier.changeRowsPerPage(value ?? 10),
+                    onRowsPerPageChanged:
+                        (value) => searchPatientNotifier.changeRowsPerPage(
+                          value ?? 10,
+                        ),
                   ),
                 ),
               ),

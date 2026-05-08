@@ -1,52 +1,65 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/datatables/datatables.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/filter_history_sales.dart';
-import 'package:oftal_web/features/sales_history/views/widgets/edit_sale_dialog.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/sales_details_dialog.dart';
+import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class SalesHistoryView extends ConsumerWidget {
+class SalesHistoryView extends ConsumerStatefulWidget {
   const SalesHistoryView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final height = MediaQuery.sizeOf(context).height;
+  ConsumerState<SalesHistoryView> createState() => _SalesHistoryViewState();
+}
+
+class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
+  late SalesHistoryDataSource _dataSource;
+
+  @override
+  void initState() {
+    super.initState();
+    final initialSales = ref.read(salesHistoryProvider).sales;
+    _dataSource = SalesHistoryDataSource(
+      sales: initialSales,
+      context: context,
+      ref: ref,
+    );
+    if (initialSales.isEmpty) {
+      Future.microtask(
+        () => ref.read(salesHistoryProvider.notifier).getSales(),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final salesState = ref.watch(salesHistoryProvider);
-    final salesNotifier = ref.watch(salesHistoryProvider.notifier);
+    final salesNotifier = ref.read(salesHistoryProvider.notifier);
+    _dataSource.update(salesState.sales, context);
+
+    ref.listenLoading(
+      salesHistoryProvider.select((s) => s.isLoading),
+      context,
+      onHidden: () {
+        final state = ref.read(salesHistoryProvider);
+        if (state.saleSelectedForDetails != null) {
+          SalesDetailsDialog().show(
+            context,
+            state.saleDetails,
+            state.saleSelectedForDetails!,
+            ref,
+          );
+        }
+      },
+    );
 
     ref.listen(salesHistoryProvider, (previous, next) {
-      if (next.isLoading && (previous?.isLoading ?? false) == false) {
-        LoadingDialog().show(context);
-      }
-      if (!next.isLoading && (previous?.isLoading ?? false) == true) {
-        if (context.mounted) {
-          context.pop();
-          if (next.saleSelectedForDetails != null) {
-            SalesDetailsDialog().show(
-              context,
-              next.saleDetails,
-              next.saleSelectedForDetails!,
-              ref,
-            );
-          }
-          if (next.isEditSaleDialogOpen && next.saleToEdit != null) {
-            ref.read(salesHistoryProvider.notifier).closeEditSaleDialog();
-            EditSaleDialog().show(
-              context,
-              ref,
-              next.saleToEdit!,
-              next.saleDetails,
-            );
-          }
-        }
-      }
       if (next.errorMessage.isNotEmpty &&
           previous?.errorMessage != next.errorMessage) {
         _showSnackbar(context, next.snackbarConfig, next.errorMessage);
@@ -103,11 +116,10 @@ class SalesHistoryView extends ConsumerWidget {
           ),
 
           // ─── Table card ───────────────────────────────────
-          ShadCard(
+          Expanded(
+            child: ShadCard(
             padding: EdgeInsets.zero,
-            child: SizedBox(
-              height: height * 0.68,
-              child: TooltipVisibility(
+            child: TooltipVisibility(
                 visible: false,
                 child: PaginatedDataTable2(
                   headingRowHeight: 40,
@@ -116,7 +128,7 @@ class SalesHistoryView extends ConsumerWidget {
                   columnSpacing: 12,
                   columnResizingParameters: ColumnResizingParameters(
                     desktopMode: true,
-                    realTime: true,
+                    realTime: false,
                     widgetColor: Theme.of(context).primaryColor,
                   ),
                   horizontalMargin: 16,
@@ -126,11 +138,7 @@ class SalesHistoryView extends ConsumerWidget {
                   headingRowColor: WidgetStateProperty.all(
                     const Color(0xffFAFAFA),
                   ),
-                  source: SalesHistoryDataSource(
-                    sales: salesState.sales,
-                    context: context,
-                    ref: ref,
-                  ),
+                  source: _dataSource,
                   availableRowsPerPage: const [20],
                   rowsPerPage: salesState.rowsPerPage,
                   onRowsPerPageChanged:
@@ -193,7 +201,7 @@ class SalesHistoryView extends ConsumerWidget {
                     ),
                     DataColumn2(
                       label: _ColHeader('Acciones'),
-                      fixedWidth: 148,
+                      fixedWidth: 186,
                       isResizable: true,
                     ),
                   ],
@@ -264,9 +272,9 @@ class _ActionsLegend extends StatelessWidget {
         _LegendItem(icon: Icons.remove_red_eye_outlined, label: 'Ver detalles'),
         _LegendItem(icon: Icons.print_outlined, label: 'Imprimir recibo'),
         _LegendItem(
-          icon: Icons.edit_outlined,
-          label: 'Editar venta (Aun en fase experimental)',
-          color: const Color(0xff0EA5E9),
+          icon: Icons.payments_outlined,
+          label: 'Registrar abono',
+          color: const Color(0xff7A6BF5),
         ),
         _LegendItem(
           icon: Icons.check_circle_outline,

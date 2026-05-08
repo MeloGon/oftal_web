@@ -6,3 +6,5 @@ export 'sales_model.dart';
 export 'sales_details_model.dart';
 export 'resin_model.dart';
 export 'seller_model.dart';
+export 'payment_model.dart';
+export 'daily_payment_model.dart';

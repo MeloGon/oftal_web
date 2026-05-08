@@ -12,6 +12,7 @@ abstract class MountRemoteDataSource {
   Future<void> updateMount(MountModel mount);
   Future<void> deleteMount(int id);
   Future<void> decrementStock(int id, int currentStock);
+  Future<void> incrementStock(int id);
 }
 
 class MountRemoteDataSourceImpl implements MountRemoteDataSource {
@@ -71,13 +72,24 @@ class MountRemoteDataSourceImpl implements MountRemoteDataSource {
 
   @override
   Future<void> decrementStock(int id, int currentStock) async {
-    if (currentStock > 1) {
-      await client
-          .from('armazones')
-          .update({'EXISTENCIAS': currentStock - 1})
-          .eq('ID ARMAZON', id);
-    } else {
-      await client.from('armazones').delete().eq('ID ARMAZON', id);
-    }
+    await client
+        .from('armazones')
+        .update({'EXISTENCIAS': currentStock > 1 ? currentStock - 1 : 0})
+        .eq('ID ARMAZON', id);
+  }
+
+  @override
+  Future<void> incrementStock(int id) async {
+    final response = await client
+        .from('armazones')
+        .select('EXISTENCIAS')
+        .eq('ID ARMAZON', id)
+        .maybeSingle();
+    if (response == null) return;
+    final current = (response['EXISTENCIAS'] as int?) ?? 0;
+    await client
+        .from('armazones')
+        .update({'EXISTENCIAS': current + 1})
+        .eq('ID ARMAZON', id);
   }
 }

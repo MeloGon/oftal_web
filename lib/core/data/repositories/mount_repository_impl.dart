@@ -82,4 +82,14 @@ class MountRepositoryImpl implements MountRepository {
       return Left(Failure.server(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, Unit>> incrementStock(int id) async {
+    try {
+      await _dataSource.incrementStock(id);
+      return const Right(unit);
+    } catch (e) {
+      return Left(Failure.server(e.toString()));
+    }
+  }
 }

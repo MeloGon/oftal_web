@@ -11,13 +11,23 @@ abstract class SaleRemoteDataSource {
   Future<List<SalesModel>> getRecentSales({int limit = 20});
   Future<int> countSalesToday({required String authorName});
   Future<int> countPatientsByBranch({required String branch});
+  Future<List<String>> getSalesDatesInRange({
+    required String branch,
+    required String from,
+    required String to,
+  });
   Future<List<SalesDetailsModel>> getSaleDetails(String folioSale);
   Future<void> insertSalesDetails(List<SalesDetailsModel> items);
   Future<void> insertShortSale(SalesModel sale);
   Future<void> deleteShortSale(String folioSale);
   Future<void> deleteSaleDetails(String idRemision);
   Future<void> updateShortSale(SalesModel sale);
-  Future<void> updateSaleDetail(SalesDetailsModel detail);
+  Future<void> updateAccountPayment(
+    String idRemision,
+    double newAccount,
+    double newRest,
+    String fechaPago,
+  );
 }
 
 class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
@@ -118,10 +128,34 @@ class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
   }
 
   @override
-  Future<void> updateSaleDetail(SalesDetailsModel detail) async {
-    await client.from('ventas').update({
-      'PRECIO': detail.price,
-      'MONTURA PRECIO': detail.mountPrice,
-    }).eq('ID', detail.id!);
+  Future<List<String>> getSalesDatesInRange({
+    required String branch,
+    required String from,
+    required String to,
+  }) async {
+    final response = await client
+        .from('ventas cortas')
+        .select('"fecha_actualizada"')
+        .eq('"SUCURSAL"', branch)
+        .gte('"fecha_actualizada"', from)
+        .lte('"fecha_actualizada"', to);
+    return response
+        .map((r) => r['fecha_actualizada']?.toString() ?? '')
+        .where((d) => d.isNotEmpty)
+        .toList();
+  }
+
+  @override
+  Future<void> updateAccountPayment(
+    String idRemision,
+    double newAccount,
+    double newRest,
+    String fechaPago,
+  ) async {
+    await client.from('ventas cortas').update({
+      'A CUENTA': newAccount,
+      'RESTA': newRest,
+      'fecha_actualizada': fechaPago,
+    }).eq('ID REMISION', idRemision);
   }
 }

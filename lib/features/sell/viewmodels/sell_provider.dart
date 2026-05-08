@@ -6,6 +6,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/core/enums/enums.dart';
+import 'package:oftal_web/shared/providers/providers.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_state.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/utils/random_id_generator.dart';
@@ -62,6 +63,7 @@ class Sell extends _$Sell {
       'es_ES',
     ).format(DateTime.now());
     state = const SellState();
+    state = state.copyWith(selectedInitialPaymentMethod: null);
   }
 
   Future<void> searchPatient() async {
@@ -105,6 +107,10 @@ class Sell extends _$Sell {
       idRemision: generateRandomId(17).toString(),
       idFolio: generateRandomId(6).toString(),
     );
+  }
+
+  void selectInitialPaymentMethod(PaymentMethodEnum? method) {
+    state = state.copyWith(selectedInitialPaymentMethod: method);
   }
 
   void selectDiscountReason(DiscountReasonEnum discountReason) {
@@ -225,6 +231,16 @@ class Sell extends _$Sell {
   }
 
   Future<void> createSale() async {
+    if (state.selectedSeller == null) {
+      state = state.copyWith(
+        errorMessage: 'Debes seleccionar un vendedor antes de crear la venta',
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Aviso',
+          type: SnackbarEnum.error,
+        ),
+      );
+      return;
+    }
     state = state.copyWith(isLoading: true);
     _checkDate();
     try {
@@ -339,15 +355,35 @@ class Sell extends _$Sell {
               ),
               isLoading: false,
             ),
-        (_) =>
-            state = state.copyWith(
-              isLoading: false,
-              snackbarConfig: SnackbarConfigModel(
-                title: 'Aviso',
-                type: SnackbarEnum.success,
-              ),
-              errorMessage: 'Venta realizada correctamente',
+        (_) async {
+          final account = double.tryParse(accountController.text) ?? 0;
+          if (account > 0 && state.idRemision.isNotEmpty) {
+            final saleDate = DateFormat(
+              'yyyy-MM-dd',
+            ).format(DateFormat('dd-MM-yyyy').parse(dateController.text));
+            final userId = ref.read(authProvider).profile?.id;
+            final initialPayment = PaymentModel(
+              idRemision: state.idRemision,
+              monto: account,
+              fechaPago: saleDate,
+              metodoPago: state.selectedInitialPaymentMethod?.value ?? 'otro',
+              registradoPor: userId,
+              notas: 'Pago inicial de venta',
+            );
+            await ref
+                .read(paymentRepositoryProvider)
+                .insertPayment(initialPayment);
+          }
+          state = state.copyWith(
+            isLoading: false,
+            snackbarConfig: SnackbarConfigModel(
+              title: 'Aviso',
+              type: SnackbarEnum.success,
             ),
+            errorMessage: 'Venta realizada correctamente',
+          );
+          Future.microtask(resetState);
+        },
       );
     } catch (e) {
       state = state.copyWith(
@@ -371,6 +407,7 @@ class Sell extends _$Sell {
       selectedDiscountReason: null,
       selectedItemOption: null,
       selectedOptionToSell: null,
+      selectedInitialPaymentMethod: null,
     );
     searchController.clear();
     searchItemToSellController.clear();
@@ -428,7 +465,11 @@ class Sell extends _$Sell {
               type: SnackbarEnum.error,
             ),
           ),
-      (mounts) => state = state.copyWith(mounts: mounts, isLoading: false),
+      (mounts) =>
+          state = state.copyWith(
+            mounts: mounts.where((m) => m.stock > 0).toList(),
+            isLoading: false,
+          ),
     );
   }
 
@@ -482,6 +523,7 @@ class Sell extends _$Sell {
     final Uint8List bytes = await pdf.save();
     final blob = html.Blob([bytes], 'application/pdf');
     final url = html.Url.createObjectUrlFromBlob(blob);
+    // ignore: unused_local_variable
     final anchor =
         html.AnchorElement(href: url)
           ..setAttribute(
@@ -499,13 +541,17 @@ class Sell extends _$Sell {
   void updateItemPrice(int index, double newPrice) {
     final items = List<SalesDetailsModel>.from(state.itemsToSell);
     final item = items[index];
-    final updated = item.mountPrice != null
-        ? item.copyWith(mountPrice: newPrice)
-        : item.copyWith(price: newPrice);
+    final updated =
+        item.mountPrice != null
+            ? item.copyWith(mountPrice: newPrice)
+            : item.copyWith(price: newPrice);
     items[index] = updated;
     state = state.copyWith(itemsToSell: items);
     // Recalculate keeping existing discount and account
-    final total = items.fold(0.0, (prev, e) => prev + (e.mountPrice ?? e.price ?? 0.0));
+    final total = items.fold(
+      0.0,
+      (prev, e) => prev + (e.mountPrice ?? e.price ?? 0.0),
+    );
     importController.text = total.toString();
     final discount = double.tryParse(discountController.text) ?? 0;
     final totalWithDiscount = total - discount;

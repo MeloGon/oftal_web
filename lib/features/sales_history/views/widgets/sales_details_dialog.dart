@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
@@ -42,7 +43,28 @@ class SalesDetailsDialog {
             ].join(' · '),
           ),
           actions: [
-            ShadButton(
+            if ((sale.rest ?? 0) > 0)
+              ShadButton(
+                backgroundColor: const Color(0xff16A34A),
+                onPressed: () {
+                  ref
+                      .read(salesHistoryProvider.notifier)
+                      .clearSaleSelectedForDetails();
+                  context.pop();
+                  ref
+                      .read(salesHistoryProvider.notifier)
+                      .finalizeSale(sale);
+                },
+                child: const Row(
+                  spacing: 6,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.check_circle_outline, size: 16),
+                    Text('Finalizar venta'),
+                  ],
+                ),
+              ),
+            ShadButton.outline(
               onPressed: () {
                 ref
                     .read(salesHistoryProvider.notifier)
@@ -60,6 +82,10 @@ class SalesDetailsDialog {
                 children: [
                   // ── Resumen financiero ────────────────────────
                   _FinancialSummary(sale: sale, itemCount: saleDetails.length),
+
+                  // ── Historial de abonos ──────────────────────
+                  if (sale.id != null && sale.id!.isNotEmpty)
+                    _PaymentHistorySection(sale: sale),
 
                   // ── Artículos ────────────────────────────────
                   if (saleDetails.isNotEmpty)
@@ -133,20 +159,6 @@ class _FinancialSummary extends StatelessWidget {
               value: sale.total?.toCurrency() ?? '—',
               bold: true,
             ),
-          const Divider(height: 1),
-          _SummaryRow(
-            label: 'A cuenta',
-            value: sale.account?.toCurrency() ?? '—',
-            valueColor: const Color(0xff16A34A),
-          ),
-          _SummaryRow(
-            label: 'Resto',
-            value: sale.rest?.toCurrency() ?? '—',
-            valueColor:
-                (sale.rest ?? 0) > 0
-                    ? const Color(0xffDC2626)
-                    : const Color(0xff16A34A),
-          ),
         ],
       ),
     );
@@ -458,6 +470,230 @@ class _SubSectionLabel extends StatelessWidget {
         color: Color(0xff7A6BF5),
         letterSpacing: 0.5,
       ),
+    );
+  }
+}
+
+// ─── Payment history section ──────────────────────────────────────────────────
+
+class _PaymentHistorySection extends ConsumerWidget {
+  const _PaymentHistorySection({required this.sale});
+  final SalesModel sale;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return FutureBuilder(
+      future: ref
+          .read(paymentRepositoryProvider)
+          .getPaymentsByRemision(sale.id!),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return const SizedBox.shrink();
+        return snapshot.data!.fold(
+          (_) => const SizedBox.shrink(),
+          (payments) {
+            final pagosSum = payments.fold(0.0, (s, p) => s + p.monto);
+            final initialAccount = (sale.account ?? 0) - pagosSum;
+            final hasInitial = initialAccount > 0.001;
+            final totalMovements = (hasInitial ? 1 : 0) + payments.length;
+            if (totalMovements == 0) return const SizedBox.shrink();
+
+            return _Section(
+              label: 'Historial de pagos',
+              child: Column(
+                spacing: 0,
+                children: [
+                  // ── Pago inicial ──────────────────────────────
+                  if (hasInitial) ...[
+                    _PaymentRow(
+                      fecha: sale.date ?? '—',
+                      etiqueta: 'Pago inicial',
+                      monto: initialAccount,
+                      isInitial: true,
+                    ),
+                    const _TimelineDivider(),
+                  ],
+
+                  // ── Abonos posteriores ────────────────────────
+                  ...payments.asMap().entries.map((e) {
+                    final isLast = e.key == payments.length - 1;
+                    return Column(
+                      children: [
+                        _PaymentRow(
+                          fecha: e.value.fechaPago,
+                          etiqueta: e.value.notas ?? e.value.metodoPago ?? 'Abono',
+                          metodo: e.value.notas != null ? e.value.metodoPago : null,
+                          monto: e.value.monto,
+                        ),
+                        if (!isLast) const _TimelineDivider(),
+                      ],
+                    );
+                  }),
+
+                  // ── Totales ───────────────────────────────────
+                  const SizedBox(height: 12),
+                  const Divider(height: 1),
+                  const SizedBox(height: 10),
+                  _TotalsRow(
+                    totalConDescuento: sale.totalWithDiscount ?? 0,
+                    totalAbonado: sale.account ?? 0,
+                    saldoPendiente: sale.rest ?? 0,
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class _PaymentRow extends StatelessWidget {
+  const _PaymentRow({
+    required this.fecha,
+    required this.etiqueta,
+    required this.monto,
+    this.metodo,
+    this.isInitial = false,
+  });
+  final String fecha;
+  final String etiqueta;
+  final String? metodo;
+  final double monto;
+  final bool isInitial;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isInitial ? const Color(0xff2563EB) : const Color(0xff16A34A);
+    final bg = isInitial ? const Color(0xffEFF6FF) : const Color(0xffF0FDF4);
+    final border = isInitial ? const Color(0xffBFDBFE) : const Color(0xffBBF7D0);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: border),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 2,
+              children: [
+                Text(
+                  fecha,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: color.withValues(alpha: 0.8),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  etiqueta,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: color,
+                  ),
+                ),
+                if (metodo != null)
+                  Text(
+                    metodo!,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Color(0xff71717A),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Text(
+            monto.toCurrency(),
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TimelineDivider extends StatelessWidget {
+  const _TimelineDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const SizedBox(width: 20),
+        Container(
+          width: 1,
+          height: 12,
+          color: const Color(0xffD4D4D8),
+        ),
+      ],
+    );
+  }
+}
+
+class _TotalsRow extends StatelessWidget {
+  const _TotalsRow({
+    required this.totalConDescuento,
+    required this.totalAbonado,
+    required this.saldoPendiente,
+  });
+  final double totalConDescuento;
+  final double totalAbonado;
+  final double saldoPendiente;
+
+  @override
+  Widget build(BuildContext context) {
+    final isPaid = saldoPendiente <= 0;
+    return Column(
+      spacing: 6,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Total abonado',
+              style: TextStyle(fontSize: 12, color: Color(0xff52525B)),
+            ),
+            Text(
+              totalAbonado.toCurrency(),
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Color(0xff16A34A),
+              ),
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Saldo pendiente',
+              style: TextStyle(fontSize: 12, color: Color(0xff52525B)),
+            ),
+            Text(
+              isPaid ? 'Liquidado' : saldoPendiente.toCurrency(),
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: isPaid
+                    ? const Color(0xff16A34A)
+                    : const Color(0xffDC2626),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
