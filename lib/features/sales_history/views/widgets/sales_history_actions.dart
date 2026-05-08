@@ -8,7 +8,6 @@ class SalesHistoryActions extends StatelessWidget {
     required this.onViewDetails,
     required this.onDeleteSale,
     required this.onPrintSale,
-    required this.onEditSale,
     required this.onFinalizeSale,
     required this.onRegisterPayment,
   });
@@ -16,7 +15,6 @@ class SalesHistoryActions extends StatelessWidget {
   final Function() onViewDetails;
   final Function() onDeleteSale;
   final Function() onPrintSale;
-  final Function() onEditSale;
   final Function() onFinalizeSale;
   final Function() onRegisterPayment;
 
@@ -49,24 +47,6 @@ class SalesHistoryActions extends StatelessWidget {
               child: const Padding(
                 padding: EdgeInsets.all(2),
                 child: Icon(Icons.print_outlined, size: 18),
-              ),
-            ),
-          ),
-        ),
-        Tooltip(
-          message: 'Editar venta',
-          child: Material(
-            type: MaterialType.transparency,
-            child: InkWell(
-              onTap: onEditSale,
-              borderRadius: BorderRadius.circular(4),
-              child: const Padding(
-                padding: EdgeInsets.all(2),
-                child: Icon(
-                  Icons.edit_outlined,
-                  size: 18,
-                  color: Color(0xff0EA5E9),
-                ),
               ),
             ),
           ),

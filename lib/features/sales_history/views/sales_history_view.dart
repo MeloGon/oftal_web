@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/datatables/datatables.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
-import 'package:oftal_web/features/sales_history/views/widgets/edit_sale_dialog.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/filter_history_sales.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/sales_details_dialog.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
@@ -12,11 +11,24 @@ import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class SalesHistoryView extends ConsumerWidget {
+class SalesHistoryView extends ConsumerStatefulWidget {
   const SalesHistoryView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SalesHistoryView> createState() => _SalesHistoryViewState();
+}
+
+class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(
+      () => ref.read(salesHistoryProvider.notifier).getSales(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final salesState = ref.watch(salesHistoryProvider);
     final salesNotifier = ref.watch(salesHistoryProvider.notifier);
 
@@ -31,15 +43,6 @@ class SalesHistoryView extends ConsumerWidget {
             state.saleDetails,
             state.saleSelectedForDetails!,
             ref,
-          );
-        }
-        if (state.isEditSaleDialogOpen && state.saleToEdit != null) {
-          ref.read(salesHistoryProvider.notifier).closeEditSaleDialog();
-          EditSaleDialog().show(
-            context,
-            ref,
-            state.saleToEdit!,
-            state.saleDetails,
           );
         }
       },
@@ -261,11 +264,6 @@ class _ActionsLegend extends StatelessWidget {
       children: [
         _LegendItem(icon: Icons.remove_red_eye_outlined, label: 'Ver detalles'),
         _LegendItem(icon: Icons.print_outlined, label: 'Imprimir recibo'),
-        _LegendItem(
-          icon: Icons.edit_outlined,
-          label: 'Editar venta (Aun en fase experimental)',
-          color: const Color(0xff0EA5E9),
-        ),
         _LegendItem(
           icon: Icons.payments_outlined,
           label: 'Registrar abono',

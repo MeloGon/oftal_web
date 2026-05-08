@@ -128,8 +128,6 @@ class SalesHistoryDataSource extends DataTableSource {
             onDeleteSale: () async {
               await ref.read(salesHistoryProvider.notifier).deleteSale(sale);
             },
-            onEditSale: () =>
-                ref.read(salesHistoryProvider.notifier).selectSaleForEdit(sale),
             onFinalizeSale: () =>
                 ref.read(salesHistoryProvider.notifier).finalizeSale(sale),
             onRegisterPayment: () =>

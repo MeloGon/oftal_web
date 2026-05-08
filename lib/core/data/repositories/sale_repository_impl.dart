@@ -115,16 +115,6 @@ class SaleRepositoryImpl implements SaleRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> updateSaleDetail(SalesDetailsModel detail) async {
-    try {
-      await _dataSource.updateSaleDetail(detail);
-      return const Right(unit);
-    } catch (e) {
-      return Left(Failure.server(e.toString()));
-    }
-  }
-
-  @override
   Future<Either<Failure, Unit>> updateAccountPayment(
     String idRemision,
     double newAccount,

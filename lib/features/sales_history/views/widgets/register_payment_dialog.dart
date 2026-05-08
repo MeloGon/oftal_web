@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/core/enums/enums.dart';
@@ -71,7 +70,11 @@ class _RegisterPaymentContentState
       return;
     }
     if (monto > resta) {
-      setState(() => _montoError = 'El abono no puede superar el saldo (${ resta.toCurrency()})');
+      setState(
+        () =>
+            _montoError =
+                'El abono no puede superar el saldo (${resta.toCurrency()})',
+      );
       return;
     }
     final fechaValida = RegExp(
@@ -85,13 +88,15 @@ class _RegisterPaymentContentState
     }
 
     context.pop();
-    ref.read(salesHistoryProvider.notifier).registerPayment(
-      sale: widget.sale,
-      monto: monto,
-      fechaPago: _fechaCtrl.text,
-      metodoPago: _method.value,
-      notas: _notasCtrl.text.trim().isEmpty ? null : _notasCtrl.text.trim(),
-    );
+    ref
+        .read(salesHistoryProvider.notifier)
+        .registerPayment(
+          sale: widget.sale,
+          monto: monto,
+          fechaPago: _fechaCtrl.text,
+          metodoPago: _method.value,
+          notas: _notasCtrl.text.trim().isEmpty ? null : _notasCtrl.text.trim(),
+        );
   }
 
   @override
@@ -111,7 +116,9 @@ class _RegisterPaymentContentState
         onPressed: () => context.pop(),
       ),
       title: const Text('Registrar abono'),
-      description: Text('${sale.patient ?? ''} · Folio ${sale.folioSale ?? ''}'),
+      description: Text(
+        '${sale.patient ?? ''} · Folio ${sale.folioSale ?? ''}',
+      ),
       actions: [
         ShadButton.outline(
           onPressed: () => context.pop(),
@@ -163,8 +170,7 @@ class _RegisterPaymentContentState
                         placeholder: Text(
                           'Máx. ${resta.toCurrency()}',
                         ),
-                        onChanged: (_) =>
-                            setState(() => _montoError = null),
+                        onChanged: (_) => setState(() => _montoError = null),
                       ).constrained(width: 150),
                       if (_montoError != null)
                         Text(
@@ -210,9 +216,15 @@ class _RegisterPaymentContentState
                       ShadSelect<PaymentMethodEnum>(
                         initialValue: _method,
                         selectedOptionBuilder: (ctx, v) => Text(v.label),
-                        options: PaymentMethodEnum.values
-                            .map((e) => ShadOption(value: e, child: Text(e.label)))
-                            .toList(),
+                        options:
+                            PaymentMethodEnum.values
+                                .map(
+                                  (e) => ShadOption(
+                                    value: e,
+                                    child: Text(e.label),
+                                  ),
+                                )
+                                .toList(),
                         onChanged: (v) {
                           if (v != null) setState(() => _method = v);
                         },
@@ -267,7 +279,10 @@ class _BalanceSummary extends StatelessWidget {
       child: Column(
         spacing: 8,
         children: [
-          _Row('Total con descuento', sale.totalWithDiscount?.toCurrency() ?? '—'),
+          _Row(
+            'Total con descuento',
+            sale.totalWithDiscount?.toCurrency() ?? '—',
+          ),
           _Row(
             'Pagado hasta ahora',
             sale.account?.toCurrency() ?? '—',
@@ -277,9 +292,10 @@ class _BalanceSummary extends StatelessWidget {
           _Row(
             'Saldo pendiente',
             sale.rest?.toCurrency() ?? '—',
-            valueColor: (sale.rest ?? 0) > 0
-                ? const Color(0xffDC2626)
-                : const Color(0xff16A34A),
+            valueColor:
+                (sale.rest ?? 0) > 0
+                    ? const Color(0xffDC2626)
+                    : const Color(0xff16A34A),
             bold: true,
           ),
         ],

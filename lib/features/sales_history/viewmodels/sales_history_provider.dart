@@ -191,90 +191,9 @@ class SalesHistory extends _$SalesHistory {
     );
   }
 
-  void selectSaleForEdit(SalesModel sale) {
-    state = state.copyWith(saleToEdit: sale, isEditSaleDialogOpen: true);
-    _getSaleDetailsForEdit(sale);
-  }
-
-  Future<void> _getSaleDetailsForEdit(SalesModel sale) async {
-    state = state.copyWith(isLoading: true);
-    final result = await ref
-        .read(saleRepositoryProvider)
-        .getSaleDetails(sale.folioSale!);
-    result.fold(
-      (failure) => state = state.copyWith(
-        isLoading: false,
-        errorMessage: failure.message,
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Error',
-          type: SnackbarEnum.error,
-        ),
-      ),
-      (details) => state = state.copyWith(
-        saleDetails: details,
-        isLoading: false,
-      ),
-    );
-  }
-
-  void closeEditSaleDialog() {
-    state = state.copyWith(isEditSaleDialogOpen: false, saleToEdit: null);
-  }
-
-  Future<void> updateSale(
-    SalesModel updatedSale,
-    List<SalesDetailsModel> updatedDetails,
-  ) async {
-    state = state.copyWith(isLoading: true);
-    for (final detail in updatedDetails) {
-      final result = await ref
-          .read(saleRepositoryProvider)
-          .updateSaleDetail(detail);
-      bool hasError = false;
-      result.fold(
-        (failure) {
-          state = state.copyWith(
-            isLoading: false,
-            errorMessage: failure.message,
-            snackbarConfig: SnackbarConfigModel(
-              title: 'Error',
-              type: SnackbarEnum.error,
-            ),
-          );
-          hasError = true;
-        },
-        (_) {},
-      );
-      if (hasError) return;
-    }
-    final result = await ref
-        .read(saleRepositoryProvider)
-        .updateShortSale(updatedSale);
-    result.fold(
-      (failure) => state = state.copyWith(
-        isLoading: false,
-        errorMessage: failure.message,
-        snackbarConfig: SnackbarConfigModel(
-          title: 'Error',
-          type: SnackbarEnum.error,
-        ),
-      ),
-      (_) {
-        getSales();
-        state = state.copyWith(
-          isLoading: false,
-          errorMessage: 'Venta actualizada correctamente',
-          snackbarConfig: SnackbarConfigModel(
-            title: 'Aviso',
-            type: SnackbarEnum.success,
-          ),
-        );
-      },
-    );
-  }
-
   Future<void> finalizeSale(SalesModel sale) async {
     state = state.copyWith(isLoading: true);
+    final remainingRest = sale.rest ?? 0;
     final updated = SalesModel(
       id: sale.id,
       branch: sale.branch,
@@ -292,8 +211,8 @@ class SalesHistory extends _$SalesHistory {
     final result = await ref
         .read(saleRepositoryProvider)
         .updateShortSale(updated);
-    result.fold(
-      (failure) => state = state.copyWith(
+    await result.fold(
+      (failure) async => state = state.copyWith(
         isLoading: false,
         errorMessage: failure.message,
         snackbarConfig: SnackbarConfigModel(
@@ -301,7 +220,19 @@ class SalesHistory extends _$SalesHistory {
           type: SnackbarEnum.error,
         ),
       ),
-      (_) {
+      (_) async {
+        if (remainingRest > 0 && sale.id != null) {
+          final userId = ref.read(authProvider).profile?.id;
+          final payment = PaymentModel(
+            idRemision: sale.id!,
+            monto: remainingRest,
+            fechaPago: DateTime.now().toIso8601String().substring(0, 10),
+            metodoPago: 'otro',
+            registradoPor: userId,
+            notas: 'Liquidación de venta',
+          );
+          await ref.read(paymentRepositoryProvider).insertPayment(payment);
+        }
         getSales();
         state = state.copyWith(
           isLoading: false,
