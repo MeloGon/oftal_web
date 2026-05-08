@@ -358,15 +358,15 @@ class Sell extends _$Sell {
         (_) async {
           final account = double.tryParse(accountController.text) ?? 0;
           if (account > 0 && state.idRemision.isNotEmpty) {
-            final saleDate = DateFormat('yyyy-MM-dd')
-                .format(DateFormat('dd-MM-yyyy').parse(dateController.text));
+            final saleDate = DateFormat(
+              'yyyy-MM-dd',
+            ).format(DateFormat('dd-MM-yyyy').parse(dateController.text));
             final userId = ref.read(authProvider).profile?.id;
             final initialPayment = PaymentModel(
               idRemision: state.idRemision,
               monto: account,
               fechaPago: saleDate,
-              metodoPago:
-                  state.selectedInitialPaymentMethod?.value ?? 'otro',
+              metodoPago: state.selectedInitialPaymentMethod?.value ?? 'otro',
               registradoPor: userId,
               notas: 'Pago inicial de venta',
             );
@@ -465,10 +465,11 @@ class Sell extends _$Sell {
               type: SnackbarEnum.error,
             ),
           ),
-      (mounts) => state = state.copyWith(
-        mounts: mounts.where((m) => m.stock > 0).toList(),
-        isLoading: false,
-      ),
+      (mounts) =>
+          state = state.copyWith(
+            mounts: mounts.where((m) => m.stock > 0).toList(),
+            isLoading: false,
+          ),
     );
   }
 
@@ -522,6 +523,7 @@ class Sell extends _$Sell {
     final Uint8List bytes = await pdf.save();
     final blob = html.Blob([bytes], 'application/pdf');
     final url = html.Url.createObjectUrlFromBlob(blob);
+    // ignore: unused_local_variable
     final anchor =
         html.AnchorElement(href: url)
           ..setAttribute(
@@ -539,13 +541,17 @@ class Sell extends _$Sell {
   void updateItemPrice(int index, double newPrice) {
     final items = List<SalesDetailsModel>.from(state.itemsToSell);
     final item = items[index];
-    final updated = item.mountPrice != null
-        ? item.copyWith(mountPrice: newPrice)
-        : item.copyWith(price: newPrice);
+    final updated =
+        item.mountPrice != null
+            ? item.copyWith(mountPrice: newPrice)
+            : item.copyWith(price: newPrice);
     items[index] = updated;
     state = state.copyWith(itemsToSell: items);
     // Recalculate keeping existing discount and account
-    final total = items.fold(0.0, (prev, e) => prev + (e.mountPrice ?? e.price ?? 0.0));
+    final total = items.fold(
+      0.0,
+      (prev, e) => prev + (e.mountPrice ?? e.price ?? 0.0),
+    );
     importController.text = total.toString();
     final discount = double.tryParse(discountController.text) ?? 0;
     final totalWithDiscount = total - discount;

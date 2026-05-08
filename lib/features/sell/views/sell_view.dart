@@ -1,7 +1,6 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:oftal_web/core/constants/constants.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/datatables/datatables.dart';
@@ -644,16 +643,17 @@ class _SellViewState extends ConsumerState<SellView> {
                                   placeholder: const Text('Seleccionar'),
                                   initialValue:
                                       sellState.selectedInitialPaymentMethod,
-                                  selectedOptionBuilder: (ctx, v) =>
-                                      Text(v.label),
-                                  options: PaymentMethodEnum.values
-                                      .map(
-                                        (e) => ShadOption(
-                                          value: e,
-                                          child: Text(e.label),
-                                        ),
-                                      )
-                                      .toList(),
+                                  selectedOptionBuilder:
+                                      (ctx, v) => Text(v.label),
+                                  options:
+                                      PaymentMethodEnum.values
+                                          .map(
+                                            (e) => ShadOption(
+                                              value: e,
+                                              child: Text(e.label),
+                                            ),
+                                          )
+                                          .toList(),
                                   onChanged:
                                       sellNotifier.selectInitialPaymentMethod,
                                 ).constrained(width: 150),
