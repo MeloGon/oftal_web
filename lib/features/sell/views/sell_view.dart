@@ -97,60 +97,14 @@ class _SellViewState extends ConsumerState<SellView> {
                           ),
                           if (sellState.patients.isNotEmpty &&
                               !sellState.isLoading)
-                            SizedBox(
-                              height: 320,
-                              child: TooltipVisibility(
-                                visible: false,
-                                child: PaginatedDataTable2(
-                                  headingRowHeight: 36,
-                                  wrapInCard: false,
-                                  columnSpacing: 12,
-                                  horizontalMargin: 12,
-                                  isHorizontalScrollBarVisible: true,
-                                  isVerticalScrollBarVisible: true,
-                                  headingRowColor: WidgetStateProperty.all(
-                                    const Color(0xffFAFAFA),
-                                  ),
-                                  columns: const [
-                                    DataColumn2(
-                                      label: Text('Nombre'),
-                                      size: ColumnSize.L,
-                                      minWidth: 100,
-                                    ),
-                                    DataColumn2(
-                                      label: Text('Fecha de registro'),
-                                      size: ColumnSize.M,
-                                      minWidth: 100,
-                                    ),
-                                    DataColumn2(
-                                      label: Text('Sucursal'),
-                                      size: ColumnSize.M,
-                                      minWidth: 90,
-                                    ),
-                                    DataColumn2(
-                                      label: Text('Teléfono'),
-                                      size: ColumnSize.M,
-                                      minWidth: 100,
-                                    ),
-                                    DataColumn2(
-                                      label: Text('Acciones'),
-                                      size: ColumnSize.S,
-                                    ),
-                                  ],
-                                  source: PatientsDataSource(
-                                    patients: sellState.patients,
-                                    context: context,
-                                    isForSell: true,
-                                    ref: ref,
-                                  ),
-                                  availableRowsPerPage: const [5, 10, 20, 50],
-                                  rowsPerPage: sellState.rowsPerPage,
-                                  onRowsPerPageChanged:
-                                      (value) => sellNotifier.changeRowsPerPage(
-                                        value ?? 5,
-                                      ),
-                                ),
-                              ),
+                            _PatientResultList(
+                              patients: sellState.patients,
+                              onSelect: (patient) {
+                                sellNotifier.selectPatient(patient);
+                                sellNotifier.selectItemOption(
+                                  SellItemOptionsEnum.sell,
+                                );
+                              },
                             ),
                           if (sellState.patients.isEmpty &&
                               !sellState.isLoading)
@@ -250,55 +204,55 @@ class _SellViewState extends ConsumerState<SellView> {
                     if (sellState.mounts.isNotEmpty && !sellState.isLoading)
                       SizedBox(
                         width: double.infinity,
-                        height: 320,
+                        height: 340,
                         child: TooltipVisibility(
                           visible: false,
                           child: PaginatedDataTable2(
                             wrapInCard: false,
+                            showCheckboxColumn: false,
                             columnSpacing: 12,
-                            horizontalMargin: 12,
-                            minWidth: 800,
+                            horizontalMargin: 16,
+                            minWidth: 680,
                             isHorizontalScrollBarVisible: true,
                             isVerticalScrollBarVisible: true,
                             headingRowHeight: 38,
+                            dataRowHeight: 44,
+                            columnResizingParameters: ColumnResizingParameters(
+                              realTime: false,
+                              widgetColor: Theme.of(context).primaryColor,
+                            ),
                             headingRowColor: WidgetStateProperty.all(
                               const Color(0xffFAFAFA),
                             ),
                             columns: const [
                               DataColumn2(
-                                label: Text('Marca'),
-                                fixedWidth: 120,
-                                isResizable: true,
+                                label: _SellColHeader('Marca'),
+                                size: ColumnSize.M,
                               ),
                               DataColumn2(
-                                label: Text('Modelo'),
-                                fixedWidth: 100,
-                                isResizable: true,
+                                label: _SellColHeader('Modelo'),
+                                size: ColumnSize.M,
                               ),
                               DataColumn2(
-                                label: Text('Color'),
-                                fixedWidth: 120,
-                                isResizable: true,
+                                label: _SellColHeader('Color'),
+                                fixedWidth: 110,
                               ),
                               DataColumn2(
-                                label: Text('Descripción'),
-                                fixedWidth: 150,
-                                isResizable: true,
+                                label: _SellColHeader('Descripción'),
+                                size: ColumnSize.L,
                               ),
                               DataColumn2(
-                                label: Text('Optica'),
-                                fixedWidth: 100,
-                                isResizable: true,
+                                label: _SellColHeader('Óptica'),
+                                size: ColumnSize.M,
                               ),
                               DataColumn2(
-                                label: Text('Precio'),
-                                fixedWidth: 90,
-                                isResizable: true,
+                                label: _SellColHeader('Precio'),
+                                fixedWidth: 95,
                               ),
                               DataColumn2(
-                                label: Text('Acciones'),
-                                fixedWidth: 90,
-                                isResizable: true,
+                                label: _SellColHeader(''),
+                                fixedWidth: 105,
+                                isResizable: false,
                               ),
                             ],
                             source: MountsDataSource(
@@ -317,65 +271,63 @@ class _SellViewState extends ConsumerState<SellView> {
                     if (sellState.resins.isNotEmpty && !sellState.isLoading)
                       SizedBox(
                         width: double.infinity,
-                        height: 320,
+                        height: 340,
                         child: TooltipVisibility(
                           visible: false,
                           child: PaginatedDataTable2(
                             wrapInCard: false,
+                            showCheckboxColumn: false,
                             columnSpacing: 12,
-                            horizontalMargin: 12,
-                            minWidth: 900,
+                            horizontalMargin: 16,
+                            minWidth: 820,
                             isHorizontalScrollBarVisible: true,
                             isVerticalScrollBarVisible: true,
                             headingRowHeight: 38,
+                            dataRowHeight: 44,
+                            columnResizingParameters: ColumnResizingParameters(
+                              realTime: false,
+                              widgetColor: Theme.of(context).primaryColor,
+                            ),
                             headingRowColor: WidgetStateProperty.all(
                               const Color(0xffFAFAFA),
                             ),
                             columns: const [
                               DataColumn2(
-                                label: Text('Descripción'),
-                                fixedWidth: 120,
-                                isResizable: true,
+                                label: _SellColHeader('Descripción'),
+                                size: ColumnSize.S,
                               ),
                               DataColumn2(
-                                label: Text('Diseño'),
-                                fixedWidth: 180,
-                                isResizable: true,
+                                label: _SellColHeader('Diseño'),
+                                size: ColumnSize.L,
                               ),
                               DataColumn2(
-                                label: Text('Linea'),
-                                fixedWidth: 100,
-                                isResizable: true,
+                                label: _SellColHeader('Línea'),
+                                size: ColumnSize.S,
                               ),
                               DataColumn2(
-                                label: Text('Material'),
-                                fixedWidth: 100,
-                                isResizable: true,
+                                label: _SellColHeader('Material'),
+                                size: ColumnSize.S,
                               ),
                               DataColumn2(
-                                label: Text('Tecnología'),
-                                fixedWidth: 130,
-                                isResizable: true,
+                                label: _SellColHeader('Tecnología'),
+                                size: ColumnSize.M,
                               ),
                               DataColumn2(
-                                label: Text('Cant.'),
-                                fixedWidth: 60,
-                                isResizable: true,
+                                label: _SellColHeader('Cant.'),
+                                fixedWidth: 58,
                               ),
                               DataColumn2(
-                                label: Text('P. Interno'),
-                                fixedWidth: 90,
-                                isResizable: true,
+                                label: _SellColHeader('P. Interno'),
+                                fixedWidth: 95,
                               ),
                               DataColumn2(
-                                label: Text('P. Público'),
-                                fixedWidth: 90,
-                                isResizable: true,
+                                label: _SellColHeader('P. Público'),
+                                fixedWidth: 95,
                               ),
                               DataColumn2(
-                                label: Text('Acciones'),
-                                fixedWidth: 80,
-                                isResizable: true,
+                                label: _SellColHeader(''),
+                                fixedWidth: 105,
+                                isResizable: false,
                               ),
                             ],
                             source: ResinDataSource(
@@ -933,6 +885,203 @@ class _SellItemCardState extends State<_SellItemCard> {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ─── Column header for sell tables ──────────────────────────────────────────
+
+class _SellColHeader extends StatelessWidget {
+  const _SellColHeader(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+        color: Color(0xff52525B),
+      ),
+    );
+  }
+}
+
+// ─── Patient result cards ────────────────────────────────────────────────────
+
+class _PatientResultList extends StatelessWidget {
+  const _PatientResultList({
+    required this.patients,
+    required this.onSelect,
+  });
+
+  final List<PatientModel> patients;
+  final ValueChanged<PatientModel> onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
+      children: [
+        Text(
+          '${patients.length} resultado${patients.length == 1 ? '' : 's'}',
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+        ),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 300),
+          child: ListView.separated(
+            shrinkWrap: true,
+            itemCount: patients.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 6),
+            itemBuilder: (context, i) => _PatientCard(
+              patient: patients[i],
+              onSelect: () => onSelect(patients[i]),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PatientCard extends StatefulWidget {
+  const _PatientCard({required this.patient, required this.onSelect});
+  final PatientModel patient;
+  final VoidCallback onSelect;
+
+  @override
+  State<_PatientCard> createState() => _PatientCardState();
+}
+
+class _PatientCardState extends State<_PatientCard> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = widget.patient;
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: GestureDetector(
+        onTap: widget.onSelect,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 120),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: _hovered ? const Color(0xffF5F3FF) : Colors.white,
+            border: Border.all(
+              color:
+                  _hovered
+                      ? const Color(0xff7A6BF5)
+                      : const Color(0xffE4E4E7),
+            ),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: const BoxDecoration(
+                  color: Color(0xffEEECFE),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    p.name.isNotEmpty ? p.name[0].toUpperCase() : '?',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xff7A6BF5),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 3,
+                  children: [
+                    Text(
+                      p.name,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xff18181B),
+                      ),
+                    ),
+                    Row(
+                      spacing: 12,
+                      children: [
+                        if (p.branch.isNotEmpty)
+                          _InfoPill(
+                            icon: Icons.store_outlined,
+                            label: p.branch,
+                          ),
+                        if (p.phone.isNotEmpty)
+                          _InfoPill(
+                            icon: Icons.phone_outlined,
+                            label: p.phone,
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                spacing: 4,
+                children: [
+                  Text(
+                    p.registerDate,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Color(0xff71717A),
+                    ),
+                  ),
+                  AnimatedOpacity(
+                    opacity: _hovered ? 1.0 : 0.0,
+                    duration: const Duration(milliseconds: 120),
+                    child: const Text(
+                      'Seleccionar →',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xff7A6BF5),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoPill extends StatelessWidget {
+  const _InfoPill({required this.icon, required this.label});
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: 3,
+      children: [
+        Icon(icon, size: 11, color: const Color(0xff71717A)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 11, color: Color(0xff71717A)),
+        ),
+      ],
     );
   }
 }
