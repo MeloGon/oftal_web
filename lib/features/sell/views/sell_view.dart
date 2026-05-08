@@ -569,7 +569,8 @@ class _SellViewState extends ConsumerState<SellView> {
                                 readOnly: sellState.itemsToSell.isEmpty,
                                 label: const Text('Descuento'),
                                 controller: sellNotifier.discountController,
-                                onSubmitted: (_) => sellNotifier.applyDiscount(),
+                                onSubmitted:
+                                    (_) => sellNotifier.applyDiscount(),
                               ).constrained(width: 110),
                             ),
                             ShadInputFormField(
@@ -590,7 +591,7 @@ class _SellViewState extends ConsumerState<SellView> {
                             ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              spacing: 4,
+                              spacing: 12,
                               children: [
                                 RichText(
                                   text: const TextSpan(
@@ -973,10 +974,11 @@ class _PatientResultList extends StatelessWidget {
             shrinkWrap: true,
             itemCount: patients.length,
             separatorBuilder: (_, __) => const SizedBox(height: 6),
-            itemBuilder: (context, i) => _PatientCard(
-              patient: patients[i],
-              onSelect: () => onSelect(patients[i]),
-            ),
+            itemBuilder:
+                (context, i) => _PatientCard(
+                  patient: patients[i],
+                  onSelect: () => onSelect(patients[i]),
+                ),
           ),
         ),
       ],
@@ -1012,9 +1014,7 @@ class _PatientCardState extends State<_PatientCard> {
             color: _hovered ? const Color(0xffF5F3FF) : Colors.white,
             border: Border.all(
               color:
-                  _hovered
-                      ? const Color(0xff7A6BF5)
-                      : const Color(0xffE4E4E7),
+                  _hovered ? const Color(0xff7A6BF5) : const Color(0xffE4E4E7),
             ),
             borderRadius: BorderRadius.circular(8),
           ),

@@ -115,6 +115,25 @@ class SaleRepositoryImpl implements SaleRepository {
   }
 
   @override
+  Future<Either<Failure, List<String>>> getSalesDatesInRange({
+    required String branch,
+    required String from,
+    required String to,
+  }) async {
+    try {
+      return Right(
+        await _dataSource.getSalesDatesInRange(
+          branch: branch,
+          from: from,
+          to: to,
+        ),
+      );
+    } catch (e) {
+      return Left(Failure.server(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, Unit>> updateAccountPayment(
     String idRemision,
     double newAccount,

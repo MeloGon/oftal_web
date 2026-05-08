@@ -20,6 +20,11 @@ abstract class SaleRepository {
   Future<Either<Failure, Unit>> insertShortSale(SalesModel sale);
   Future<Either<Failure, Unit>> deleteSale(String folioSale);
   Future<Either<Failure, Unit>> updateShortSale(SalesModel sale);
+  Future<Either<Failure, List<String>>> getSalesDatesInRange({
+    required String branch,
+    required String from,
+    required String to,
+  });
   Future<Either<Failure, Unit>> updateAccountPayment(
     String idRemision,
     double newAccount,

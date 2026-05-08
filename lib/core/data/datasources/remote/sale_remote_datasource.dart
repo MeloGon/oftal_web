@@ -11,6 +11,11 @@ abstract class SaleRemoteDataSource {
   Future<List<SalesModel>> getRecentSales({int limit = 20});
   Future<int> countSalesToday({required String authorName});
   Future<int> countPatientsByBranch({required String branch});
+  Future<List<String>> getSalesDatesInRange({
+    required String branch,
+    required String from,
+    required String to,
+  });
   Future<List<SalesDetailsModel>> getSaleDetails(String folioSale);
   Future<void> insertSalesDetails(List<SalesDetailsModel> items);
   Future<void> insertShortSale(SalesModel sale);
@@ -120,6 +125,24 @@ class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
       'A CUENTA': sale.account,
       'RESTA': sale.rest,
     }).eq('FOLIO REMISION', sale.folioSale!);
+  }
+
+  @override
+  Future<List<String>> getSalesDatesInRange({
+    required String branch,
+    required String from,
+    required String to,
+  }) async {
+    final response = await client
+        .from('ventas cortas')
+        .select('"fecha_actualizada"')
+        .eq('"SUCURSAL"', branch)
+        .gte('"fecha_actualizada"', from)
+        .lte('"fecha_actualizada"', to);
+    return response
+        .map((r) => r['fecha_actualizada']?.toString() ?? '')
+        .where((d) => d.isNotEmpty)
+        .toList();
   }
 
   @override

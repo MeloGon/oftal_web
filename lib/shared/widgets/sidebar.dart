@@ -36,33 +36,44 @@ class Sidebar extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ─── Logo ────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 22, 18, 16),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(7),
-                  decoration: BoxDecoration(
-                    color: _kBrand.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(9),
-                  ),
-                  child: const Icon(
-                    Icons.bubble_chart_outlined,
-                    color: _kBrand,
-                    size: 18,
-                  ),
+          MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () {
+                ref.read(appRouterProvider).go(RouterName.dashboard);
+                ref
+                    .read(navigationProvider.notifier)
+                    .setCurrentPage(RouterName.dashboard);
+              },
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(18, 22, 18, 16),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(7),
+                      decoration: BoxDecoration(
+                        color: _kBrand.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(9),
+                      ),
+                      child: const Icon(
+                        Icons.bubble_chart_outlined,
+                        color: _kBrand,
+                        size: 18,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    const Text(
+                      'OFTALWEB',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.1,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 10),
-                const Text(
-                  'OFTALWEB',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.1,
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
           Container(height: 1, color: _kDivider),
