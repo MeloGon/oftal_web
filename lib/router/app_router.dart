@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:oftal_web/features/search_patient/views/search_patient_view.dart';
 import 'package:oftal_web/features/sell/views/sell_view.dart';
 import 'package:oftal_web/features/sales_history/views/sales_history_view.dart';
+import 'package:oftal_web/features/settings/views/payments_report/payments_report_view.dart';
 import 'package:oftal_web/features/settings/views/mounts/mounts_view.dart';
 import 'package:oftal_web/features/settings/views/resins/resins_view.dart';
 import 'package:oftal_web/features/views.dart';
@@ -123,6 +124,11 @@ GoRouter appRouter(Ref ref) {
               GoRoute(
                 path: 'mounts',
                 pageBuilder: (context, state) => _fadeRoute(const MountsView()),
+              ),
+              GoRoute(
+                path: 'payments-report',
+                pageBuilder: (context, state) =>
+                    _fadeRoute(const PaymentsReportView()),
               ),
             ],
           ),

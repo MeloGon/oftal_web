@@ -627,6 +627,38 @@ class _SellViewState extends ConsumerState<SellView> {
                               controller: sellNotifier.accountController,
                               onSubmitted: (_) => sellNotifier.leaveAccount(),
                             ).constrained(width: 110),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              spacing: 4,
+                              children: [
+                                const Text(
+                                  'Método de pago',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xff09090B),
+                                  ),
+                                ),
+                                ShadSelect<PaymentMethodEnum>(
+                                  enabled: sellState.itemsToSell.isNotEmpty,
+                                  placeholder: const Text('Seleccionar'),
+                                  initialValue:
+                                      sellState.selectedInitialPaymentMethod,
+                                  selectedOptionBuilder: (ctx, v) =>
+                                      Text(v.label),
+                                  options: PaymentMethodEnum.values
+                                      .map(
+                                        (e) => ShadOption(
+                                          value: e,
+                                          child: Text(e.label),
+                                        ),
+                                      )
+                                      .toList(),
+                                  onChanged:
+                                      sellNotifier.selectInitialPaymentMethod,
+                                ).constrained(width: 150),
+                              ],
+                            ),
                             ShadInputFormField(
                               readOnly: true,
                               label: const Text('Resto'),

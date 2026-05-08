@@ -44,7 +44,7 @@ class SettingsView extends ConsumerWidget {
                 ),
               ),
               Text(
-                'Gestiona el inventario de productos',
+                'Gestiona el inventario y consulta los reportes',
                 style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
               ),
             ],
@@ -94,6 +94,45 @@ class SettingsView extends ConsumerWidget {
                           ref.read(appRouterProvider).go(RouterName.mounts),
                 ),
               ),
+            ],
+          ),
+
+          // ─── Reports section ──────────────────────────────
+          const Text(
+            'Reportes',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: Color(0xff52525B),
+              letterSpacing: 0.3,
+            ),
+          ),
+          Row(
+            spacing: 16,
+            children: [
+              Expanded(
+                child: _SettingsNavCard(
+                  title: 'Ingresos del día',
+                  description:
+                      'Consulta todos los pagos y abonos recibidos por fecha',
+                  icon: Icons.payments_outlined,
+                  iconColor: const Color(0xff22C55E),
+                  iconBgColor: const Color(0xffDCFCE7),
+                  onTap: () async {
+                    final authorized = await showAuthorizationDialog(
+                      context: context,
+                      requiredRole: AuthorizationRole.admin,
+                      actionName: 'ver el reporte de ingresos',
+                    );
+                    if (authorized) {
+                      ref
+                          .read(appRouterProvider)
+                          .go(RouterName.paymentsReport);
+                    }
+                  },
+                ),
+              ),
+              const Expanded(child: SizedBox()),
             ],
           ),
         ],

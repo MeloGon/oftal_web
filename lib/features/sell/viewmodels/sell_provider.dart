@@ -6,6 +6,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/core/enums/enums.dart';
+import 'package:oftal_web/shared/providers/providers.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_state.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/utils/random_id_generator.dart';
@@ -62,6 +63,7 @@ class Sell extends _$Sell {
       'es_ES',
     ).format(DateTime.now());
     state = const SellState();
+    state = state.copyWith(selectedInitialPaymentMethod: null);
   }
 
   Future<void> searchPatient() async {
@@ -105,6 +107,10 @@ class Sell extends _$Sell {
       idRemision: generateRandomId(17).toString(),
       idFolio: generateRandomId(6).toString(),
     );
+  }
+
+  void selectInitialPaymentMethod(PaymentMethodEnum? method) {
+    state = state.copyWith(selectedInitialPaymentMethod: method);
   }
 
   void selectDiscountReason(DiscountReasonEnum discountReason) {
@@ -349,7 +355,25 @@ class Sell extends _$Sell {
               ),
               isLoading: false,
             ),
-        (_) {
+        (_) async {
+          final account = double.tryParse(accountController.text) ?? 0;
+          if (account > 0 && state.idRemision.isNotEmpty) {
+            final saleDate = DateFormat('yyyy-MM-dd')
+                .format(DateFormat('dd-MM-yyyy').parse(dateController.text));
+            final userId = ref.read(authProvider).profile?.id;
+            final initialPayment = PaymentModel(
+              idRemision: state.idRemision,
+              monto: account,
+              fechaPago: saleDate,
+              metodoPago:
+                  state.selectedInitialPaymentMethod?.value ?? 'otro',
+              registradoPor: userId,
+              notas: 'Pago inicial de venta',
+            );
+            await ref
+                .read(paymentRepositoryProvider)
+                .insertPayment(initialPayment);
+          }
           state = state.copyWith(
             isLoading: false,
             snackbarConfig: SnackbarConfigModel(
@@ -383,6 +407,7 @@ class Sell extends _$Sell {
       selectedDiscountReason: null,
       selectedItemOption: null,
       selectedOptionToSell: null,
+      selectedInitialPaymentMethod: null,
     );
     searchController.clear();
     searchItemToSellController.clear();
