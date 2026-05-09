@@ -272,7 +272,7 @@ class _ActionsLegend extends StatelessWidget {
         _LegendItem(icon: Icons.remove_red_eye_outlined, label: 'Ver detalles'),
         _LegendItem(icon: Icons.print_outlined, label: 'Imprimir recibo'),
         _LegendItem(
-          icon: Icons.payments_outlined,
+          icon: Icons.account_balance_wallet_outlined,
           label: 'Registrar abono',
           color: const Color(0xff7A6BF5),
         ),

@@ -62,7 +62,7 @@ class SalesHistoryActions extends StatelessWidget {
                 child: const Padding(
                   padding: EdgeInsets.all(2),
                   child: Icon(
-                    Icons.payments_outlined,
+                    Icons.account_balance_wallet_outlined,
                     size: 18,
                     color: Color(0xff7A6BF5),
                   ),

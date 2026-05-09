@@ -68,11 +68,17 @@ class SalesHistoryDataSource extends DataTableSource {
           onDoubleTap: () => _openDetails(sale),
         ),
         DataCell(
-          Text(sale.rest?.toCurrency() ?? '0', style: s),
+          Text(
+            (sale.rest ?? 0) == 0 ? '—' : sale.rest!.toCurrency(),
+            style: s,
+          ),
           onDoubleTap: () => _openDetails(sale),
         ),
         DataCell(
-          Text(sale.discount?.toCurrency() ?? '0', style: s),
+          Text(
+            (sale.discount ?? 0) == 0 ? '—' : sale.discount!.toCurrency(),
+            style: s,
+          ),
           onDoubleTap: () => _openDetails(sale),
         ),
         DataCell(
