@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/settings/viewmodels/payments_report_state.dart';
+import 'package:oftal_web/shared/models/expense_model.dart';
 import 'package:oftal_web/shared/models/snackbar_config_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -24,12 +25,20 @@ class PaymentsReport extends _$PaymentsReport {
   }
 
   Future<void> loadPayments() async {
-    state = state.copyWith(isLoading: true, payments: []);
+    state = state.copyWith(isLoading: true, payments: [], expenses: []);
     final (from, to) = _currentRange();
-    final result = await ref
+
+    final paymentsResult = await ref
         .read(paymentRepositoryProvider)
         .getPaymentsByDateRange(from, to);
-    result.fold(
+    final expensesResult = await ref
+        .read(expenseRepositoryProvider)
+        .getExpensesByDateRange(from, to);
+
+    List<ExpenseModel> expenses = [];
+    expensesResult.fold((_) {}, (list) => expenses = list);
+
+    paymentsResult.fold(
       (failure) => state = state.copyWith(
         isLoading: false,
         errorMessage: failure.message,
@@ -41,6 +50,7 @@ class PaymentsReport extends _$PaymentsReport {
       (payments) => state = state.copyWith(
         isLoading: false,
         payments: payments,
+        expenses: expenses,
       ),
     );
   }

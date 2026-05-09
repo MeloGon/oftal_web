@@ -40,30 +40,29 @@ class _ExpensesViewState extends ConsumerState<ExpensesView> {
   void _handleDelete(ExpenseModel expense) {
     showShadDialog(
       context: context,
-      builder:
-          (_) => ShadDialog.alert(
-            title: const Text('Eliminar egreso'),
-            description: Text(
-              '¿Eliminar el egreso "${expense.descripcion}"? Esta acción no se puede deshacer.',
-            ),
-            actions: [
-              ShadButton.outline(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Cancelar'),
-              ),
-              ShadButton.destructive(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  if (expense.id != null) {
-                    ref
-                        .read(expensesProvider.notifier)
-                        .deleteExpense(expense.id!);
-                  }
-                },
-                child: const Text('Eliminar'),
-              ),
-            ],
+      builder: (dialogCtx) => ShadDialog.alert(
+        title: const Text('Eliminar egreso'),
+        description: Text(
+          '¿Eliminar el egreso "${expense.descripcion}"? Esta acción no se puede deshacer.',
+        ),
+        actions: [
+          ShadButton.outline(
+            onPressed: () => Navigator.of(dialogCtx).pop(),
+            child: const Text('Cancelar'),
           ),
+          ShadButton.destructive(
+            onPressed: () {
+              Navigator.of(dialogCtx).pop();
+              if (expense.id != null) {
+                ref
+                    .read(expensesProvider.notifier)
+                    .deleteExpense(expense.id!);
+              }
+            },
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
     );
   }
 

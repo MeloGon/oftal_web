@@ -20,6 +20,18 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   }
 
   @override
+  Future<Either<Failure, List<ExpenseModel>>> getExpensesByDateRange(
+    String from,
+    String to,
+  ) async {
+    try {
+      return Right(await _dataSource.getExpensesByDateRange(from, to));
+    } catch (e) {
+      return Left(Failure.server(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, Unit>> insertExpense(ExpenseModel expense) async {
     try {
       await _dataSource.insertExpense(expense);

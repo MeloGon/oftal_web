@@ -4,6 +4,10 @@ import 'package:oftal_web/shared/models/shared_models.dart';
 
 abstract class ExpenseRepository {
   Future<Either<Failure, List<ExpenseModel>>> getExpenses({int limit = 50});
+  Future<Either<Failure, List<ExpenseModel>>> getExpensesByDateRange(
+    String from,
+    String to,
+  );
   Future<Either<Failure, Unit>> insertExpense(ExpenseModel expense);
   Future<Either<Failure, Unit>> updateExpense(ExpenseModel expense);
   Future<Either<Failure, Unit>> deleteExpense(String id);

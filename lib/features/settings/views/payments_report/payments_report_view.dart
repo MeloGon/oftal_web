@@ -6,6 +6,7 @@ import 'package:oftal_web/features/settings/viewmodels/payments_report_provider.
 import 'package:oftal_web/features/settings/viewmodels/payments_report_state.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/daily_payment_model.dart';
+import 'package:oftal_web/shared/models/expense_model.dart';
 import 'package:oftal_web/shared/models/snackbar_config_model.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -27,8 +28,11 @@ class PaymentsReportView extends ConsumerWidget {
     });
 
     final payments = state.payments;
+    final expenses = state.expenses;
     final total = payments.fold(0.0, (sum, p) => sum + p.monto);
+    final totalExpenses = expenses.fold(0.0, (sum, e) => sum + e.monto);
     final byMethod = _groupByMethod(payments);
+    final expensesByCategory = _groupExpensesByCategory(expenses);
 
     return Padding(
       padding: const EdgeInsets.all(24),
@@ -58,7 +62,7 @@ class PaymentsReportView extends ConsumerWidget {
                   spacing: 2,
                   children: [
                     Text(
-                      'Reportes · Ingresos',
+                      'Reportes · Ingresos y Egresos',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
@@ -66,7 +70,7 @@ class PaymentsReportView extends ConsumerWidget {
                       ),
                     ),
                     Text(
-                      'Pagos y abonos recibidos según el período seleccionado',
+                      'Ingresos y egresos registrados según el período seleccionado',
                       style: TextStyle(
                         fontSize: 12,
                         color: Color(0xff71717A),
@@ -81,13 +85,22 @@ class PaymentsReportView extends ConsumerWidget {
           // ─── Filter tabs ─────────────────────────────────────
           _PeriodFilterBar(state: state, notifier: notifier),
 
-          // ─── Summary + table ──────────────────────────────────
-          LoadingOverlay(
-            isLoading: state.isLoading,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 16,
-              children: [
+          // ─── Summary + tables ─────────────────────────────────
+          Expanded(
+            child: SingleChildScrollView(
+              child: LoadingOverlay(
+                isLoading: state.isLoading,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 20,
+                  children: [
+                // ── Ingresos ─────────────────────────────────
+                _SectionLabel(
+                  label: 'Ingresos',
+                  total: total,
+                  color: const Color(0xff0EA5E9),
+                  icon: Icons.trending_up_rounded,
+                ),
                 _SummaryRow(total: total, byMethod: byMethod),
                 ShadCard(
                   padding: EdgeInsets.zero,
@@ -97,7 +110,7 @@ class PaymentsReportView extends ConsumerWidget {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
                         child: Text(
-                          'Detalle de ingresos  (${payments.length})',
+                          'Detalle de ingresos (${payments.length})',
                           style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -107,12 +120,51 @@ class PaymentsReportView extends ConsumerWidget {
                       ),
                       const Divider(height: 1, color: Color(0xffF4F4F5)),
                       payments.isEmpty
-                          ? const _EmptyState()
+                          ? const _EmptyState(label: 'Sin ingresos en el período seleccionado')
                           : _PaymentsTable(payments: payments),
                     ],
                   ),
                 ),
+
+                const Divider(height: 1),
+
+                // ── Egresos ──────────────────────────────────
+                _SectionLabel(
+                  label: 'Egresos',
+                  total: totalExpenses,
+                  color: const Color(0xffEF4444),
+                  icon: Icons.trending_down_rounded,
+                ),
+                _ExpensesSummaryRow(
+                  total: totalExpenses,
+                  byCategory: expensesByCategory,
+                ),
+                ShadCard(
+                  padding: EdgeInsets.zero,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+                        child: Text(
+                          'Detalle de egresos (${expenses.length})',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xff18181B),
+                          ),
+                        ),
+                      ),
+                      const Divider(height: 1, color: Color(0xffF4F4F5)),
+                      expenses.isEmpty
+                          ? const _EmptyState(label: 'Sin egresos en el período seleccionado')
+                          : _ExpensesTable(expenses: expenses),
+                    ],
+                  ),
+                ),
               ],
+                ),
+              ),
             ),
           ),
         ],
@@ -125,6 +177,15 @@ class PaymentsReportView extends ConsumerWidget {
     for (final p in payments) {
       final key = p.metodoPago ?? 'otro';
       map[key] = (map[key] ?? 0) + p.monto;
+    }
+    return map;
+  }
+
+  Map<String, double> _groupExpensesByCategory(List<ExpenseModel> expenses) {
+    final map = <String, double>{};
+    for (final e in expenses) {
+      final key = e.categoriaNombre ?? 'Sin categoría';
+      map[key] = (map[key] ?? 0) + e.monto;
     }
     return map;
   }
@@ -660,10 +721,253 @@ class _ColHeader extends StatelessWidget {
   }
 }
 
+// ─── Section label with total ─────────────────────────────────────────────────
+
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel({
+    required this.label,
+    required this.total,
+    required this.color,
+    required this.icon,
+  });
+  final String label;
+  final double total;
+  final Color color;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      spacing: 10,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, size: 16, color: color),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: color,
+          ),
+        ),
+        const Spacer(),
+        Text(
+          total.toCurrency(),
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: color,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── Expenses summary row ─────────────────────────────────────────────────────
+
+class _ExpensesSummaryRow extends StatelessWidget {
+  const _ExpensesSummaryRow({
+    required this.total,
+    required this.byCategory,
+  });
+  final double total;
+  final Map<String, double> byCategory;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 12,
+      runSpacing: 12,
+      children: [
+        _MetricCard(
+          label: 'Total egresado',
+          value: total.toCurrency(),
+          icon: Icons.account_balance_wallet_outlined,
+          iconColor: const Color(0xffEF4444),
+          iconBg: const Color(0xffFEE2E2),
+          isTotal: true,
+        ),
+        ...byCategory.entries.map(
+          (entry) => _MetricCard(
+            label: entry.key,
+            value: entry.value.toCurrency(),
+            icon: Icons.label_outline,
+            iconColor: const Color(0xff6B7280),
+            iconBg: const Color(0xffF3F4F6),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── Expenses table ───────────────────────────────────────────────────────────
+
+class _ExpensesTable extends StatelessWidget {
+  const _ExpensesTable({required this.expenses});
+  final List<ExpenseModel> expenses;
+
+  static const _methodLabels = <String, String>{
+    'efectivo': 'Efectivo',
+    'tarjeta': 'Tarjeta',
+    'transferencia': 'Transferencia',
+    'nomina': 'Nómina',
+    'otro': 'Otro',
+  };
+
+  static const _methodColors = <String, Color>{
+    'efectivo': Color(0xff22C55E),
+    'tarjeta': Color(0xff3B82F6),
+    'transferencia': Color(0xff8B5CF6),
+    'nomina': Color(0xffF59E0B),
+    'otro': Color(0xff6B7280),
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: DataTable(
+        headingRowColor: WidgetStateProperty.all(const Color(0xffFAFAFA)),
+        headingRowHeight: 38,
+        dataRowMinHeight: 44,
+        dataRowMaxHeight: 52,
+        columnSpacing: 20,
+        horizontalMargin: 16,
+        columns: const [
+          DataColumn(label: _ColHeader('Fecha')),
+          DataColumn(label: _ColHeader('Categoría')),
+          DataColumn(label: _ColHeader('Descripción')),
+          DataColumn(label: _ColHeader('Método de pago')),
+          DataColumn(label: _ColHeader('Sucursal')),
+          DataColumn(label: _ColHeader('Comprobante')),
+          DataColumn(label: _ColHeader('Registrado por')),
+          DataColumn(label: _ColHeader('Monto'), numeric: true),
+        ],
+        rows: expenses.map((e) {
+          final method = e.metodoPago;
+          final methodLabel = _methodLabels[method] ?? method;
+          final methodColor = _methodColors[method] ?? const Color(0xff6B7280);
+
+          return DataRow(
+            cells: [
+              DataCell(Text(
+                e.fecha,
+                style: const TextStyle(fontSize: 12, color: Color(0xff52525B)),
+              )),
+              DataCell(
+                e.categoriaNombre != null
+                    ? _CategoryBadge(
+                        nombre: e.categoriaNombre!,
+                        color: e.categoriaColor,
+                      )
+                    : Text(
+                        'Sin categoría',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+              ),
+              DataCell(Text(
+                e.descripcion,
+                style: const TextStyle(fontSize: 13, color: Color(0xff18181B)),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              )),
+              DataCell(
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: methodColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    methodLabel,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: methodColor,
+                    ),
+                  ),
+                ),
+              ),
+              DataCell(Text(
+                e.sucursal ?? 'Global',
+                style: const TextStyle(fontSize: 12, color: Color(0xff52525B)),
+              )),
+              DataCell(Text(
+                e.comprobante?.isNotEmpty == true ? e.comprobante! : '—',
+                style: const TextStyle(fontSize: 12, color: Color(0xff71717A)),
+              )),
+              DataCell(Text(
+                e.registradoPor ?? '—',
+                style: const TextStyle(fontSize: 12, color: Color(0xff52525B)),
+              )),
+              DataCell(Text(
+                e.monto.toCurrency(),
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xffEF4444),
+                ),
+              )),
+            ],
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class _CategoryBadge extends StatelessWidget {
+  const _CategoryBadge({required this.nombre, this.color});
+  final String nombre;
+  final String? color;
+
+  @override
+  Widget build(BuildContext context) {
+    Color dotColor = const Color(0xff6366F1);
+    if (color != null) {
+      try {
+        dotColor = Color(
+          int.parse(color!.replaceFirst('#', '0xff')),
+        );
+      } catch (_) {}
+    }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: 6,
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle),
+        ),
+        Text(
+          nombre,
+          style: const TextStyle(fontSize: 12, color: Color(0xff18181B)),
+        ),
+      ],
+    );
+  }
+}
+
 // ─── Empty state ──────────────────────────────────────────────────────────────
 
 class _EmptyState extends StatelessWidget {
-  const _EmptyState();
+  const _EmptyState({required this.label});
+  final String label;
 
   @override
   Widget build(BuildContext context) {
@@ -675,7 +979,7 @@ class _EmptyState extends StatelessWidget {
           children: [
             Icon(Icons.inbox_outlined, size: 40, color: Colors.grey.shade300),
             Text(
-              'Sin ingresos en el período seleccionado',
+              label,
               style: TextStyle(fontSize: 13, color: Colors.grey.shade400),
             ),
           ],

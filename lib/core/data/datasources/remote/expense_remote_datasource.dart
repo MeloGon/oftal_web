@@ -3,6 +3,7 @@ import 'package:oftal_web/shared/models/shared_models.dart';
 
 abstract class ExpenseRemoteDataSource {
   Future<List<ExpenseModel>> getExpenses({int limit = 50});
+  Future<List<ExpenseModel>> getExpensesByDateRange(String from, String to);
   Future<void> insertExpense(ExpenseModel expense);
   Future<void> updateExpense(ExpenseModel expense);
   Future<void> deleteExpense(String id);
@@ -23,6 +24,20 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
         .select('*, categorias_egresos(nombre, color)')
         .order('fecha', ascending: false)
         .limit(limit);
+    return response.map((json) => ExpenseModel.fromJson(json)).toList();
+  }
+
+  @override
+  Future<List<ExpenseModel>> getExpensesByDateRange(
+    String from,
+    String to,
+  ) async {
+    final response = await client
+        .from('egresos')
+        .select('*, categorias_egresos(nombre, color)')
+        .gte('fecha', from)
+        .lte('fecha', to)
+        .order('fecha', ascending: false);
     return response.map((json) => ExpenseModel.fromJson(json)).toList();
   }
 
