@@ -8,3 +8,5 @@ export 'resin_model.dart';
 export 'seller_model.dart';
 export 'payment_model.dart';
 export 'daily_payment_model.dart';
+export 'expense_model.dart';
+export 'expense_category_model.dart';

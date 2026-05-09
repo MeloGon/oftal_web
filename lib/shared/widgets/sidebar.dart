@@ -121,6 +121,13 @@ class Sidebar extends ConsumerWidget {
                 ref.read(appRouterProvider).go(RouterName.salesHistory),
             isActive: navigationState.currentPage == RouterName.salesHistory,
           ),
+          MenuItem(
+            text: 'Egresos',
+            icon: Icons.account_balance_wallet_outlined,
+            onPressed: () =>
+                ref.read(appRouterProvider).go(RouterName.expenses),
+            isActive: navigationState.currentPage == RouterName.expenses,
+          ),
           if (ref.read(navigationProvider).isAdmin)
             MenuItem(
               text: 'Configuración',

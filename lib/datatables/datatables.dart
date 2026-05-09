@@ -3,3 +3,4 @@ export 'sales_history_datasource.dart';
 export 'resin_datasource.dart';
 export 'mounts_datasource.dart';
 export 'resins_inventory_datasource.dart';
+export 'expenses_datasource.dart';

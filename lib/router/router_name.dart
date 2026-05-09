@@ -7,6 +7,7 @@ class RouterName {
   static const String paymentsReport = '/dashboard/settings/payments-report';
   static const String sell = '/dashboard/sell';
   static const String salesHistory = '/dashboard/sales-history';
+  static const String expenses = '/dashboard/expenses';
   static const String searchPatient = '/dashboard/search-patient';
   static const String login = '/auth/login';
   static const String splash = '/';
