@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:oftal_web/features/search_patient/views/search_patient_view.dart';
 import 'package:oftal_web/features/sell/views/sell_view.dart';
+import 'package:oftal_web/features/expenses/views/expenses_view.dart';
 import 'package:oftal_web/features/sales_history/views/sales_history_view.dart';
 import 'package:oftal_web/features/settings/views/payments_report/payments_report_view.dart';
 import 'package:oftal_web/features/settings/views/mounts/mounts_view.dart';
@@ -172,6 +173,21 @@ GoRouter appRouter(Ref ref) {
                   ref
                       .read(navigationProvider.notifier)
                       .setCurrentPage(RouterName.salesHistory);
+                  return null;
+                },
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RouterName.expenses,
+                pageBuilder:
+                    (context, state) => _fadeRoute(const ExpensesView()),
+                redirect: (context, state) {
+                  ref
+                      .read(navigationProvider.notifier)
+                      .setCurrentPage(RouterName.expenses);
                   return null;
                 },
               ),

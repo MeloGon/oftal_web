@@ -46,6 +46,27 @@ class SalesHistoryDataSource extends DataTableSource {
       onSelectChanged: (value) {},
       index: index,
       cells: [
+        DataCell(
+          SalesHistoryActions(
+            sale: sale,
+            onViewDetails: () => _openDetails(sale),
+            onPrintSale: () async {
+              _openDetails(sale);
+              await ref
+                  .read(salesHistoryProvider.notifier)
+                  .getSalesDetails()
+                  .then((_) => ref
+                      .read(salesHistoryProvider.notifier)
+                      .generatePdf(sale));
+            },
+            onDeleteSale: () =>
+                ref.read(salesHistoryProvider.notifier).deleteSale(sale),
+            onFinalizeSale: () =>
+                ref.read(salesHistoryProvider.notifier).finalizeSale(sale),
+            onRegisterPayment: () =>
+                RegisterPaymentDialog().show(context, ref, sale),
+          ),
+        ),
         DataCell(_StatusBadge(isPaid: (sale.rest ?? 0) == 0)),
         DataCell(
           Text(sale.folioSale.toString(), style: s),
@@ -68,11 +89,17 @@ class SalesHistoryDataSource extends DataTableSource {
           onDoubleTap: () => _openDetails(sale),
         ),
         DataCell(
-          Text(sale.rest?.toCurrency() ?? '0', style: s),
+          Text(
+            (sale.rest ?? 0) == 0 ? '—' : sale.rest!.toCurrency(),
+            style: s,
+          ),
           onDoubleTap: () => _openDetails(sale),
         ),
         DataCell(
-          Text(sale.discount?.toCurrency() ?? '0', style: s),
+          Text(
+            (sale.discount ?? 0) == 0 ? '—' : sale.discount!.toCurrency(),
+            style: s,
+          ),
           onDoubleTap: () => _openDetails(sale),
         ),
         DataCell(
@@ -86,27 +113,6 @@ class SalesHistoryDataSource extends DataTableSource {
         DataCell(
           Text(sale.branch.toString(), style: s),
           onDoubleTap: () => _openDetails(sale),
-        ),
-        DataCell(
-          SalesHistoryActions(
-            sale: sale,
-            onViewDetails: () => _openDetails(sale),
-            onPrintSale: () async {
-              _openDetails(sale);
-              await ref
-                  .read(salesHistoryProvider.notifier)
-                  .getSalesDetails()
-                  .then((_) => ref
-                      .read(salesHistoryProvider.notifier)
-                      .generatePdf(sale));
-            },
-            onDeleteSale: () =>
-                ref.read(salesHistoryProvider.notifier).deleteSale(sale),
-            onFinalizeSale: () =>
-                ref.read(salesHistoryProvider.notifier).finalizeSale(sale),
-            onRegisterPayment: () =>
-                RegisterPaymentDialog().show(context, ref, sale),
-          ),
         ),
       ],
     );

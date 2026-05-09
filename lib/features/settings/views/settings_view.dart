@@ -112,10 +112,10 @@ class SettingsView extends ConsumerWidget {
             children: [
               Expanded(
                 child: _SettingsNavCard(
-                  title: 'Ingresos del día',
+                  title: 'Reporte de ingresos y egresos',
                   description:
-                      'Consulta todos los pagos y abonos recibidos por fecha',
-                  icon: Icons.payments_outlined,
+                      'Consulta ingresos y egresos registrados por período',
+                  icon: Icons.bar_chart_rounded,
                   iconColor: const Color(0xff22C55E),
                   iconBgColor: const Color(0xffDCFCE7),
                   onTap: () async {

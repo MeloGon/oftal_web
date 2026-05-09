@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/features/dashboard/viewmodels/dashboard_provider.dart';
 import 'package:oftal_web/features/dashboard/viewmodels/dashboard_state.dart';
+import 'package:oftal_web/features/expenses/viewmodels/expenses_provider.dart';
 import 'package:oftal_web/router/app_router.dart';
 import 'package:oftal_web/router/router_name.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
@@ -42,6 +43,7 @@ class DashboardView extends ConsumerWidget {
               Expanded(flex: 3, child: _QuickActions(ref: ref)),
             ],
           ),
+          const _ExpensesDonutChart(),
           const SizedBox(height: 8),
         ],
       ),
@@ -793,6 +795,208 @@ class _ActionButton extends StatefulWidget {
 
   @override
   State<_ActionButton> createState() => _ActionButtonState();
+}
+
+// ─── Expenses donut ───────────────────────────────────────────────────────────
+
+const _kExpenseColors = [
+  Color(0xff6366F1),
+  Color(0xffEF4444),
+  Color(0xffF59E0B),
+  Color(0xff10B981),
+  Color(0xff0EA5E9),
+  Color(0xff8B5CF6),
+  Color(0xffEC4899),
+  Color(0xff14B8A6),
+];
+
+class _ExpensesDonutChart extends ConsumerWidget {
+  const _ExpensesDonutChart();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final summary = ref.watch(expensesSummaryProvider);
+
+    return ShadCard(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 16,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Egresos del mes por categoría',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xff18181B),
+                ),
+              ),
+              GestureDetector(
+                onTap: () =>
+                    ref.read(appRouterProvider).go(RouterName.expenses),
+                child: const Text(
+                  'Ver todos →',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xff7A6BF5),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          summary.when(
+            loading: () => const SizedBox(
+              height: 180,
+              child: Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Color(0xff7A6BF5),
+                ),
+              ),
+            ),
+            error: (_, __) => const SizedBox(
+              height: 100,
+              child: Center(
+                child: Text(
+                  'Error al cargar egresos',
+                  style: TextStyle(fontSize: 12, color: Color(0xff71717A)),
+                ),
+              ),
+            ),
+            data: (data) {
+              if (data.isEmpty) {
+                return SizedBox(
+                  height: 100,
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 8,
+                      children: [
+                        Icon(
+                          Icons.account_balance_wallet_outlined,
+                          size: 32,
+                          color: Colors.grey.shade300,
+                        ),
+                        Text(
+                          'Sin egresos este mes',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+
+              final entries = data.entries.toList();
+              final total = entries.fold(0.0, (s, e) => s + e.value);
+
+              return SizedBox(
+                height: 180,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          PieChart(
+                            PieChartData(
+                              sections: entries.asMap().entries.map((e) {
+                                final color =
+                                    _kExpenseColors[e.key % _kExpenseColors.length];
+                                return PieChartSectionData(
+                                  value: e.value.value,
+                                  color: color,
+                                  title: '',
+                                  radius: 46,
+                                );
+                              }).toList(),
+                              centerSpaceRadius: 52,
+                              sectionsSpace: 2,
+                            ),
+                          ),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                total.toCurrency(),
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xff18181B),
+                                ),
+                              ),
+                              Text(
+                                'total',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.grey.shade500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 8,
+                      children: entries.asMap().entries.map((e) {
+                        final color =
+                            _kExpenseColors[e.key % _kExpenseColors.length];
+                        final pct =
+                            (e.value.value / total * 100).toStringAsFixed(0);
+                        return Row(
+                          spacing: 6,
+                          children: [
+                            Container(
+                              width: 10,
+                              height: 10,
+                              decoration: BoxDecoration(
+                                color: color,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  e.value.key,
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xff18181B),
+                                  ),
+                                ),
+                                Text(
+                                  '$pct% · ${e.value.value.toCurrency()}',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.grey.shade500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _ActionButtonState extends State<_ActionButton> {
