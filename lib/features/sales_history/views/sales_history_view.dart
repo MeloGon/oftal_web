@@ -99,18 +99,10 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
           // ─── Filters card ─────────────────────────────────
           ShadCard(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 12,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Expanded(child: FilterHistorySales()),
-                  ],
-                ),
-                const Divider(height: 1),
-                const _ActionsLegend(),
+                const Expanded(child: FilterHistorySales()),
               ],
             ),
           ),
@@ -125,6 +117,7 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
                   headingRowHeight: 40,
                   showCheckboxColumn: false,
                   wrapInCard: false,
+                  fixedLeftColumns: 1,
                   columnSpacing: 12,
                   columnResizingParameters: ColumnResizingParameters(
                     desktopMode: true,
@@ -144,6 +137,11 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
                   onRowsPerPageChanged:
                       (value) => salesNotifier.changeRowsPerPage(value ?? 20),
                   columns: [
+                    const DataColumn2(
+                      label: SizedBox.shrink(),
+                      fixedWidth: 48,
+                      isResizable: false,
+                    ),
                     DataColumn2(
                       label: _ColHeader('Estado'),
                       fixedWidth: 52,
@@ -197,11 +195,6 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
                     DataColumn2(
                       label: _ColHeader('Sucursal'),
                       fixedWidth: 100,
-                      isResizable: true,
-                    ),
-                    DataColumn2(
-                      label: _ColHeader('Acciones'),
-                      fixedWidth: 186,
                       isResizable: true,
                     ),
                   ],
@@ -260,108 +253,6 @@ class _ColHeader extends StatelessWidget {
   }
 }
 
-class _ActionsLegend extends StatelessWidget {
-  const _ActionsLegend();
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 20,
-      runSpacing: 6,
-      children: [
-        _LegendItem(icon: Icons.remove_red_eye_outlined, label: 'Ver detalles'),
-        _LegendItem(icon: Icons.print_outlined, label: 'Imprimir recibo'),
-        _LegendItem(
-          icon: Icons.account_balance_wallet_outlined,
-          label: 'Registrar abono',
-          color: const Color(0xff7A6BF5),
-        ),
-        _LegendItem(
-          icon: Icons.check_circle_outline,
-          label: 'Finalizar venta',
-          color: const Color(0xff16A34A),
-        ),
-        _LegendItem(icon: Icons.delete_outlined, label: 'Eliminar venta'),
-        const _BadgeLegendItem(
-          label: 'C',
-          description: 'Cobrado',
-          bg: Color(0xffDCFCE7),
-          fg: Color(0xff16A34A),
-        ),
-        const _BadgeLegendItem(
-          label: 'P',
-          description: 'Pendiente',
-          bg: Color(0xffFFF3CD),
-          fg: Color(0xffD97706),
-        ),
-      ],
-    );
-  }
-}
-
-class _LegendItem extends StatelessWidget {
-  const _LegendItem({required this.icon, required this.label, this.color});
-  final IconData icon;
-  final String label;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      spacing: 4,
-      children: [
-        Icon(icon, size: 14, color: color ?? const Color(0xff71717A)),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 11, color: Color(0xff71717A)),
-        ),
-      ],
-    );
-  }
-}
-
-class _BadgeLegendItem extends StatelessWidget {
-  const _BadgeLegendItem({
-    required this.label,
-    required this.description,
-    required this.bg,
-    required this.fg,
-  });
-  final String label;
-  final String description;
-  final Color bg;
-  final Color fg;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      spacing: 4,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-          decoration: BoxDecoration(
-            color: bg,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              color: fg,
-            ),
-          ),
-        ),
-        Text(
-          description,
-          style: const TextStyle(fontSize: 11, color: Color(0xff71717A)),
-        ),
-      ],
-    );
-  }
-}
 
 void _showSnackbar(
   BuildContext context,

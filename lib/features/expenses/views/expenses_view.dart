@@ -169,6 +169,7 @@ class _ExpensesViewState extends ConsumerState<ExpensesView> {
                   headingRowHeight: 40,
                   showCheckboxColumn: false,
                   wrapInCard: false,
+                  fixedLeftColumns: 1,
                   columnSpacing: 12,
                   horizontalMargin: 16,
                   minWidth: 1100,
@@ -183,6 +184,11 @@ class _ExpensesViewState extends ConsumerState<ExpensesView> {
                   onRowsPerPageChanged:
                       (v) => notifier.changeRowsPerPage(v ?? 20),
                   columns: const [
+                    DataColumn2(
+                      label: SizedBox.shrink(),
+                      fixedWidth: 48,
+                      isResizable: false,
+                    ),
                     DataColumn2(
                       label: _ColHeader('Categoría'),
                       fixedWidth: 160,
@@ -222,11 +228,6 @@ class _ExpensesViewState extends ConsumerState<ExpensesView> {
                       label: _ColHeader('Monto'),
                       fixedWidth: 100,
                       isResizable: true,
-                    ),
-                    DataColumn2(
-                      label: _ColHeader('Acciones'),
-                      fixedWidth: 80,
-                      isResizable: false,
                     ),
                   ],
                 ),

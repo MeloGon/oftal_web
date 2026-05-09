@@ -36,6 +36,12 @@ class ExpensesDataSource extends DataTableSource {
       onSelectChanged: (_) {},
       index: index,
       cells: [
+        DataCell(
+          _ExpenseActions(
+            onEdit: () => onEdit(e),
+            onDelete: () => onDelete(e),
+          ),
+        ),
         DataCell(_CategoryBadge(expense: e)),
         DataCell(Text(e.fecha, style: s)),
         DataCell(Text(e.descripcion, style: s)),
@@ -44,12 +50,6 @@ class ExpensesDataSource extends DataTableSource {
         DataCell(Text(e.sucursal ?? 'Global', style: s)),
         DataCell(Text(e.registradoPor ?? '—', style: s)),
         DataCell(Text(e.monto.toCurrency(), style: s)),
-        DataCell(
-          _ExpenseActions(
-            onEdit: () => onEdit(e),
-            onDelete: () => onDelete(e),
-          ),
-        ),
       ],
     );
   }
@@ -103,6 +103,8 @@ Color _hexToColor(String? hex) {
 
 // ─── Actions ─────────────────────────────────────────────────────────────────
 
+enum _ExpenseAction { edit, delete }
+
 class _ExpenseActions extends StatelessWidget {
   const _ExpenseActions({required this.onEdit, required this.onDelete});
   final VoidCallback onEdit;
@@ -110,37 +112,52 @@ class _ExpenseActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return PopupMenuButton<_ExpenseAction>(
+      icon: const Icon(Icons.more_vert, size: 18, color: Color(0xff71717A)),
+      tooltip: '',
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      onSelected: (action) {
+        switch (action) {
+          case _ExpenseAction.edit:
+            onEdit();
+          case _ExpenseAction.delete:
+            onDelete();
+        }
+      },
+      itemBuilder: (_) => [
+        const PopupMenuItem(
+          value: _ExpenseAction.edit,
+          height: 36,
+          child: _MenuItem(icon: Icons.edit_outlined, label: 'Editar'),
+        ),
+        const PopupMenuItem(
+          value: _ExpenseAction.delete,
+          height: 36,
+          child: _MenuItem(
+            icon: Icons.delete_outlined,
+            label: 'Eliminar',
+            color: Color(0xffEF4444),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MenuItem extends StatelessWidget {
+  const _MenuItem({required this.icon, required this.label, this.color});
+  final IconData icon;
+  final String label;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = color ?? const Color(0xff18181B);
     return Row(
       spacing: 8,
       children: [
-        Tooltip(
-          message: 'Editar',
-          child: Material(
-            type: MaterialType.transparency,
-            child: InkWell(
-              onTap: onEdit,
-              borderRadius: BorderRadius.circular(4),
-              child: const Padding(
-                padding: EdgeInsets.all(2),
-                child: Icon(Icons.edit_outlined, size: 18),
-              ),
-            ),
-          ),
-        ),
-        Tooltip(
-          message: 'Eliminar',
-          child: Material(
-            type: MaterialType.transparency,
-            child: InkWell(
-              onTap: onDelete,
-              borderRadius: BorderRadius.circular(4),
-              child: const Padding(
-                padding: EdgeInsets.all(2),
-                child: Icon(Icons.delete_outlined, size: 18),
-              ),
-            ),
-          ),
-        ),
+        Icon(icon, size: 16, color: c),
+        Text(label, style: TextStyle(fontSize: 13, color: c)),
       ],
     );
   }
