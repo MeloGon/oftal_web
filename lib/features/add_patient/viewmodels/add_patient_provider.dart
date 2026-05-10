@@ -4,7 +4,6 @@ import 'package:oftal_web/core/enums/snackbar_enum.dart';
 import 'package:oftal_web/features/add_patient/viewmodels/add_patient_state.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/utils/random_id_generator.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:oftal_web/shared/services/local_storage.dart' as local_storage;
@@ -22,10 +21,7 @@ class AddPatient extends _$AddPatient {
   final phoneController = TextEditingController();
   final observationsController = TextEditingController();
 
-  final mask = MaskTextInputFormatter(
-    mask: '##-##-####',
-    filter: {'#': RegExp(r'[0-9]')},
-  );
+  DateTime selectedBirthDate = DateTime.now();
 
   @override
   AddPatientState build() {
@@ -34,8 +30,7 @@ class AddPatient extends _$AddPatient {
       'dd-MMM-yyyy',
       'es_ES',
     ).format(DateTime.now());
-    birthDateController.text =
-        DateFormat('dd-MM-yyyy').format(DateTime.now()).toString();
+    birthDateController.text = DateFormat('dd-MM-yyyy').format(selectedBirthDate);
 
     Future.microtask(() {
       initializeBranch();
@@ -81,9 +76,9 @@ class AddPatient extends _$AddPatient {
     }
   }
 
-  void updateBirthDate(DateTime? birthDate) {
-    birthDateController.text =
-        DateFormat('yyyy-MM-dd').format(birthDate ?? DateTime.now()).toString();
+  void updateBirthDate(DateTime date) {
+    selectedBirthDate = date;
+    birthDateController.text = DateFormat('dd-MM-yyyy').format(date);
   }
 
   Future<void> createPatient({required bool isValid}) async {
@@ -145,8 +140,8 @@ class AddPatient extends _$AddPatient {
   void clearForm() {
     uniqueIdController.text = generateRandomId(16).toString();
     fullNameController.clear();
-    birthDateController.text =
-        DateFormat('dd-MM-yyyy').format(DateTime.now()).toString();
+    selectedBirthDate = DateTime.now();
+    birthDateController.text = DateFormat('dd-MM-yyyy').format(selectedBirthDate);
     genderController.value.clear();
     state = state.copyWith(errorMessage: '');
   }

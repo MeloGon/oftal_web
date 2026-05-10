@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_provider.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
+import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class EditPatientDialog {
@@ -43,20 +43,23 @@ class _EditPatientDialogContentState extends State<_EditPatientDialogContent> {
   late final TextEditingController _phoneCtrl;
   late final TextEditingController _birthDateCtrl;
   late final TextEditingController _observationsCtrl;
+  late DateTime _selectedBirthDate;
 
   String? _selectedGender;
   String? _selectedBranch;
 
-  final _dateMask = MaskTextInputFormatter(
-    mask: '##-##-####',
-    filter: {'#': RegExp(r'[0-9]')},
-  );
+  static final _dateFmt = DateFormat('dd-MM-yyyy');
 
   @override
   void initState() {
     super.initState();
     _nameCtrl = TextEditingController(text: widget.patient.name);
     _phoneCtrl = TextEditingController(text: widget.patient.phone);
+    try {
+      _selectedBirthDate = _dateFmt.parse(widget.patient.birthDate);
+    } catch (_) {
+      _selectedBirthDate = DateTime.now();
+    }
     _birthDateCtrl = TextEditingController(text: widget.patient.birthDate);
     _observationsCtrl =
         TextEditingController(text: widget.patient.observations);
@@ -178,19 +181,16 @@ class _EditPatientDialogContentState extends State<_EditPatientDialogContent> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: 150,
-                  child: ShadInputFormField(
-                    label: const Text('Fecha de nacimiento'),
-                    placeholder: const Text('31-03-2000'),
-                    controller: _birthDateCtrl,
-                    inputFormatters: [_dateMask],
-                    validator: (v) => RegExp(
-                      r'^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(19|20)\d{2}$',
-                    ).hasMatch(v)
-                        ? null
-                        : 'Formato inválido',
-                  ),
+                AppDatePickerButton(
+                  label: 'Fecha de nacimiento',
+                  selectedDate: _selectedBirthDate,
+                  lastDate: DateTime.now(),
+                  onDateSelected: (date) {
+                    setState(() {
+                      _selectedBirthDate = date;
+                      _birthDateCtrl.text = _dateFmt.format(date);
+                    });
+                  },
                 ),
                 Expanded(
                   child: _LabeledField(

@@ -7,6 +7,7 @@ class PaymentModel {
   final String? registradoPor;
   final String? notas;
   final String? creadoEl;
+  final String paymentType;
 
   const PaymentModel({
     this.id,
@@ -17,6 +18,7 @@ class PaymentModel {
     this.registradoPor,
     this.notas,
     this.creadoEl,
+    this.paymentType = 'abono_saldo',
   });
 
   factory PaymentModel.fromJson(Map<String, dynamic> json) => PaymentModel(
@@ -28,6 +30,7 @@ class PaymentModel {
     registradoPor: json['registrado_por'] as String?,
     notas: json['notas'] as String?,
     creadoEl: json['creado_el'] as String?,
+    paymentType: (json['tipo_pago'] as String?) ?? 'abono_saldo',
   );
 
   Map<String, dynamic> toInsertJson() => {
@@ -37,5 +40,6 @@ class PaymentModel {
     if (metodoPago != null) 'metodo_pago': metodoPago,
     if (registradoPor != null) 'registrado_por': registradoPor,
     if (notas != null && notas!.isNotEmpty) 'notas': notas,
+    'tipo_pago': paymentType,
   };
 }

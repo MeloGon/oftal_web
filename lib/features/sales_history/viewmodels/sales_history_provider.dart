@@ -4,7 +4,6 @@ import 'dart:typed_data';
 // import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/shared/providers/providers.dart';
 import 'package:oftal_web/core/enums/enums.dart';
@@ -21,11 +20,13 @@ part 'sales_history_provider.g.dart';
 @Riverpod(keepAlive: true)
 class SalesHistory extends _$SalesHistory {
   final searchController = TextEditingController();
+  DateTime searchDate = DateTime.now();
 
-  final mask = MaskTextInputFormatter(
-    mask: '####-##-##',
-    filter: {'#': RegExp(r'[0-9]')},
-  );
+  void updateSearchDate(DateTime date) {
+    searchDate = date;
+    searchController.text = DateFormat('yyyy-MM-dd').format(date);
+    getSales();
+  }
 
   @override
   SalesHistoryState build() {

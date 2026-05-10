@@ -5,7 +5,7 @@ import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/add_patient/viewmodels/add_patient_provider.dart';
 import 'package:oftal_web/features/add_patient/views/widgets/last_patients_added.dart';
 import 'package:oftal_web/shared/models/snackbar_config_model.dart';
-import 'package:oftal_web/shared/widgets/custom_snackbar.dart';
+import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class AddPatientView extends ConsumerStatefulWidget {
@@ -169,18 +169,14 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
                         },
                       );
 
-                      final birthField = ShadInputFormField(
-                        inputFormatters: [addPatientNotifier.mask],
-                        placeholder: const Text('31-03-2000'),
-                        label: Text(AppStrings.birthDate),
-                        controller: addPatientNotifier.birthDateController,
-                        validator:
-                            (v) =>
-                                RegExp(
-                                      r'^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(19|20)\d{2}$',
-                                    ).hasMatch(v)
-                                    ? null
-                                    : AppStrings.lblrequired,
+                      final birthField = AppDatePickerButton(
+                        label: AppStrings.birthDate,
+                        selectedDate: addPatientNotifier.selectedBirthDate,
+                        lastDate: DateTime.now(),
+                        onDateSelected: (date) {
+                          addPatientNotifier.updateBirthDate(date);
+                          setState(() {});
+                        },
                       );
 
                       final genderField = Column(

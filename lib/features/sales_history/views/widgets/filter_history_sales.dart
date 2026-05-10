@@ -5,6 +5,7 @@ import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/core/theme/app_text_styles.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
+import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class FilterHistorySales extends ConsumerWidget {
@@ -28,9 +29,10 @@ class FilterHistorySales extends ConsumerWidget {
               placeholder: Text(AppStrings.select),
               initialValue: salesHistoryState.selectedFilter,
               selectedOptionBuilder: (context, value) => Text(value.label),
-              options: FilterToSalesHistory.values
-                  .map((e) => ShadOption(value: e, child: Text(e.label)))
-                  .toList(),
+              options:
+                  FilterToSalesHistory.values
+                      .map((e) => ShadOption(value: e, child: Text(e.label)))
+                      .toList(),
               onChanged: (value) {
                 if (value != null) salesHistoryNotifier.selectFilter(value);
               },
@@ -72,24 +74,17 @@ class FilterHistorySales extends ConsumerWidget {
                     ),
           ).constrained(width: size.width * .4),
         if (salesHistoryState.selectedFilter == FilterToSalesHistory.date)
-          ShadInputFormField(
-            padding: EdgeInsets.symmetric(vertical: 6, horizontal: 6),
-            inputFormatters: [
-              salesHistoryNotifier.mask,
-            ],
-            placeholder: Text(
-              'Ingresa la fecha ejm. 2026-04-31 (año - mes - día)',
-            ),
-            onSubmitted: (_) => salesHistoryNotifier.getSales(),
-            controller: salesHistoryNotifier.searchController,
-            validator:
-                (v) =>
-                    RegExp(
-                          r'^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$',
-                        ).hasMatch(v)
-                        ? null
-                        : 'Ingresa una fecha valida',
-          ).constrained(width: size.width * .4),
+          StatefulBuilder(
+            builder:
+                (context, setLocalState) => AppDatePickerButton(
+                  selectedDate: salesHistoryNotifier.searchDate,
+                  lastDate: DateTime.now(),
+                  onDateSelected: (date) {
+                    setLocalState(() {});
+                    salesHistoryNotifier.updateSearchDate(date);
+                  },
+                ),
+          ),
       ],
     );
   }

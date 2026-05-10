@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/expenses/viewmodels/expenses_provider.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
+import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class ExpenseFormDialog {
@@ -32,11 +31,7 @@ class _ExpenseFormContent extends ConsumerStatefulWidget {
 }
 
 class _ExpenseFormContentState extends ConsumerState<_ExpenseFormContent> {
-  final _mask = MaskTextInputFormatter(
-    mask: '####-##-##',
-    filter: {'#': RegExp(r'[0-9]')},
-  );
-
+  late DateTime _selectedDate;
   late final TextEditingController _fechaCtrl;
   late final TextEditingController _descCtrl;
   late final TextEditingController _montoCtrl;
@@ -54,9 +49,13 @@ class _ExpenseFormContentState extends ConsumerState<_ExpenseFormContent> {
   void initState() {
     super.initState();
     final e = widget.expense;
-    _fechaCtrl = TextEditingController(
-      text: e?.fecha ?? DateFormat('yyyy-MM-dd').format(DateTime.now()),
-    );
+    final fechaTexto = e?.fecha ?? DateFormat('yyyy-MM-dd').format(DateTime.now());
+    _fechaCtrl = TextEditingController(text: fechaTexto);
+    try {
+      _selectedDate = DateFormat('yyyy-MM-dd').parse(fechaTexto);
+    } catch (_) {
+      _selectedDate = DateTime.now();
+    }
     _descCtrl = TextEditingController(text: e?.descripcion ?? '');
     _montoCtrl = TextEditingController(
       text: e != null ? e.monto.toStringAsFixed(2) : '',
@@ -90,15 +89,6 @@ class _ExpenseFormContentState extends ConsumerState<_ExpenseFormContent> {
       return;
     }
     if (_descCtrl.text.trim().isEmpty) return;
-    final fechaValida = RegExp(
-      r'^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$',
-    ).hasMatch(_fechaCtrl.text);
-    if (!fechaValida) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ingresa una fecha válida (yyyy-MM-dd)')),
-      );
-      return;
-    }
 
     final expense = ExpenseModel(
       id: widget.expense?.id,
@@ -161,13 +151,16 @@ class _ExpenseFormContentState extends ConsumerState<_ExpenseFormContent> {
                 spacing: 12,
                 runSpacing: 12,
                 children: [
-                  _Field(
+                  AppDatePickerButton(
                     label: 'Fecha *',
-                    child: ShadInput(
-                      controller: _fechaCtrl,
-                      inputFormatters: [_mask],
-                      placeholder: const Text('yyyy-MM-dd'),
-                    ).constrained(width: 140),
+                    selectedDate: _selectedDate,
+                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                    onDateSelected: (date) {
+                      setState(() {
+                        _selectedDate = date;
+                        _fechaCtrl.text = DateFormat('yyyy-MM-dd').format(date);
+                      });
+                    },
                   ),
                   _Field(
                     label: 'Monto *',
