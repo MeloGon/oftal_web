@@ -33,20 +33,20 @@ class _MobileBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 1000,
+    final screenHeight = MediaQuery.of(context).size.height;
+    return ColoredBox(
       color: Colors.white,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
             width: double.infinity,
-            height: 420,
+            height: screenHeight * 0.62,
             child: child,
           ),
           SizedBox(
             width: double.infinity,
-            height: 400,
+            height: screenHeight * 0.38,
             child: BackgroundOpticalLenses(),
           ),
         ],

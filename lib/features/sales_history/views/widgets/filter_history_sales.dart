@@ -55,7 +55,9 @@ class FilterHistorySales extends ConsumerWidget {
                       },
                       child: Icon(Icons.close),
                     ),
-          ).constrained(width: size.width * .48),
+          ).constrained(
+            width: size.width < 700 ? size.width - 48 : size.width * .48,
+          ),
         if (salesHistoryState.selectedFilter == FilterToSalesHistory.folio)
           ShadInputFormField(
             padding: EdgeInsets.symmetric(vertical: 6, horizontal: 6),
@@ -72,7 +74,9 @@ class FilterHistorySales extends ConsumerWidget {
                       },
                       child: Icon(Icons.close),
                     ),
-          ).constrained(width: size.width * .4),
+          ).constrained(
+            width: size.width < 700 ? size.width - 48 : size.width * .4,
+          ),
         if (salesHistoryState.selectedFilter == FilterToSalesHistory.date)
           StatefulBuilder(
             builder:
