@@ -133,9 +133,9 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: 16,
                       children: [
-                        SizedBox(width: 200, child: branchField),
-                        Expanded(child: idField),
-                        SizedBox(width: 140, child: dateField),
+                        Expanded(child: branchField),
+                        Expanded(flex: 2, child: idField),
+                        Expanded(child: dateField),
                       ],
                     );
                   }
@@ -158,7 +158,8 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
                   // Row 1: name | birth date | gender | phone
                   LayoutBuilder(
                     builder: (context, constraints) {
-                      final wide = constraints.maxWidth >= 520;
+                      final wide = constraints.maxWidth >= 800;
+                      final medium = constraints.maxWidth >= 520;
 
                       final nameField = ShadInputFormField(
                         label: Text(AppStrings.fullName),
@@ -238,18 +239,45 @@ class _AddPatientViewState extends ConsumerState<AddPatientView> {
                         keyboardType: TextInputType.number,
                       );
 
+                      // ≥800px: single row, date gets 2/7 of space (~228px at 800px)
                       if (wide) {
                         return Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           spacing: 16,
                           children: [
                             Expanded(flex: 3, child: nameField),
-                            SizedBox(width: 140, child: birthField),
-                            SizedBox(width: 160, child: genderField),
-                            SizedBox(width: 130, child: phoneField),
+                            Expanded(flex: 2, child: birthField),
+                            Expanded(child: genderField),
+                            Expanded(child: phoneField),
                           ],
                         );
                       }
+                      // 520–799px: two rows so date always gets ≥50% of its row
+                      if (medium) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 16,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              spacing: 16,
+                              children: [
+                                Expanded(flex: 2, child: nameField),
+                                Expanded(child: birthField),
+                              ],
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              spacing: 16,
+                              children: [
+                                Expanded(child: genderField),
+                                Expanded(child: phoneField),
+                              ],
+                            ),
+                          ],
+                        );
+                      }
+                      // <520px: stack everything, date shares a row with gender
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         spacing: 16,

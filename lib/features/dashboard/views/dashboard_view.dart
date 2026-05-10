@@ -27,21 +27,47 @@ class DashboardView extends ConsumerWidget {
         children: [
           _GreetingBanner(state: s),
           _StatsRow(state: s),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 16,
-            children: [
-              Expanded(flex: 5, child: _SalesBarChart(state: s)),
-              Expanded(flex: 3, child: _PaymentDonut(state: s)),
-            ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth < 650) {
+                return Column(
+                  spacing: 16,
+                  children: [
+                    _SalesBarChart(state: s),
+                    _PaymentDonut(state: s),
+                  ],
+                );
+              }
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 16,
+                children: [
+                  Expanded(flex: 5, child: _SalesBarChart(state: s)),
+                  Expanded(flex: 3, child: _PaymentDonut(state: s)),
+                ],
+              );
+            },
           ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 16,
-            children: [
-              Expanded(flex: 5, child: _RecentSalesList(state: s)),
-              Expanded(flex: 3, child: _QuickActions(ref: ref)),
-            ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth < 650) {
+                return Column(
+                  spacing: 16,
+                  children: [
+                    _RecentSalesList(state: s),
+                    _QuickActions(ref: ref),
+                  ],
+                );
+              }
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 16,
+                children: [
+                  Expanded(flex: 5, child: _RecentSalesList(state: s)),
+                  Expanded(flex: 3, child: _QuickActions(ref: ref)),
+                ],
+              );
+            },
           ),
           const _ExpensesDonutChart(),
           const SizedBox(height: 8),
@@ -175,49 +201,63 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      spacing: 16,
-      children: [
-        Expanded(
-          child: _StatCard(
-            label: 'Mis ventas hoy',
-            value: '${state.salesToday}',
-            icon: Icons.receipt_long_outlined,
-            iconColor: const Color(0xff7A6BF5),
-            iconBg: const Color(0xffEEECFE),
-          ),
-        ),
-        Expanded(
-          child: _StatCard(
-            label: 'Ingresos hoy',
-            value: state.incomeToday > 0
-                ? state.incomeToday.toCurrency()
-                : '—',
-            icon: Icons.payments_outlined,
-            iconColor: const Color(0xff16A34A),
-            iconBg: const Color(0xffDCFCE7),
-          ),
-        ),
-        Expanded(
-          child: _StatCard(
-            label: 'Clientes en sucursal',
-            value: '${state.clientsByBranch}',
-            icon: Icons.people_outline_rounded,
-            iconColor: const Color(0xff0EA5E9),
-            iconBg: const Color(0xffE0F2FE),
-          ),
-        ),
-        Expanded(
-          child: _StatCard(
-            label: 'Sucursal',
-            value: state.branchName.isEmpty ? '—' : state.branchName,
-            icon: Icons.store_outlined,
-            iconColor: const Color(0xff10B981),
-            iconBg: const Color(0xffD1FAE5),
-            smallValue: true,
-          ),
-        ),
-      ],
+    final card1 = _StatCard(
+      label: 'Mis ventas hoy',
+      value: '${state.salesToday}',
+      icon: Icons.receipt_long_outlined,
+      iconColor: const Color(0xff7A6BF5),
+      iconBg: const Color(0xffEEECFE),
+    );
+    final card2 = _StatCard(
+      label: 'Ingresos hoy',
+      value: state.incomeToday > 0 ? state.incomeToday.toCurrency() : '—',
+      icon: Icons.payments_outlined,
+      iconColor: const Color(0xff16A34A),
+      iconBg: const Color(0xffDCFCE7),
+    );
+    final card3 = _StatCard(
+      label: 'Clientes en sucursal',
+      value: '${state.clientsByBranch}',
+      icon: Icons.people_outline_rounded,
+      iconColor: const Color(0xff0EA5E9),
+      iconBg: const Color(0xffE0F2FE),
+    );
+    final card4 = _StatCard(
+      label: 'Sucursal',
+      value: state.branchName.isEmpty ? '—' : state.branchName,
+      icon: Icons.store_outlined,
+      iconColor: const Color(0xff10B981),
+      iconBg: const Color(0xffD1FAE5),
+      smallValue: true,
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 560) {
+          return Column(
+            spacing: 12,
+            children: [
+              Row(
+                spacing: 16,
+                children: [Expanded(child: card1), Expanded(child: card2)],
+              ),
+              Row(
+                spacing: 16,
+                children: [Expanded(child: card3), Expanded(child: card4)],
+              ),
+            ],
+          );
+        }
+        return Row(
+          spacing: 16,
+          children: [
+            Expanded(child: card1),
+            Expanded(child: card2),
+            Expanded(child: card3),
+            Expanded(child: card4),
+          ],
+        );
+      },
     );
   }
 }

@@ -178,7 +178,9 @@ class _SellViewState extends ConsumerState<SellView> {
                         ),
                         ConstrainedBox(
                           constraints: BoxConstraints(
-                            maxWidth: size.width * 0.5,
+                            maxWidth: size.width < 700
+                                ? size.width - 48
+                                : size.width * 0.5,
                           ),
                           child: ShadInputFormField(
                             placeholder: const Text(

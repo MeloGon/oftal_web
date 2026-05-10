@@ -243,8 +243,10 @@ class _PeriodFilterBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Wrap(
       spacing: 16,
+      runSpacing: 10,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         // Segmented tabs
         Container(
@@ -414,9 +416,10 @@ class _RangePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Wrap(
       spacing: 8,
-      mainAxisSize: MainAxisSize.min,
+      runSpacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         ShadButton.outline(
           onPressed: () async {

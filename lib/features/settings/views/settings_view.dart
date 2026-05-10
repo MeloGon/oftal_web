@@ -24,7 +24,7 @@ class SettingsView extends ConsumerWidget {
       }
     });
 
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,41 +60,48 @@ class SettingsView extends ConsumerWidget {
               letterSpacing: 0.3,
             ),
           ),
-          Row(
-            spacing: 16,
-            children: [
-              Expanded(
-                child: _SettingsNavCard(
-                  title: 'Resinas',
-                  description: 'Administra el catálogo de resinas y lentes',
-                  icon: Icons.lens_outlined,
-                  iconColor: const Color(0xff0EA5E9),
-                  iconBgColor: const Color(0xffE0F2FE),
-                  onTap: () async {
-                    final authorized = await showAuthorizationDialog(
-                      context: context,
-                      requiredRole: AuthorizationRole.admin,
-                      actionName: 'acceder a Resinas',
-                    );
-                    if (authorized) {
-                      ref.read(appRouterProvider).go(RouterName.resins);
-                    }
-                  },
-                ),
-              ),
-              Expanded(
-                child: _SettingsNavCard(
-                  title: 'Monturas',
-                  description: 'Administra el inventario de armazones',
-                  icon: Icons.visibility_outlined,
-                  iconColor: const Color(0xff7A6BF5),
-                  iconBgColor: const Color(0xffEEECFE),
-                  onTap:
-                      () async =>
-                          ref.read(appRouterProvider).go(RouterName.mounts),
-                ),
-              ),
-            ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final resinas = _SettingsNavCard(
+                title: 'Resinas',
+                description: 'Administra el catálogo de resinas y lentes',
+                icon: Icons.lens_outlined,
+                iconColor: const Color(0xff0EA5E9),
+                iconBgColor: const Color(0xffE0F2FE),
+                onTap: () async {
+                  final authorized = await showAuthorizationDialog(
+                    context: context,
+                    requiredRole: AuthorizationRole.admin,
+                    actionName: 'acceder a Resinas',
+                  );
+                  if (authorized) {
+                    ref.read(appRouterProvider).go(RouterName.resins);
+                  }
+                },
+              );
+              final monturas = _SettingsNavCard(
+                title: 'Monturas',
+                description: 'Administra el inventario de armazones',
+                icon: Icons.visibility_outlined,
+                iconColor: const Color(0xff7A6BF5),
+                iconBgColor: const Color(0xffEEECFE),
+                onTap: () async =>
+                    ref.read(appRouterProvider).go(RouterName.mounts),
+              );
+              if (constraints.maxWidth < 560) {
+                return Column(
+                  spacing: 16,
+                  children: [resinas, monturas],
+                );
+              }
+              return Row(
+                spacing: 16,
+                children: [
+                  Expanded(child: resinas),
+                  Expanded(child: monturas),
+                ],
+              );
+            },
           ),
 
           // ─── Reports section ──────────────────────────────
@@ -107,33 +114,37 @@ class SettingsView extends ConsumerWidget {
               letterSpacing: 0.3,
             ),
           ),
-          Row(
-            spacing: 16,
-            children: [
-              Expanded(
-                child: _SettingsNavCard(
-                  title: 'Reporte de ingresos y egresos',
-                  description:
-                      'Consulta ingresos y egresos registrados por período',
-                  icon: Icons.bar_chart_rounded,
-                  iconColor: const Color(0xff22C55E),
-                  iconBgColor: const Color(0xffDCFCE7),
-                  onTap: () async {
-                    final authorized = await showAuthorizationDialog(
-                      context: context,
-                      requiredRole: AuthorizationRole.admin,
-                      actionName: 'ver el reporte de ingresos',
-                    );
-                    if (authorized) {
-                      ref
-                          .read(appRouterProvider)
-                          .go(RouterName.paymentsReport);
-                    }
-                  },
-                ),
-              ),
-              const Expanded(child: SizedBox()),
-            ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final reporte = _SettingsNavCard(
+                title: 'Reporte de ingresos y egresos',
+                description:
+                    'Consulta ingresos y egresos registrados por período',
+                icon: Icons.bar_chart_rounded,
+                iconColor: const Color(0xff22C55E),
+                iconBgColor: const Color(0xffDCFCE7),
+                onTap: () async {
+                  final authorized = await showAuthorizationDialog(
+                    context: context,
+                    requiredRole: AuthorizationRole.admin,
+                    actionName: 'ver el reporte de ingresos',
+                  );
+                  if (authorized) {
+                    ref.read(appRouterProvider).go(RouterName.paymentsReport);
+                  }
+                },
+              );
+              if (constraints.maxWidth < 560) {
+                return reporte;
+              }
+              return Row(
+                spacing: 16,
+                children: [
+                  Expanded(child: reporte),
+                  const Expanded(child: SizedBox()),
+                ],
+              );
+            },
           ),
         ],
       ),

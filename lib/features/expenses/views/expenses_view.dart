@@ -135,26 +135,32 @@ class _ExpensesViewState extends ConsumerState<ExpensesView> {
           Row(
             spacing: 12,
             children: [
-              _SummaryCard(
-                label: 'Total egresos',
-                value: total.toCurrency(),
-                icon: Icons.account_balance_wallet_outlined,
-                iconColor: const Color(0xffEF4444),
-                iconBg: const Color(0xffFEE2E2),
+              Expanded(
+                child: _SummaryCard(
+                  label: 'Total egresos',
+                  value: total.toCurrency(),
+                  icon: Icons.account_balance_wallet_outlined,
+                  iconColor: const Color(0xffEF4444),
+                  iconBg: const Color(0xffFEE2E2),
+                ),
               ),
-              _SummaryCard(
-                label: 'Registros',
-                value: '${state.expenses.length}',
-                icon: Icons.receipt_long_outlined,
-                iconColor: const Color(0xff6366F1),
-                iconBg: const Color(0xffEEECFE),
+              Expanded(
+                child: _SummaryCard(
+                  label: 'Registros',
+                  value: '${state.expenses.length}',
+                  icon: Icons.receipt_long_outlined,
+                  iconColor: const Color(0xff6366F1),
+                  iconBg: const Color(0xffEEECFE),
+                ),
               ),
-              _SummaryCard(
-                label: 'Categorías',
-                value: '${state.categories.length}',
-                icon: Icons.label_outline,
-                iconColor: const Color(0xff10B981),
-                iconBg: const Color(0xffD1FAE5),
+              Expanded(
+                child: _SummaryCard(
+                  label: 'Categorías',
+                  value: '${state.categories.length}',
+                  icon: Icons.label_outline,
+                  iconColor: const Color(0xff10B981),
+                  iconBg: const Color(0xffD1FAE5),
+                ),
               ),
             ],
           ),
@@ -311,12 +317,15 @@ class _SummaryCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             spacing: 12,
             children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey.shade600,
+              Expanded(
+                child: Text(
+                  label,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey.shade600,
+                  ),
                 ),
               ),
               Container(
