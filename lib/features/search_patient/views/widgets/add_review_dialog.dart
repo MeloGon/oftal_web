@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_provider.dart';
+import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class AddReviewDialog {
@@ -50,11 +50,16 @@ class AddReviewDialog {
   }
 }
 
-class AddReviewWidget extends ConsumerWidget {
+class AddReviewWidget extends ConsumerStatefulWidget {
   const AddReviewWidget({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AddReviewWidget> createState() => _AddReviewWidgetState();
+}
+
+class _AddReviewWidgetState extends ConsumerState<AddReviewWidget> {
+  @override
+  Widget build(BuildContext context) {
     final searchPatientNotifier = ref.read(searchPatientProvider.notifier);
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.8,
@@ -66,10 +71,14 @@ class AddReviewWidget extends ConsumerWidget {
           children: [
             // Información General
             _buildSectionTitle(context, 'Información General'),
-            _buildInputDateField(
-              'Fecha de la medida a ingresar',
-              searchPatientNotifier.dateConsultController,
-              '31-03-2000',
+            AppDatePickerButton(
+              label: 'Fecha de la medida a ingresar',
+              selectedDate: searchPatientNotifier.selectedConsultDate,
+              lastDate: DateTime.now(),
+              onDateSelected: (date) {
+                searchPatientNotifier.updateConsultDate(date);
+                setState(() {});
+              },
             ),
             _buildInputField(
               'Motivo de Consulta',
@@ -293,34 +302,6 @@ class AddReviewWidget extends ConsumerWidget {
       controller: controller,
       maxLines: maxLines,
       keyboardType: _getKeyboardType(label),
-    );
-  }
-
-  Widget _buildInputDateField(
-    String label,
-    TextEditingController controller,
-    String placeholder,
-  ) {
-    return ShadInputFormField(
-      label: Text(label),
-      controller: controller,
-      keyboardType: TextInputType.datetime,
-      placeholder: Text(placeholder),
-      inputFormatters: [
-        MaskTextInputFormatter(
-          mask: '##-##-####',
-          filter: {
-            '#': RegExp(r'[0-9]'),
-          },
-        ),
-      ],
-      validator:
-          (v) =>
-              RegExp(
-                    r'^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(19|20)\d{2}$',
-                  ).hasMatch(v)
-                  ? null
-                  : null,
     );
   }
 

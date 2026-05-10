@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
+import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class RegisterPaymentDialog {
@@ -36,10 +36,7 @@ class _RegisterPaymentContentState
   late final TextEditingController _montoCtrl;
   late final TextEditingController _fechaCtrl;
   late final TextEditingController _notasCtrl;
-  final _mask = MaskTextInputFormatter(
-    mask: '####-##-##',
-    filter: {'#': RegExp(r'[0-9]')},
-  );
+  DateTime _selectedDate = DateTime.now();
   PaymentMethodEnum _method = PaymentMethodEnum.efectivo;
   String? _montoError;
 
@@ -48,7 +45,7 @@ class _RegisterPaymentContentState
     super.initState();
     _montoCtrl = TextEditingController();
     _fechaCtrl = TextEditingController(
-      text: DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      text: DateFormat('yyyy-MM-dd').format(_selectedDate),
     );
     _notasCtrl = TextEditingController();
   }
@@ -74,15 +71,6 @@ class _RegisterPaymentContentState
         () =>
             _montoError =
                 'El abono no puede superar el saldo (${resta.toCurrency()})',
-      );
-      return;
-    }
-    final fechaValida = RegExp(
-      r'^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$',
-    ).hasMatch(_fechaCtrl.text);
-    if (!fechaValida) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ingresa una fecha válida (yyyy-MM-dd)')),
       );
       return;
     }
@@ -182,24 +170,16 @@ class _RegisterPaymentContentState
                         ),
                     ],
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 4,
-                    children: [
-                      const Text(
-                        'Fecha de pago *',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xff52525B),
-                        ),
-                      ),
-                      ShadInput(
-                        controller: _fechaCtrl,
-                        inputFormatters: [_mask],
-                        placeholder: const Text('yyyy-MM-dd'),
-                      ).constrained(width: 140),
-                    ],
+                  AppDatePickerButton(
+                    label: 'Fecha de pago *',
+                    selectedDate: _selectedDate,
+                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                    onDateSelected: (date) {
+                      setState(() {
+                        _selectedDate = date;
+                        _fechaCtrl.text = DateFormat('yyyy-MM-dd').format(date);
+                      });
+                    },
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

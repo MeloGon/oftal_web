@@ -19,8 +19,6 @@ class SellView extends ConsumerStatefulWidget {
 }
 
 class _SellViewState extends ConsumerState<SellView> {
-  final _formKey = GlobalKey<ShadFormState>();
-
   @override
   Widget build(BuildContext context) {
     final sellNotifier = ref.watch(sellProvider.notifier);
@@ -385,22 +383,14 @@ class _SellViewState extends ConsumerState<SellView> {
                             ],
                           ),
                         ),
-                        ShadForm(
-                          key: _formKey,
-                          autovalidateMode:
-                              ShadAutovalidateMode.onUserInteraction,
-                          child: ShadInputFormField(
-                            label: const Text('Fecha'),
-                            inputFormatters: [sellNotifier.mask],
-                            controller: sellNotifier.dateController,
-                            validator:
-                                (v) =>
-                                    RegExp(
-                                          r'^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(19|20)\d{2}$',
-                                        ).hasMatch(v)
-                                        ? null
-                                        : 'Ingresa una fecha válida',
-                          ).constrained(width: 130),
+                        AppDatePickerButton(
+                          label: 'Fecha',
+                          selectedDate: sellNotifier.selectedDate,
+                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                          onDateSelected: (date) {
+                            sellNotifier.updateDate(date);
+                            setState(() {});
+                          },
                         ),
                       ],
                     ),

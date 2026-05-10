@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
@@ -28,18 +27,11 @@ class Sell extends _$Sell {
   final accountController = TextEditingController();
   final restController = TextEditingController();
   final dateController = TextEditingController();
-
-  final mask = MaskTextInputFormatter(
-    mask: '##-##-####',
-    filter: {'#': RegExp(r'[0-9]')},
-  );
+  DateTime selectedDate = DateTime.now();
 
   @override
   SellState build() {
-    dateController.text = DateFormat(
-      'dd-MM-yyyy',
-      'es_ES',
-    ).format(DateTime.now());
+    dateController.text = DateFormat('dd-MM-yyyy').format(selectedDate);
     ref.onDispose(() {
       searchController.dispose();
       searchItemToSellController.dispose();
@@ -53,6 +45,11 @@ class Sell extends _$Sell {
     return const SellState();
   }
 
+  void updateDate(DateTime date) {
+    selectedDate = date;
+    dateController.text = DateFormat('dd-MM-yyyy').format(date);
+  }
+
   void resetState() {
     searchController.clear();
     searchItemToSellController.clear();
@@ -61,10 +58,8 @@ class Sell extends _$Sell {
     totalController.clear();
     accountController.clear();
     restController.clear();
-    dateController.text = DateFormat(
-      'dd-MM-yyyy',
-      'es_ES',
-    ).format(DateTime.now());
+    selectedDate = DateTime.now();
+    dateController.text = DateFormat('dd-MM-yyyy').format(selectedDate);
     state = const SellState();
     state = state.copyWith(selectedInitialPaymentMethod: null);
   }

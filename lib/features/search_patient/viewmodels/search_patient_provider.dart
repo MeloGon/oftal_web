@@ -42,6 +42,12 @@ class SearchPatient extends _$SearchPatient {
   final avConRxOiCercaController = TextEditingController();
   final optometricDiagnosisController = TextEditingController();
   final dateConsultController = TextEditingController();
+  DateTime selectedConsultDate = DateTime.now();
+
+  void updateConsultDate(DateTime date) {
+    selectedConsultDate = date;
+    dateConsultController.text = DateFormat('dd-MM-yyyy').format(date);
+  }
 
   @override
   SearchPatientState build() {
