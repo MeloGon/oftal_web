@@ -29,9 +29,13 @@ class PaymentsReportView extends ConsumerWidget {
 
     final payments = state.payments;
     final expenses = state.expenses;
-    final total = payments.fold(0.0, (sum, p) => sum + p.monto);
+    final newSales = payments.where((p) => p.isNewSale).toList();
+    final balancePayments = payments.where((p) => !p.isNewSale).toList();
+    final totalNewSales = newSales.fold(0.0, (sum, p) => sum + p.monto);
+    final totalBalancePayments = balancePayments.fold(0.0, (sum, p) => sum + p.monto);
     final totalExpenses = expenses.fold(0.0, (sum, e) => sum + e.monto);
-    final byMethod = _groupByMethod(payments);
+    final byMethodNewSales = _groupByMethod(newSales);
+    final byMethodBalancePayments = _groupByMethod(balancePayments);
     final expensesByCategory = _groupExpensesByCategory(expenses);
 
     return Padding(
@@ -97,11 +101,18 @@ class PaymentsReportView extends ConsumerWidget {
                 // ── Ingresos ─────────────────────────────────
                 _SectionLabel(
                   label: 'Ingresos',
-                  total: total,
+                  total: totalNewSales + totalBalancePayments,
                   color: const Color(0xff0EA5E9),
                   icon: Icons.trending_up_rounded,
                 ),
-                _SummaryRow(total: total, byMethod: byMethod),
+
+                // ── Ingresos por nuevas ventas ────────────
+                _SubSectionLabel(
+                  label: 'Ingresos por nuevas ventas',
+                  total: totalNewSales,
+                  color: const Color(0xff22C55E),
+                ),
+                _SummaryRow(total: totalNewSales, byMethod: byMethodNewSales),
                 ShadCard(
                   padding: EdgeInsets.zero,
                   child: Column(
@@ -110,7 +121,7 @@ class PaymentsReportView extends ConsumerWidget {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
                         child: Text(
-                          'Detalle de ingresos (${payments.length})',
+                          'Detalle de nuevas ventas (${newSales.length})',
                           style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -119,9 +130,40 @@ class PaymentsReportView extends ConsumerWidget {
                         ),
                       ),
                       const Divider(height: 1, color: Color(0xffF4F4F5)),
-                      payments.isEmpty
-                          ? const _EmptyState(label: 'Sin ingresos en el período seleccionado')
-                          : _PaymentsTable(payments: payments),
+                      newSales.isEmpty
+                          ? const _EmptyState(label: 'Sin nuevas ventas en el período seleccionado')
+                          : _PaymentsTable(payments: newSales),
+                    ],
+                  ),
+                ),
+
+                // ── Ingresos por saldos pagados ───────────
+                _SubSectionLabel(
+                  label: 'Ingresos por saldos pagados',
+                  total: totalBalancePayments,
+                  color: const Color(0xff8B5CF6),
+                ),
+                _SummaryRow(total: totalBalancePayments, byMethod: byMethodBalancePayments),
+                ShadCard(
+                  padding: EdgeInsets.zero,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+                        child: Text(
+                          'Detalle de saldos pagados (${balancePayments.length})',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xff18181B),
+                          ),
+                        ),
+                      ),
+                      const Divider(height: 1, color: Color(0xffF4F4F5)),
+                      balancePayments.isEmpty
+                          ? const _EmptyState(label: 'Sin saldos pagados en el período seleccionado')
+                          : _PaymentsTable(payments: balancePayments),
                     ],
                   ),
                 ),
@@ -717,6 +759,53 @@ class _ColHeader extends StatelessWidget {
         fontWeight: FontWeight.w600,
         color: Color(0xff52525B),
       ),
+    );
+  }
+}
+
+// ─── Sub-section label ────────────────────────────────────────────────────────
+
+class _SubSectionLabel extends StatelessWidget {
+  const _SubSectionLabel({
+    required this.label,
+    required this.total,
+    required this.color,
+  });
+  final String label;
+  final double total;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      spacing: 8,
+      children: [
+        Container(
+          width: 3,
+          height: 16,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: color,
+          ),
+        ),
+        const Spacer(),
+        Text(
+          total.toCurrency(),
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: color,
+          ),
+        ),
+      ],
     );
   }
 }

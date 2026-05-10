@@ -9,6 +9,7 @@ class DailyPaymentModel {
   final String? paciente;
   final String? folioRemision;
   final String? sucursal;
+  final String paymentType;
 
   const DailyPaymentModel({
     this.id,
@@ -21,7 +22,10 @@ class DailyPaymentModel {
     this.paciente,
     this.folioRemision,
     this.sucursal,
+    this.paymentType = 'abono_saldo',
   });
+
+  bool get isNewSale => paymentType == 'nueva_venta';
 
   factory DailyPaymentModel.fromJson(
     Map<String, dynamic> json,
@@ -37,5 +41,6 @@ class DailyPaymentModel {
     paciente: saleJson?['PACIENTE'] as String?,
     folioRemision: saleJson?['FOLIO REMISION'] as String?,
     sucursal: saleJson?['SUCURSAL'] as String?,
+    paymentType: (json['tipo_pago'] as String?) ?? 'abono_saldo',
   );
 }

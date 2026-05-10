@@ -372,6 +372,7 @@ class Sell extends _$Sell {
               metodoPago: state.selectedInitialPaymentMethod?.value ?? 'otro',
               registradoPor: userId,
               notas: 'Pago inicial de venta',
+              paymentType: 'nueva_venta',
             );
             await ref
                 .read(paymentRepositoryProvider)
