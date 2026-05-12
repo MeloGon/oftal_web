@@ -97,14 +97,12 @@ class MountsView extends ConsumerWidget {
           ),
 
           // ─── Table card ───────────────────────────────────
-          ShadCard(
+          Expanded(
+           child: ShadCard(
             padding: EdgeInsets.zero,
             child: LoadingOverlay(
               isLoading: mountsState.isLoading,
-              child: SizedBox(
-                width: width * 0.9,
-                height: 600,
-                child: PaginatedDataTable2(
+              child: PaginatedDataTable2(
                   wrapInCard: false,
                   columnSpacing: 12,
                   horizontalMargin: 16,
