@@ -106,8 +106,7 @@ class _EditPatientDialogContentState extends State<_EditPatientDialogContent> {
 
     return ShadDialog(
       constraints: BoxConstraints(
-        maxWidth: size.width * 0.6,
-        minWidth: 340,
+        maxWidth: (size.width * 0.85).clamp(320, 580),
       ),
       title: const Text('Editar paciente'),
       description: Text(widget.patient.name),

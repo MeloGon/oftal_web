@@ -93,8 +93,7 @@ class _CategoryContentState extends ConsumerState<_CategoryContent> {
 
     return ShadDialog(
       constraints: BoxConstraints(
-        maxWidth: size.width * 0.4,
-        minWidth: 320,
+        maxWidth: (size.width * 0.85).clamp(300, 480),
         maxHeight: size.height * 0.85,
       ),
       closeIcon: ShadIconButton(

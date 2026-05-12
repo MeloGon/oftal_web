@@ -16,8 +16,7 @@ class AddResinDialog {
           (context) => ShadDialog(
             closeIcon: SizedBox(),
             constraints: BoxConstraints(
-              maxWidth: MediaQuery.sizeOf(context).width * .6,
-              minWidth: 293,
+              maxWidth: (MediaQuery.sizeOf(context).width * 0.85).clamp(280, 480),
             ),
             title: Text(
               'Agregar Resina',

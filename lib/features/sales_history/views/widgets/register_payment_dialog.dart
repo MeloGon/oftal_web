@@ -95,8 +95,7 @@ class _RegisterPaymentContentState
 
     return ShadDialog(
       constraints: BoxConstraints(
-        maxWidth: size.width * 0.5,
-        minWidth: 340,
+        maxWidth: (size.width * 0.85).clamp(320, 560),
         maxHeight: size.height * 0.88,
       ),
       closeIcon: ShadIconButton(

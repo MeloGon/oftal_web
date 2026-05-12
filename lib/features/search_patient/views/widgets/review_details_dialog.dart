@@ -18,8 +18,7 @@ class ReviewDetailsDialog {
         final size = MediaQuery.sizeOf(context);
         return ShadDialog(
           constraints: BoxConstraints(
-            maxWidth: size.width * 0.72,
-            minWidth: 340,
+            maxWidth: (size.width * 0.85).clamp(320, 640),
             maxHeight: size.height * 0.85,
           ),
           title: Text(reviews.first.patientName ?? 'Paciente'),

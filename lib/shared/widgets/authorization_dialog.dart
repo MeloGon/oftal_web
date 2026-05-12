@@ -91,8 +91,7 @@ class _AuthorizationDialogContentState
     return ShadDialog(
       closeIcon: const SizedBox.shrink(),
       constraints: BoxConstraints(
-        maxWidth: MediaQuery.sizeOf(context).width * 0.4,
-        minWidth: 320,
+        maxWidth: (MediaQuery.sizeOf(context).width * 0.85).clamp(280, 480),
       ),
       title: const Text('Autorización requerida'),
       description: Text(

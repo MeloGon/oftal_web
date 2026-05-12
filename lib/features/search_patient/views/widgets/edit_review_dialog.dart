@@ -148,8 +148,7 @@ class _EditReviewContentState extends State<_EditReviewContent> {
     final size = MediaQuery.sizeOf(context);
     return ShadDialog(
       constraints: BoxConstraints(
-        maxWidth: size.width * 0.65,
-        minWidth: 340,
+        maxWidth: (size.width * 0.85).clamp(320, 600),
         maxHeight: size.height * 0.88,
       ),
       title: Text(
