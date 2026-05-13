@@ -21,11 +21,47 @@ class ReviewDetailsDialog {
             maxWidth: (size.width * 0.85).clamp(320, 640),
             maxHeight: size.height * 0.85,
           ),
-          title: Text(reviews.first.patientName ?? 'Paciente'),
-          description: Text(
-            reviews.length == 1
-                ? '1 medición registrada'
-                : '${reviews.length} mediciones registradas',
+          title: Row(
+            spacing: 10,
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: const Color(0xffEEECFE),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.person_outline_rounded,
+                  size: 18,
+                  color: Color(0xff7A6BF5),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  reviews.first.patientName ?? 'Paciente',
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          description: Row(
+            spacing: 6,
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: Color(0xff7A6BF5),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              Text(
+                reviews.length == 1
+                    ? '1 medición registrada'
+                    : '${reviews.length} mediciones registradas',
+              ),
+            ],
           ),
           actions: [
             ShadButton(
@@ -90,192 +126,228 @@ class _ReviewCard extends StatelessWidget {
       review.avConRxOdCerca, review.avConRxOiCerca,
     ]);
 
-    return ShadCard(
-      padding: const EdgeInsets.all(16),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xffE4E4E7)),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 14,
         children: [
-          // ─ Header ──────────────────────────────────────────
-          Row(
-            children: [
-              Expanded(
-                child: Row(
-                  spacing: 16,
-                  children: [
-                    _InfoChip(
-                      icon: Icons.calendar_today_outlined,
-                      label: review.date ?? 'Sin fecha',
-                    ),
-                    _InfoChip(
-                      icon: Icons.store_outlined,
-                      label: review.branchName ?? 'Sin sucursal',
-                    ),
-                  ],
-                ),
+          // ─ Card header ─────────────────────────────────────
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: const BoxDecoration(
+              color: Color(0xffFAFAFA),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(11)),
+              border: Border(
+                bottom: BorderSide(color: Color(0xffE4E4E7)),
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                spacing: 8,
-                children: [
-                  if (total > 1)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: [
+                      _InfoChip(
+                        icon: Icons.calendar_today_outlined,
+                        label: review.date ?? 'Sin fecha',
                       ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xffEEECFE),
-                        borderRadius: BorderRadius.circular(20),
+                      _InfoChip(
+                        icon: Icons.store_outlined,
+                        label: review.branchName ?? 'Sin sucursal',
                       ),
-                      child: Text(
-                        '$index / $total',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xff7A6BF5),
+                    ],
+                  ),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 6,
+                  children: [
+                    if (total > 1)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffEEECFE),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          '$index / $total',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xff7A6BF5),
+                          ),
                         ),
                       ),
-                    ),
-                  Tooltip(
-                    message: 'Editar medición',
-                    child: Material(
-                      type: MaterialType.transparency,
-                      child: InkWell(
+                    Tooltip(
+                      message: 'Editar medición',
+                      child: Material(
+                        color: const Color(0xffEFF6FF),
                         borderRadius: BorderRadius.circular(6),
-                        onTap: () => EditReviewDialog().show(
-                          context,
-                          ref,
-                          review,
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(4),
-                          child: Icon(
-                            Icons.edit_outlined,
-                            size: 16,
-                            color: Color(0xff0EA5E9),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(6),
+                          onTap: () => EditReviewDialog().show(
+                            context,
+                            ref,
+                            review,
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(6),
+                            child: Icon(
+                              Icons.edit_outlined,
+                              size: 14,
+                              color: Color(0xff0EA5E9),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-
-          // ─ Motivo ──────────────────────────────────────────
-          if (_has(review.reasonConsult))
-            _FieldRow(
-              label: 'Motivo de consulta',
-              value: review.reasonConsult!,
-            ),
-
-          // ─ Graduación ──────────────────────────────────────
-          if (_has(review.graduationType))
-            _FieldRow(
-              label: 'Tipo de graduación',
-              value: review.graduationType!,
-            ),
-
-          // ─ Refracción ──────────────────────────────────────
-          if (hasRefraction) ...[
-            _SectionLabel('Refracción'),
-            _MeasureGrid(rows: [
-              if (_anyOf([review.odEsf, review.oiEsf]))
-                _MRow('ESF', review.odEsf, review.oiEsf),
-              if (_anyOf([review.odCil, review.oiCil]))
-                _MRow('CIL', review.odCil, review.oiCil),
-              if (_anyOf([review.odEje, review.oiEje]))
-                _MRow('EJE', review.odEje, review.oiEje),
-              if (_anyOf([review.odAv, review.oiAv]))
-                _MRow('AV', review.odAv, review.oiAv),
-            ]),
-          ],
-
-          // ─ Lentes de contacto ──────────────────────────────
-          if (hasLc) ...[
-            _SectionLabel('Lentes de contacto'),
-            _MeasureGrid(rows: [
-              if (_anyOf([review.odCbLc, review.oiCbLc]))
-                _MRow('CB LC', review.odCbLc, review.oiCbLc),
-              if (_anyOf([review.odDiamLc, review.oiDiamLc]))
-                _MRow('DIAM LC', review.odDiamLc, review.oiDiamLc),
-            ]),
-          ],
-
-          // ─ AV sin RX ───────────────────────────────────────
-          if (hasAvSinRx) ...[
-            _SectionLabel('AV sin RX'),
-            _MeasureGrid(rows: [
-              if (_anyOf([review.avSinRxOdLejos, review.avSinRxOiLejos]))
-                _MRow('Lejos', review.avSinRxOdLejos, review.avSinRxOiLejos),
-              if (_anyOf([review.avSinRxOdCerca, review.avSinRxOiCerca]))
-                _MRow('Cerca', review.avSinRxOdCerca, review.avSinRxOiCerca),
-            ]),
-          ],
-
-          // ─ AV con RX ───────────────────────────────────────
-          if (hasAvConRx) ...[
-            _SectionLabel('AV con RX'),
-            _MeasureGrid(rows: [
-              if (_anyOf([review.avConRxOdCerca, review.avConRxOiCerca]))
-                _MRow('Cerca', review.avConRxOdCerca, review.avConRxOiCerca),
-            ]),
-          ],
-
-          // ─ Otros valores ───────────────────────────────────
-          if (_has(review.add) || _has(review.dip))
-            Wrap(
-              spacing: 24,
-              runSpacing: 8,
-              children: [
-                if (_has(review.add))
-                  _FieldRow(label: 'ADD', value: review.add!),
-                if (_has(review.dip))
-                  _FieldRow(label: 'DIP', value: review.dip!),
+                  ],
+                ),
               ],
             ),
+          ),
 
-          // ─ Diagnóstico ─────────────────────────────────────
-          if (_has(review.optometricDiagnosis))
-            _FieldRow(
-              label: 'Diagnóstico optométrico',
-              value: review.optometricDiagnosis!,
-            ),
+          // ─ Card body ───────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 12,
+              children: [
+                // ─ Motivo ────────────────────────────────────
+                if (_has(review.reasonConsult))
+                  _FieldRow(
+                    label: 'Motivo de consulta',
+                    value: review.reasonConsult!,
+                  ),
 
-          // ─ Observaciones ───────────────────────────────────
-          if (_has(review.observation))
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: const Color(0xffFAFAFA),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xffE4E4E7)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4,
-                children: [
-                  const Text(
-                    'Observaciones',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xff71717A),
-                    ),
+                // ─ Graduación ────────────────────────────────
+                if (_has(review.graduationType))
+                  _FieldRow(
+                    label: 'Tipo de graduación',
+                    value: review.graduationType!,
                   ),
-                  Text(
-                    review.observation!,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: Color(0xff18181B),
-                    ),
-                  ),
+
+                // ─ Refracción ────────────────────────────────
+                if (hasRefraction) ...[
+                  _SectionLabel('Refracción'),
+                  _MeasureGrid(rows: [
+                    if (_anyOf([review.odEsf, review.oiEsf]))
+                      _MRow('ESF', review.odEsf, review.oiEsf),
+                    if (_anyOf([review.odCil, review.oiCil]))
+                      _MRow('CIL', review.odCil, review.oiCil),
+                    if (_anyOf([review.odEje, review.oiEje]))
+                      _MRow('EJE', review.odEje, review.oiEje),
+                    if (_anyOf([review.odAv, review.oiAv]))
+                      _MRow('AV', review.odAv, review.oiAv),
+                  ]),
                 ],
-              ),
+
+                // ─ Lentes de contacto ────────────────────────
+                if (hasLc) ...[
+                  _SectionLabel('Lentes de contacto'),
+                  _MeasureGrid(rows: [
+                    if (_anyOf([review.odCbLc, review.oiCbLc]))
+                      _MRow('CB LC', review.odCbLc, review.oiCbLc),
+                    if (_anyOf([review.odDiamLc, review.oiDiamLc]))
+                      _MRow('DIAM LC', review.odDiamLc, review.oiDiamLc),
+                  ]),
+                ],
+
+                // ─ AV sin RX ─────────────────────────────────
+                if (hasAvSinRx) ...[
+                  _SectionLabel('AV sin RX'),
+                  _MeasureGrid(rows: [
+                    if (_anyOf([review.avSinRxOdLejos, review.avSinRxOiLejos]))
+                      _MRow('Lejos', review.avSinRxOdLejos, review.avSinRxOiLejos),
+                    if (_anyOf([review.avSinRxOdCerca, review.avSinRxOiCerca]))
+                      _MRow('Cerca', review.avSinRxOdCerca, review.avSinRxOiCerca),
+                  ]),
+                ],
+
+                // ─ AV con RX ─────────────────────────────────
+                if (hasAvConRx) ...[
+                  _SectionLabel('AV con RX'),
+                  _MeasureGrid(rows: [
+                    if (_anyOf([review.avConRxOdCerca, review.avConRxOiCerca]))
+                      _MRow('Cerca', review.avConRxOdCerca, review.avConRxOiCerca),
+                  ]),
+                ],
+
+                // ─ ADD / DIP ─────────────────────────────────
+                if (_has(review.add) || _has(review.dip))
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 8,
+                    children: [
+                      if (_has(review.add))
+                        _ValueBadge(label: 'ADD', value: review.add!),
+                      if (_has(review.dip))
+                        _ValueBadge(label: 'DIP', value: review.dip!),
+                    ],
+                  ),
+
+                // ─ Diagnóstico ───────────────────────────────
+                if (_has(review.optometricDiagnosis))
+                  _FieldRow(
+                    label: 'Diagnóstico optométrico',
+                    value: review.optometricDiagnosis!,
+                  ),
+
+                // ─ Observaciones ─────────────────────────────
+                if (_has(review.observation))
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffFAFAFA),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: const Color(0xffE4E4E7)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 4,
+                      children: [
+                        Row(
+                          spacing: 6,
+                          children: const [
+                            Icon(
+                              Icons.notes_rounded,
+                              size: 13,
+                              color: Color(0xff71717A),
+                            ),
+                            Text(
+                              'Observaciones',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xff71717A),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          review.observation!,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Color(0xff18181B),
+                            height: 1.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
+          ),
         ],
       ),
     );
@@ -300,40 +372,42 @@ class _MeasureGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Table(
-      columnWidths: const {
-        0: FlexColumnWidth(2),
-        1: FlexColumnWidth(3),
-        2: FlexColumnWidth(3),
-      },
-      children: [
-        // Header row
-        TableRow(
-          decoration: const BoxDecoration(
-            color: Color(0xffF4F4F5),
-            borderRadius: BorderRadius.all(Radius.circular(6)),
-          ),
-          children: const [
-            _TCell('', isHeader: true),
-            _TCell('OD', isHeader: true),
-            _TCell('OI', isHeader: true),
-          ],
-        ),
-        ...rows.map(
-          (r) => TableRow(
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: Color(0xffF4F4F5)),
-              ),
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xffE4E4E7)),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Table(
+        columnWidths: const {
+          0: FlexColumnWidth(2),
+          1: FlexColumnWidth(3),
+          2: FlexColumnWidth(3),
+        },
+        children: [
+          // Header row
+          const TableRow(
+            decoration: BoxDecoration(color: Color(0xffF4F4F5)),
             children: [
-              _TCell(r.label, isLabel: true),
-              _TCell(r.od ?? '—'),
-              _TCell(r.oi ?? '—'),
+              _TCell('', isHeader: true),
+              _TCell('OD', isHeader: true),
+              _TCell('OI', isHeader: true),
             ],
           ),
-        ),
-      ],
+          ...rows.asMap().entries.map(
+            (e) => TableRow(
+              decoration: BoxDecoration(
+                color: e.key.isEven ? Colors.white : const Color(0xffFAFAFA),
+              ),
+              children: [
+                _TCell(e.value.label, isLabel: true),
+                _TCell(e.value.od ?? '—'),
+                _TCell(e.value.oi ?? '—'),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -347,7 +421,7 @@ class _TCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Text(
         text,
         style: TextStyle(
@@ -373,14 +447,27 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w700,
-        color: Color(0xff7A6BF5),
-        letterSpacing: 0.5,
-      ),
+    return Row(
+      spacing: 8,
+      children: [
+        Container(
+          width: 3,
+          height: 14,
+          decoration: BoxDecoration(
+            color: const Color(0xff7A6BF5),
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        Text(
+          text,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: Color(0xff7A6BF5),
+            letterSpacing: 0.3,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -422,20 +509,72 @@ class _InfoChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      spacing: 4,
-      children: [
-        Icon(icon, size: 13, color: const Color(0xff71717A)),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Color(0xff52525B),
-            fontWeight: FontWeight.w500,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color(0xffF4F4F5),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 5,
+        children: [
+          Icon(icon, size: 12, color: const Color(0xff71717A)),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Color(0xff52525B),
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ValueBadge extends StatelessWidget {
+  const _ValueBadge({required this.label, required this.value});
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: const Color(0xffF4F4F5),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xffE4E4E7)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 6,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: Color(0xff71717A),
+            ),
+          ),
+          Container(
+            width: 1,
+            height: 12,
+            color: const Color(0xffD4D4D8),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Color(0xff18181B),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
