@@ -15,9 +15,8 @@ class AddPatient extends _$AddPatient {
   final uniqueIdController = TextEditingController();
   final registerDateController = TextEditingController();
   final registrationBranchController = TextEditingController();
-  final fullNameController = TextEditingController();
+  final nameController = TextEditingController();
   final birthDateController = TextEditingController();
-  final genderController = ShadSelectController<String>();
   final phoneController = TextEditingController();
   final observationsController = TextEditingController();
 
@@ -30,7 +29,9 @@ class AddPatient extends _$AddPatient {
       'dd-MMM-yyyy',
       'es_ES',
     ).format(DateTime.now());
-    birthDateController.text = DateFormat('dd-MM-yyyy').format(selectedBirthDate);
+    birthDateController.text = DateFormat(
+      'dd-MM-yyyy',
+    ).format(selectedBirthDate);
 
     Future.microtask(() {
       initializeBranch();
@@ -40,9 +41,9 @@ class AddPatient extends _$AddPatient {
     ref.onDispose(() {
       uniqueIdController.dispose();
       registerDateController.dispose();
-      fullNameController.dispose();
+      registrationBranchController.dispose();
+      nameController.dispose();
       birthDateController.dispose();
-      genderController.dispose();
       phoneController.dispose();
       observationsController.dispose();
     });
@@ -57,7 +58,6 @@ class AddPatient extends _$AddPatient {
 
   void updateGender(String? gender) {
     state = state.copyWith(selectedGender: gender);
-    genderController.value = {gender ?? ''};
   }
 
   Future<void> updateBranch(String? branch) async {
@@ -86,14 +86,16 @@ class AddPatient extends _$AddPatient {
     state = state.copyWith(isLoading: true);
 
     try {
+      final extraInfo = observationsController.text.trim();
+
       final patient = PatientModel(
         id: int.parse(uniqueIdController.text),
         branch: state.selectedBranch?.toUpperCase() ?? '',
         registerDate: registerDateController.text,
-        name: fullNameController.text.toUpperCase(),
+        name: nameController.text.toUpperCase(),
         birthDate: birthDateController.text,
         phone: phoneController.text,
-        observations: observationsController.text.toUpperCase(),
+        observations: extraInfo.toUpperCase(),
         gender: state.selectedGender ?? '',
         updatedRegisterDate:
             DateFormat('yyyy-MM-dd').format(DateTime.now()).toString(),
@@ -139,11 +141,14 @@ class AddPatient extends _$AddPatient {
 
   void clearForm() {
     uniqueIdController.text = generateRandomId(16).toString();
-    fullNameController.clear();
+    nameController.clear();
     selectedBirthDate = DateTime.now();
-    birthDateController.text = DateFormat('dd-MM-yyyy').format(selectedBirthDate);
-    genderController.value.clear();
-    state = state.copyWith(errorMessage: '');
+    birthDateController.text = DateFormat(
+      'dd-MM-yyyy',
+    ).format(selectedBirthDate);
+    phoneController.clear();
+    observationsController.clear();
+    state = state.copyWith(errorMessage: '', selectedGender: null);
   }
 
   void clearErrorMessage() {
