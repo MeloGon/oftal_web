@@ -153,6 +153,8 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
                   child: PaginatedDataTable2(
                     controller: _paginatorController,
                     wrapInCard: false,
+                    fixedLeftColumns: 1,
+                    showCheckboxColumn: false,
                     columnSpacing: 12,
                     horizontalMargin: 16,
                     isHorizontalScrollBarVisible: true,
@@ -162,6 +164,10 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
                       const Color(0xffFAFAFA),
                     ),
                     columns: [
+                      const DataColumn2(
+                        label: SizedBox.shrink(),
+                        fixedWidth: 48,
+                      ),
                       DataColumn2(
                         label: _ColHeader('Nombre'),
                         size: ColumnSize.L,
@@ -181,11 +187,6 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
                         label: _ColHeader('Teléfono'),
                         size: ColumnSize.S,
                         minWidth: 110,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Acciones'),
-                        size: ColumnSize.S,
-                        minWidth: 130,
                       ),
                     ],
                     source: PatientsDataSource(

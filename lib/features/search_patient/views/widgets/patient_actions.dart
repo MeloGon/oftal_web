@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 
+enum _PatientAction { viewMeasurements, addMeasurement, edit, delete }
+
 class PatientActions extends StatelessWidget {
   final PatientModel patient;
   final Function() onAddMeasurement;
@@ -23,67 +25,89 @@ class PatientActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      spacing: 8,
-      children: [
-        if (isForSell ?? false) ...[
-          _ActionIcon(
-            icon: Icons.add_shopping_cart,
-            onTap: onSelectPatientToSell,
-          ),
-        ] else ...[
-          _ActionIcon(
+    if (isForSell ?? false) {
+      return InkWell(
+        onTap: onSelectPatientToSell,
+        borderRadius: BorderRadius.circular(6),
+        child: const SizedBox.square(
+          dimension: 28,
+          child: Icon(Icons.add_shopping_cart, size: 18, color: Color(0xff52525B)),
+        ),
+      );
+    }
+
+    return PopupMenuButton<_PatientAction>(
+      icon: const Icon(Icons.more_vert, size: 18, color: Color(0xff71717A)),
+      tooltip: '',
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      onSelected: (action) {
+        switch (action) {
+          case _PatientAction.viewMeasurements:
+            onViewMeasurements();
+          case _PatientAction.addMeasurement:
+            onAddMeasurement();
+          case _PatientAction.edit:
+            onEditPatient();
+          case _PatientAction.delete:
+            onDeletePatient();
+        }
+      },
+      itemBuilder: (_) => [
+        const PopupMenuItem(
+          value: _PatientAction.viewMeasurements,
+          height: 36,
+          child: _MenuItem(
             icon: Icons.remove_red_eye_outlined,
-            tooltip: 'Ver medidas',
-            onTap: onViewMeasurements,
+            label: 'Ver medidas',
           ),
-          _ActionIcon(
+        ),
+        const PopupMenuItem(
+          value: _PatientAction.addMeasurement,
+          height: 36,
+          child: _MenuItem(
             icon: Icons.add_circle_outline_sharp,
-            tooltip: 'Agregar medida',
-            onTap: onAddMeasurement,
+            label: 'Agregar medida',
           ),
-          _ActionIcon(
+        ),
+        const PopupMenuItem(
+          value: _PatientAction.edit,
+          height: 36,
+          child: _MenuItem(
             icon: Icons.edit_outlined,
-            tooltip: 'Editar paciente',
-            color: const Color(0xff0EA5E9),
-            onTap: onEditPatient,
+            label: 'Editar paciente',
+            color: Color(0xff0EA5E9),
           ),
-          _ActionIcon(
+        ),
+        const PopupMenuDivider(height: 1),
+        const PopupMenuItem(
+          value: _PatientAction.delete,
+          height: 36,
+          child: _MenuItem(
             icon: Icons.delete_outline_outlined,
-            tooltip: 'Eliminar',
-            color: Colors.red,
-            onTap: onDeletePatient,
+            label: 'Eliminar',
+            color: Color(0xffEF4444),
           ),
-        ],
+        ),
       ],
     );
   }
 }
 
-class _ActionIcon extends StatelessWidget {
-  const _ActionIcon({
-    required this.icon,
-    this.onTap,
-    this.tooltip,
-    this.color,
-  });
-
+class _MenuItem extends StatelessWidget {
+  const _MenuItem({required this.icon, required this.label, this.color});
   final IconData icon;
-  final VoidCallback? onTap;
-  final String? tooltip;
+  final String label;
   final Color? color;
 
   @override
   Widget build(BuildContext context) {
-    final w = InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(6),
-      child: SizedBox.square(
-        dimension: 28,
-        child: Icon(icon, size: 18, color: color ?? const Color(0xff52525B)),
-      ),
+    final c = color ?? const Color(0xff18181B);
+    return Row(
+      spacing: 8,
+      children: [
+        Icon(icon, size: 16, color: c),
+        Text(label, style: TextStyle(fontSize: 13, color: c)),
+      ],
     );
-    if (tooltip != null) return Tooltip(message: tooltip!, child: w);
-    return w;
   }
 }

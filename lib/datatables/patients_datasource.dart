@@ -27,27 +27,6 @@ class PatientsDataSource extends DataTableSource {
       index: index,
       cells: [
         DataCell(
-          Text(patient.name, style: AppTextStyles(context).small12),
-        ),
-        DataCell(
-          Text(
-            patient.registerDate,
-            style: AppTextStyles(context).small12,
-          ),
-        ),
-        DataCell(
-          Text(
-            patient.branch,
-            style: AppTextStyles(context).small12,
-          ),
-        ),
-        DataCell(
-          Text(
-            patient.phone,
-            style: AppTextStyles(context).small12,
-          ),
-        ),
-        DataCell(
           PatientActions(
             isForSell: isForSell,
             patient: patient,
@@ -80,6 +59,16 @@ class PatientsDataSource extends DataTableSource {
                     : null,
           ),
         ),
+        DataCell(
+          Text(patient.name, style: AppTextStyles(context).small12),
+        ),
+        DataCell(
+          Text(patient.registerDate, style: AppTextStyles(context).small12),
+        ),
+        DataCell(_BranchBadge(branch: patient.branch)),
+        DataCell(
+          Text(patient.phone, style: AppTextStyles(context).small12),
+        ),
       ],
     );
   }
@@ -92,4 +81,40 @@ class PatientsDataSource extends DataTableSource {
 
   @override
   int get selectedRowCount => 0;
+}
+
+// ─── Branch badge ─────────────────────────────────────────────────────────────
+
+class _BranchBadge extends StatelessWidget {
+  const _BranchBadge({required this.branch});
+  final String branch;
+
+  @override
+  Widget build(BuildContext context) {
+    final isOftalvision =
+        branch.toUpperCase().contains('OFTALVISION');
+
+    final bg = isOftalvision
+        ? const Color(0xffEFF6FF)
+        : const Color(0xffF0FDF4);
+    final fg = isOftalvision
+        ? const Color(0xff1D4ED8)
+        : const Color(0xff16A34A);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        branch,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: fg,
+        ),
+      ),
+    );
+  }
 }
