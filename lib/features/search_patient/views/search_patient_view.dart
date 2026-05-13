@@ -2,15 +2,17 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/enums/enums.dart';
-import 'package:oftal_web/datatables/datatables.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_provider.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/add_review_dialog.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/edit_patient_dialog.dart';
+import 'package:oftal_web/features/search_patient/views/widgets/patients_empty_state.dart';
+import 'package:oftal_web/features/search_patient/views/widgets/patients_table.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/review_details_dialog.dart';
+import 'package:oftal_web/features/search_patient/views/widgets/search_patient_bar.dart';
+import 'package:oftal_web/features/search_patient/views/widgets/search_patient_header.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/snackbar_config_model.dart';
 import 'package:oftal_web/shared/widgets/custom_snackbar.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SearchPatientView extends ConsumerStatefulWidget {
   const SearchPatientView({super.key});
@@ -31,7 +33,6 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
   @override
   Widget build(BuildContext context) {
     final searchPatientState = ref.watch(searchPatientProvider);
-    final searchPatientNotifier = ref.watch(searchPatientProvider.notifier);
 
     ref.listenLoading(
       searchPatientProvider.select((s) => s.isLoading),
@@ -82,169 +83,13 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 20,
         children: [
-          // ─── Page header ─────────────────────────────────
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 4,
-            children: [
-              const Text(
-                'Buscar Paciente',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xff18181B),
-                ),
-              ),
-              Text(
-                'Busca y gestiona los registros de pacientes',
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
-              ),
-            ],
-          ),
-
-          // ─── Search card ─────────────────────────────────
-          ShadCard(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              spacing: 4,
-              children: [
-                ShadInput(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 10,
-                  ),
-                  placeholder: const Text('Buscar por nombre del paciente...'),
-                  controller: searchPatientNotifier.searchController,
-                  leading: const Icon(LucideIcons.search, size: 16),
-                  onSubmitted: (_) {
-                    searchPatientNotifier.getPatients();
-                    if (_paginatorController.isAttached) {
-                      _paginatorController.goToFirstPage();
-                    }
-                  },
-                  trailing:
-                      searchPatientNotifier.searchIsEmpty
-                          ? null
-                          : ShadButton.ghost(
-                            height: 28,
-                            width: 28,
-                            padding: EdgeInsets.zero,
-                            onPressed: () {
-                              searchPatientNotifier.searchController.clear();
-                              searchPatientNotifier.getPatients();
-                              if (_paginatorController.isAttached) {
-                                _paginatorController.goToFirstPage();
-                              }
-                            },
-                            child: const Icon(LucideIcons.x, size: 14),
-                          ),
-                ),
-              ],
-            ),
-          ),
-
-          // ─── Results table ───────────────────────────────
+          const SearchPatientHeader(),
+          SearchPatientBar(paginatorController: _paginatorController),
           if (searchPatientState.patients.isNotEmpty)
-            Expanded(
-              child: ShadCard(
-                padding: EdgeInsets.zero,
-                child: TooltipVisibility(
-                  visible: false,
-                  child: PaginatedDataTable2(
-                    controller: _paginatorController,
-                    wrapInCard: false,
-                    fixedLeftColumns: 1,
-                    showCheckboxColumn: false,
-                    columnSpacing: 12,
-                    horizontalMargin: 16,
-                    isHorizontalScrollBarVisible: true,
-                    isVerticalScrollBarVisible: true,
-                    headingRowHeight: 44,
-                    headingRowColor: WidgetStateProperty.all(
-                      const Color(0xffFAFAFA),
-                    ),
-                    columns: [
-                      const DataColumn2(
-                        label: SizedBox.shrink(),
-                        fixedWidth: 48,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Nombre'),
-                        size: ColumnSize.L,
-                        minWidth: 200,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Fecha de registro'),
-                        size: ColumnSize.S,
-                        minWidth: 120,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Sucursal'),
-                        size: ColumnSize.S,
-                        minWidth: 80,
-                      ),
-                      DataColumn2(
-                        label: _ColHeader('Teléfono'),
-                        size: ColumnSize.S,
-                        minWidth: 110,
-                      ),
-                    ],
-                    source: PatientsDataSource(
-                      patients: searchPatientState.patients,
-                      context: context,
-                      ref: ref,
-                    ),
-                    availableRowsPerPage: const [10],
-                    rowsPerPage: searchPatientState.rowsPerPage,
-                    onRowsPerPageChanged:
-                        (value) => searchPatientNotifier.changeRowsPerPage(
-                          value ?? 10,
-                        ),
-                  ),
-                ),
-              ),
-            )
+            PatientsTable(paginatorController: _paginatorController)
           else
-            ShadCard(
-              padding: const EdgeInsets.symmetric(vertical: 40),
-              child: Center(
-                child: Column(
-                  spacing: 8,
-                  children: [
-                    Icon(
-                      LucideIcons.users,
-                      size: 36,
-                      color: Colors.grey.shade300,
-                    ),
-                    Text(
-                      'Busca un paciente por su nombre',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            const PatientsEmptyState(),
         ],
-      ),
-    );
-  }
-}
-
-class _ColHeader extends StatelessWidget {
-  const _ColHeader(this.text);
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
-        color: Color(0xff52525B),
       ),
     );
   }
