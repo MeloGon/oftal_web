@@ -19,5 +19,6 @@ abstract class PaymentsReportState with _$PaymentsReportState {
     required DateTime rangeEnd,
     @Default('') String errorMessage,
     SnackbarConfigModel? snackbarConfig,
+    String? selectedSucursal,
   }) = _PaymentsReportState;
 }

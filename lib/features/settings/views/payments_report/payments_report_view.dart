@@ -27,10 +27,19 @@ class PaymentsReportView extends ConsumerWidget {
       }
     });
 
-    final payments = state.payments;
+    final allPayments = state.payments;
     final expenses = state.expenses;
-    final newSales = payments.where((p) => p.isNewSale).toList();
-    final balancePayments = payments.where((p) => !p.isNewSale).toList();
+    final filteredPayments = state.selectedSucursal == null
+        ? allPayments
+        : allPayments.where((p) => p.sucursal == state.selectedSucursal).toList();
+    final availableSucursales = allPayments
+        .map((p) => p.sucursal)
+        .whereType<String>()
+        .toSet()
+        .toList()
+      ..sort();
+    final newSales = filteredPayments.where((p) => p.isNewSale).toList();
+    final balancePayments = filteredPayments.where((p) => !p.isNewSale).toList();
     final totalNewSales = newSales.fold(0.0, (sum, p) => sum + p.monto);
     final totalBalancePayments = balancePayments.fold(0.0, (sum, p) => sum + p.monto);
     final totalExpenses = expenses.fold(0.0, (sum, e) => sum + e.monto);
@@ -87,7 +96,11 @@ class PaymentsReportView extends ConsumerWidget {
           ),
 
           // ─── Filter tabs ─────────────────────────────────────
-          _PeriodFilterBar(state: state, notifier: notifier),
+          _PeriodFilterBar(
+            state: state,
+            notifier: notifier,
+            availableSucursales: availableSucursales,
+          ),
 
           // ─── Summary + tables ─────────────────────────────────
           Expanded(
@@ -236,10 +249,15 @@ class PaymentsReportView extends ConsumerWidget {
 // ─── Period filter bar ────────────────────────────────────────────────────────
 
 class _PeriodFilterBar extends StatelessWidget {
-  const _PeriodFilterBar({required this.state, required this.notifier});
+  const _PeriodFilterBar({
+    required this.state,
+    required this.notifier,
+    required this.availableSucursales,
+  });
 
   final PaymentsReportState state;
   final PaymentsReport notifier;
+  final List<String> availableSucursales;
 
   @override
   Widget build(BuildContext context) {
@@ -300,6 +318,14 @@ class _PeriodFilterBar extends StatelessWidget {
 
         // Date controls depending on mode
         _DateControls(state: state, notifier: notifier),
+
+        // Sucursal filter
+        if (availableSucursales.isNotEmpty)
+          _SucursalFilter(
+            sucursales: availableSucursales,
+            selected: state.selectedSucursal,
+            onChanged: notifier.selectSucursal,
+          ),
       ],
     );
   }
@@ -329,6 +355,50 @@ class _DateControls extends StatelessWidget {
           onEndPicked: notifier.selectRangeEnd,
         ),
     };
+  }
+}
+
+// ─── Sucursal filter ──────────────────────────────────────────────────────────
+
+class _SucursalFilter extends StatelessWidget {
+  const _SucursalFilter({
+    required this.sucursales,
+    required this.selected,
+    required this.onChanged,
+  });
+
+  static const _all = '';
+
+  final List<String> sucursales;
+  final String? selected;
+  final void Function(String?) onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadSelect<String>(
+      placeholder: const Row(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 6,
+        children: [
+          Icon(Icons.store_outlined, size: 14, color: Color(0xff71717A)),
+          Text('Todas las sucursales'),
+        ],
+      ),
+      selectedOptionBuilder: (context, value) => Row(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 6,
+        children: [
+          const Icon(Icons.store_outlined, size: 14, color: Color(0xff18181B)),
+          Text(value.isEmpty ? 'Todas las sucursales' : value),
+        ],
+      ),
+      initialValue: selected ?? _all,
+      onChanged: (v) => onChanged(v == null || v.isEmpty ? null : v),
+      options: [
+        const ShadOption(value: _all, child: Text('Todas las sucursales')),
+        ...sucursales.map((s) => ShadOption(value: s, child: Text(s))),
+      ],
+    );
   }
 }
 
@@ -682,12 +752,26 @@ class _PaymentsTable extends StatelessWidget {
                 ),
               ),
               DataCell(
-                Text(
-                  p.paciente ?? '—',
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Color(0xff18181B),
-                  ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      p.paciente ?? '—',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Color(0xff18181B),
+                      ),
+                    ),
+                    if (p.sucursal != null)
+                      Text(
+                        'Sucursal: ${p.sucursal}',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Color(0xff71717A),
+                        ),
+                      ),
+                  ],
                 ),
               ),
               DataCell(

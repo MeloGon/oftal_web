@@ -82,6 +82,10 @@ class PaymentsReport extends _$PaymentsReport {
     loadPayments();
   }
 
+  void selectSucursal(String? sucursal) {
+    state = state.copyWith(selectedSucursal: sucursal);
+  }
+
   void clearErrorMessage() {
     state = state.copyWith(errorMessage: '', snackbarConfig: null);
   }
