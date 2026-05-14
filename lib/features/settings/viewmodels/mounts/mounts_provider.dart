@@ -19,6 +19,7 @@ class Mounts extends _$Mounts {
   final barcodeController = TextEditingController();
   final existencesController = TextEditingController();
   final providerController = TextEditingController();
+  final searchController = TextEditingController();
 
   @override
   MountsState build() {
@@ -32,6 +33,7 @@ class Mounts extends _$Mounts {
       barcodeController.dispose();
       existencesController.dispose();
       providerController.dispose();
+      searchController.dispose();
     });
     Future.microtask(() async {
       await fetchPage(offset: 0, limit: state.rowsPerPage);
@@ -71,6 +73,38 @@ class Mounts extends _$Mounts {
   void changeRowsPerPage(int newSize) {
     state = state.copyWith(rowsPerPage: newSize);
     fetchPage(offset: 0, limit: newSize);
+  }
+
+  Future<void> searchMounts() async {
+    final query = searchController.text.trim();
+    if (query.isEmpty) {
+      state = state.copyWith(isSearchMode: false);
+      await fetchPage(offset: 0, limit: state.rowsPerPage);
+      return;
+    }
+    state = state.copyWith(isLoading: true, isSearchMode: true);
+    final result = await ref.read(mountRepositoryProvider).searchMounts(query);
+    result.fold(
+      (failure) => state = state.copyWith(
+        errorMessage: failure.message,
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+        isLoading: false,
+      ),
+      (mounts) => state = state.copyWith(
+        mounts: mounts,
+        totalCount: mounts.length,
+        isLoading: false,
+      ),
+    );
+  }
+
+  Future<void> clearSearch() async {
+    searchController.clear();
+    state = state.copyWith(isSearchMode: false);
+    await fetchPage(offset: 0, limit: state.rowsPerPage);
   }
 
   Future<void> addMount() async {

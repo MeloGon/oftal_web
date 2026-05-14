@@ -96,6 +96,41 @@ class MountsView extends ConsumerWidget {
             ],
           ),
 
+          // ─── Search bar ──────────────────────────────────
+          Row(
+            children: [
+              Expanded(
+                child: Material(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  child: ShadInput(
+                    controller: mountsNotifier.searchController,
+                    placeholder: const Text('Buscar por marca o modelo...'),
+                    leading: const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Icon(Icons.search, size: 16, color: Color(0xff71717A)),
+                    ),
+                    trailing: mountsState.isSearchMode
+                        ? GestureDetector(
+                            onTap: mountsNotifier.clearSearch,
+                            child: const Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Icon(Icons.close, size: 16, color: Color(0xff71717A)),
+                            ),
+                          )
+                        : null,
+                    onSubmitted: (_) => mountsNotifier.searchMounts(),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              ShadButton.outline(
+                onPressed: mountsNotifier.searchMounts,
+                child: const Text('Buscar'),
+              ),
+            ],
+          ),
+
           // ─── Table card ───────────────────────────────────
           Expanded(
            child: ShadCard(

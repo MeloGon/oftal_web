@@ -15,6 +15,7 @@ abstract class MountsState with _$MountsState {
     @Default(true) bool hasMore,
     SnackbarConfigModel? snackbarConfig,
     @Default(false) bool isAddMountDialogOpen,
+    @Default(false) bool isSearchMode,
     MountModel? selectedMount,
   }) = _MountsState;
 }
