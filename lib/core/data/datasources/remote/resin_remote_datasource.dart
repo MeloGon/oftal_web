@@ -21,7 +21,7 @@ class ResinRemoteDataSourceImpl implements ResinRemoteDataSource {
     final response = await client
         .from('resinas')
         .select()
-        .textSearch('"texto"', '%$query%', type: TextSearchType.plain);
+        .ilike('texto', '%$query%');
     return response.map((json) => ResinModel.fromJson(json)).toList();
   }
 

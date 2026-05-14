@@ -24,7 +24,7 @@ class MountRemoteDataSourceImpl implements MountRemoteDataSource {
     final response = await client
         .from('armazones')
         .select()
-        .textSearch('"MARCA"', '%$query%', type: TextSearchType.plain);
+        .or('MARCA.ilike.%$query%,MODELO.ilike.%$query%');
     return response.map((json) => MountModel.fromJson(json)).toList();
   }
 
