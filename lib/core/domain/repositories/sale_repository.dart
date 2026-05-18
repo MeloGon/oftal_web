@@ -35,4 +35,9 @@ abstract class SaleRepository {
     double newRest,
     String fechaPago,
   );
+  Future<Either<Failure, Unit>> updateSaleDate(
+    String folioSale,
+    String fecha,
+    String fechaActualizada,
+  );
 }

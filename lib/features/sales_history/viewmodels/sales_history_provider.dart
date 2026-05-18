@@ -91,6 +91,37 @@ class SalesHistory extends _$SalesHistory {
     getSales();
   }
 
+  Future<void> updateSaleDate(SalesModel sale, DateTime date) async {
+    if (sale.folioSale == null) return;
+    state = state.copyWith(isLoading: true);
+    final fecha = DateFormat('dd-MMM-yy', 'en_US').format(date);
+    final fechaActualizada = DateFormat('yyyy-MM-dd').format(date);
+    final result = await ref
+        .read(saleRepositoryProvider)
+        .updateSaleDate(sale.folioSale!, fecha, fechaActualizada);
+    result.fold(
+      (failure) => state = state.copyWith(
+        isLoading: false,
+        errorMessage: failure.message,
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Error',
+          type: SnackbarEnum.error,
+        ),
+      ),
+      (_) {
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: 'Fecha actualizada correctamente',
+          snackbarConfig: SnackbarConfigModel(
+            title: 'Aviso',
+            type: SnackbarEnum.success,
+          ),
+        );
+        getSales();
+      },
+    );
+  }
+
   void clearFilters() {
     searchController.clear();
     state = state.copyWith(

@@ -50,6 +50,47 @@ class SettingsView extends ConsumerWidget {
             ],
           ),
 
+          // ─── Feature flags ───────────────────────────────
+          const Text(
+            'Funcionalidades',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: Color(0xff52525B),
+              letterSpacing: 0.3,
+            ),
+          ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final features = _SettingsNavCard(
+                title: 'Funcionalidades',
+                description:
+                    'Activa o desactiva funcionalidades del sistema',
+                icon: Icons.tune_rounded,
+                iconColor: const Color(0xff7A6BF5),
+                iconBgColor: const Color(0xffEEECFE),
+                onTap: () async {
+                  final authorized = await showAuthorizationDialog(
+                    context: context,
+                    requiredRole: AuthorizationRole.admin,
+                    actionName: 'acceder a Funcionalidades',
+                  );
+                  if (authorized) {
+                    ref.read(appRouterProvider).go(RouterName.features);
+                  }
+                },
+              );
+              if (constraints.maxWidth < 560) return features;
+              return Row(
+                spacing: 16,
+                children: [
+                  Expanded(child: features),
+                  const Expanded(child: SizedBox()),
+                ],
+              );
+            },
+          ),
+
           // ─── Inventory options ────────────────────────────
           const Text(
             'Inventario',

@@ -143,6 +143,20 @@ class SaleRepositoryImpl implements SaleRepository {
   }
 
   @override
+  Future<Either<Failure, Unit>> updateSaleDate(
+    String folioSale,
+    String fecha,
+    String fechaActualizada,
+  ) async {
+    try {
+      await _dataSource.updateSaleDate(folioSale, fecha, fechaActualizada);
+      return const Right(unit);
+    } catch (e) {
+      return Left(Failure.server(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, Unit>> updateAccountPayment(
     String idRemision,
     double newAccount,

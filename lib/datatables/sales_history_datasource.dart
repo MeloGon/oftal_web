@@ -11,6 +11,7 @@ class SalesHistoryDataSource extends DataTableSource {
   List<SalesModel> sales;
   BuildContext context;
   final WidgetRef ref;
+  bool changeDateEnabled;
 
   // Cached once per class — avoids GoogleFonts + ShadTheme lookups per cell
   static final _cellStyle = TextStyle(
@@ -22,12 +23,15 @@ class SalesHistoryDataSource extends DataTableSource {
     required this.sales,
     required this.context,
     required this.ref,
+    required this.changeDateEnabled,
   });
 
   /// Call from build() to refresh data without recreating the source.
   /// Only triggers notifyListeners() when the sales list actually changes.
-  void update(List<SalesModel> newSales, BuildContext ctx) {
+  void update(List<SalesModel> newSales, BuildContext ctx,
+      {required bool changeDateEnabled}) {
     context = ctx;
+    this.changeDateEnabled = changeDateEnabled;
     if (identical(sales, newSales)) return;
     sales = newSales;
     notifyListeners();
@@ -49,6 +53,7 @@ class SalesHistoryDataSource extends DataTableSource {
         DataCell(
           SalesHistoryActions(
             sale: sale,
+            changeDateEnabled: changeDateEnabled,
             onViewDetails: () => _openDetails(sale),
             onPrintSale: () async {
               _openDetails(sale);
@@ -65,6 +70,8 @@ class SalesHistoryDataSource extends DataTableSource {
                 ref.read(salesHistoryProvider.notifier).finalizeSale(sale),
             onRegisterPayment: () =>
                 RegisterPaymentDialog().show(context, ref, sale),
+            onChangeDate: (date) =>
+                ref.read(salesHistoryProvider.notifier).updateSaleDate(sale, date),
           ),
         ),
         DataCell(_StatusBadge(isPaid: (sale.rest ?? 0) == 0)),

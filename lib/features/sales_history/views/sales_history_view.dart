@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/datatables/datatables.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
+import 'package:oftal_web/features/settings/viewmodels/app_features_provider.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/col_header.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/filter_history_sales.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/sales_details_dialog.dart';
@@ -31,6 +32,7 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
       sales: initialSales,
       context: context,
       ref: ref,
+      changeDateEnabled: ref.read(appFeaturesProvider).changeDateEnabled,
     );
     if (initialSales.isEmpty) {
       Future.microtask(
@@ -43,7 +45,14 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
   Widget build(BuildContext context) {
     final salesState = ref.watch(salesHistoryProvider);
     final salesNotifier = ref.read(salesHistoryProvider.notifier);
-    _dataSource.update(salesState.sales, context);
+    final changeDateEnabled = ref.watch(
+      appFeaturesProvider.select((s) => s.changeDateEnabled),
+    );
+    _dataSource.update(
+      salesState.sales,
+      context,
+      changeDateEnabled: changeDateEnabled,
+    );
 
     ref.listenLoading(
       salesHistoryProvider.select((s) => s.isLoading),

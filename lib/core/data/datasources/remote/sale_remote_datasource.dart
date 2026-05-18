@@ -32,6 +32,11 @@ abstract class SaleRemoteDataSource {
     double newRest,
     String fechaPago,
   );
+  Future<void> updateSaleDate(
+    String folioSale,
+    String fecha,
+    String fechaActualizada,
+  );
 }
 
 class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
@@ -151,6 +156,18 @@ class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
         .map((r) => r['fecha_actualizada']?.toString() ?? '')
         .where((d) => d.isNotEmpty)
         .toList();
+  }
+
+  @override
+  Future<void> updateSaleDate(
+    String folioSale,
+    String fecha,
+    String fechaActualizada,
+  ) async {
+    await client.from('ventas cortas').update({
+      'FECHA': fecha,
+      'fecha_actualizada': fechaActualizada,
+    }).eq('FOLIO REMISION', folioSale);
   }
 
   @override

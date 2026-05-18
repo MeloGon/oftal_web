@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 
-enum _SaleAction { viewDetails, print, registerPayment, finalize, delete }
+enum _SaleAction { viewDetails, print, registerPayment, finalize, changeDate, delete }
 
 class SalesHistoryActions extends StatelessWidget {
   const SalesHistoryActions({
@@ -12,6 +13,8 @@ class SalesHistoryActions extends StatelessWidget {
     required this.onPrintSale,
     required this.onFinalizeSale,
     required this.onRegisterPayment,
+    required this.onChangeDate,
+    this.changeDateEnabled = true,
   });
   final SalesModel sale;
   final VoidCallback onViewDetails;
@@ -19,6 +22,8 @@ class SalesHistoryActions extends StatelessWidget {
   final VoidCallback onPrintSale;
   final VoidCallback onFinalizeSale;
   final VoidCallback onRegisterPayment;
+  final ValueChanged<DateTime> onChangeDate;
+  final bool changeDateEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +33,7 @@ class SalesHistoryActions extends StatelessWidget {
       icon: const Icon(Icons.more_vert, size: 18, color: Color(0xff71717A)),
       tooltip: '',
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      onSelected: (action) {
+      onSelected: (action) async {
         switch (action) {
           case _SaleAction.viewDetails:
             onViewDetails();
@@ -38,6 +43,16 @@ class SalesHistoryActions extends StatelessWidget {
             onRegisterPayment();
           case _SaleAction.finalize:
             onFinalizeSale();
+          case _SaleAction.changeDate:
+            final initial = _parseSaleDate(sale.updatedDate ?? sale.date);
+            final picked = await showDatePicker(
+              context: context,
+              initialDate: initial,
+              firstDate: DateTime(2000),
+              lastDate: DateTime.now(),
+              locale: const Locale('es', 'MX'),
+            );
+            if (picked != null) onChangeDate(picked);
           case _SaleAction.delete:
             onDeleteSale();
         }
@@ -76,6 +91,15 @@ class SalesHistoryActions extends StatelessWidget {
             ),
           ),
         ],
+        if (changeDateEnabled)
+          const PopupMenuItem(
+            value: _SaleAction.changeDate,
+            height: 36,
+            child: _MenuItem(
+              icon: Icons.edit_calendar_outlined,
+              label: 'Cambiar fecha',
+            ),
+          ),
         const PopupMenuDivider(height: 1),
         const PopupMenuItem(
           value: _SaleAction.delete,
@@ -89,6 +113,17 @@ class SalesHistoryActions extends StatelessWidget {
       ],
     );
   }
+}
+
+DateTime _parseSaleDate(String? raw) {
+  if (raw == null || raw.isEmpty) return DateTime.now();
+  try {
+    return DateFormat('dd-MMM-yy', 'en_US').parse(raw);
+  } catch (_) {}
+  try {
+    return DateTime.parse(raw);
+  } catch (_) {}
+  return DateTime.now();
 }
 
 class _MenuItem extends StatelessWidget {

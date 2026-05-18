@@ -1,5 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:oftal_web/core/data/datasources/remote/app_config_remote_datasource.dart';
+import 'package:oftal_web/core/data/repositories/app_config_repository_impl.dart';
+import 'package:oftal_web/core/domain/repositories/app_config_repository.dart';
 import 'package:oftal_web/core/data/datasources/remote/expense_remote_datasource.dart';
 import 'package:oftal_web/core/data/datasources/remote/mount_remote_datasource.dart';
 import 'package:oftal_web/core/data/datasources/remote/payment_remote_datasource.dart';
@@ -94,4 +97,13 @@ final expenseRemoteDataSourceProvider = Provider<ExpenseRemoteDataSource>((ref) 
 
 final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
   return ExpenseRepositoryImpl(ref.read(expenseRemoteDataSourceProvider));
+});
+
+final appConfigRemoteDataSourceProvider =
+    Provider<AppConfigRemoteDataSource>((ref) {
+  return AppConfigRemoteDataSourceImpl(ref.read(supabaseClientProvider));
+});
+
+final appConfigRepositoryProvider = Provider<AppConfigRepository>((ref) {
+  return AppConfigRepositoryImpl(ref.read(appConfigRemoteDataSourceProvider));
 });
