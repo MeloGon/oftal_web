@@ -8,6 +8,7 @@ import 'package:oftal_web/shared/providers/auth_general/auth_provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:oftal_web/shared/services/local_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
+import 'package:timeago/timeago.dart' as timeago;
 
 void main() async {
   GoRouter.optionURLReflectsImperativeAPIs = true;
@@ -21,6 +22,8 @@ void main() async {
   );
 
   await LocalStorage.init();
+
+  timeago.setLocaleMessages('es', timeago.EsMessages());
 
   runApp(
     ProviderScope(

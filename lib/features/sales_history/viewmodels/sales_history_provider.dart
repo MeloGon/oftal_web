@@ -1,6 +1,8 @@
 // import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
+
 // import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -108,7 +110,7 @@ class SalesHistory extends _$SalesHistory {
           type: SnackbarEnum.error,
         ),
       ),
-      (_) {
+      (_) async {
         state = state.copyWith(
           isLoading: false,
           errorMessage: 'Fecha actualizada correctamente',
@@ -116,6 +118,18 @@ class SalesHistory extends _$SalesHistory {
             title: 'Aviso',
             type: SnackbarEnum.success,
           ),
+        );
+        final userEmail =
+            supabase.Supabase.instance.client.auth.currentUser?.email ?? '';
+        await ref.read(auditLogRepositoryProvider).log(
+          action: 'change_date',
+          entity: 'sale',
+          entityId: '${sale.folioSale}',
+          userEmail: userEmail,
+          detail: {
+            'old_value': sale.date ?? '',
+            'new_value': fecha,
+          },
         );
         getSales();
       },

@@ -1,8 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:oftal_web/core/data/datasources/remote/app_config_remote_datasource.dart';
+import 'package:oftal_web/core/data/datasources/remote/audit_log_remote_datasource.dart';
 import 'package:oftal_web/core/data/repositories/app_config_repository_impl.dart';
+import 'package:oftal_web/core/data/repositories/audit_log_repository_impl.dart';
 import 'package:oftal_web/core/domain/repositories/app_config_repository.dart';
+import 'package:oftal_web/core/domain/repositories/audit_log_repository.dart';
 import 'package:oftal_web/core/data/datasources/remote/expense_remote_datasource.dart';
 import 'package:oftal_web/core/data/datasources/remote/mount_remote_datasource.dart';
 import 'package:oftal_web/core/data/datasources/remote/payment_remote_datasource.dart';
@@ -106,4 +109,13 @@ final appConfigRemoteDataSourceProvider =
 
 final appConfigRepositoryProvider = Provider<AppConfigRepository>((ref) {
   return AppConfigRepositoryImpl(ref.read(appConfigRemoteDataSourceProvider));
+});
+
+final auditLogRemoteDataSourceProvider =
+    Provider<AuditLogRemoteDataSource>((ref) {
+  return AuditLogRemoteDataSourceImpl(ref.read(supabaseClientProvider));
+});
+
+final auditLogRepositoryProvider = Provider<AuditLogRepository>((ref) {
+  return AuditLogRepositoryImpl(ref.read(auditLogRemoteDataSourceProvider));
 });

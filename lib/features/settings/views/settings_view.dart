@@ -145,6 +145,47 @@ class SettingsView extends ConsumerWidget {
             },
           ),
 
+          // ─── Admin section ────────────────────────────────
+          const Text(
+            'Administración',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: Color(0xff52525B),
+              letterSpacing: 0.3,
+            ),
+          ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final auditLogs = _SettingsNavCard(
+                title: 'Registro de auditoría',
+                description:
+                    'Historial de cambios realizados por los usuarios',
+                icon: Icons.history_rounded,
+                iconColor: const Color(0xffEA580C),
+                iconBgColor: const Color(0xffFFF7ED),
+                onTap: () async {
+                  final authorized = await showAuthorizationDialog(
+                    context: context,
+                    requiredRole: AuthorizationRole.admin,
+                    actionName: 'ver el registro de auditoría',
+                  );
+                  if (authorized) {
+                    ref.read(appRouterProvider).go(RouterName.auditLogs);
+                  }
+                },
+              );
+              if (constraints.maxWidth < 560) return auditLogs;
+              return Row(
+                spacing: 16,
+                children: [
+                  Expanded(child: auditLogs),
+                  const Expanded(child: SizedBox()),
+                ],
+              );
+            },
+          ),
+
           // ─── Reports section ──────────────────────────────
           const Text(
             'Reportes',

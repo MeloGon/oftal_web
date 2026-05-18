@@ -44,12 +44,14 @@ class SalesHistoryActions extends StatelessWidget {
           case _SaleAction.finalize:
             onFinalizeSale();
           case _SaleAction.changeDate:
-            final initial = _parseSaleDate(sale.updatedDate ?? sale.date);
+            final now = DateTime.now();
+            final parsed = _parseSaleDate(sale.updatedDate ?? sale.date);
+            final initial = parsed.isAfter(now) ? now : parsed;
             final picked = await showDatePicker(
               context: context,
               initialDate: initial,
               firstDate: DateTime(2000),
-              lastDate: DateTime.now(),
+              lastDate: DateTime(now.year + 1, 12, 31),
               locale: const Locale('es', 'MX'),
             );
             if (picked != null) onChangeDate(picked);

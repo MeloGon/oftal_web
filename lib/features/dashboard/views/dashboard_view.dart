@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/features/dashboard/viewmodels/dashboard_provider.dart';
 import 'package:oftal_web/features/dashboard/viewmodels/dashboard_state.dart';
+import 'package:oftal_web/features/dashboard/views/widgets/audit_log_card.dart';
 import 'package:oftal_web/features/expenses/viewmodels/expenses_provider.dart';
 import 'package:oftal_web/router/app_router.dart';
 import 'package:oftal_web/router/router_name.dart';
@@ -70,6 +71,20 @@ class DashboardView extends ConsumerWidget {
             },
           ),
           const _ExpensesDonutChart(),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth < 650) {
+                return const AuditLogCard();
+              }
+              return const Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(flex: 5, child: AuditLogCard()),
+                  Expanded(flex: 3, child: SizedBox()),
+                ],
+              );
+            },
+          ),
           const SizedBox(height: 8),
         ],
       ),
