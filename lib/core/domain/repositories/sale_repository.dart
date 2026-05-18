@@ -7,8 +7,12 @@ abstract class SaleRepository {
     String filter,
     String query, {
     bool isDate = false,
+    bool onlyPending = false,
   });
-  Future<Either<Failure, List<SalesModel>>> getRecentSales({int limit = 20});
+  Future<Either<Failure, List<SalesModel>>> getRecentSales({
+    int limit = 20,
+    bool onlyPending = false,
+  });
   Future<Either<Failure, int>> countSalesToday({required String authorName});
   Future<Either<Failure, int>> countPatientsByBranch({required String branch});
   Future<Either<Failure, List<SalesDetailsModel>>> getSaleDetails(

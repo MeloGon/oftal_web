@@ -20,16 +20,18 @@ part 'sales_history_provider.g.dart';
 @Riverpod(keepAlive: true)
 class SalesHistory extends _$SalesHistory {
   final searchController = TextEditingController();
-  DateTime searchDate = DateTime.now();
 
   void updateSearchDate(DateTime date) {
-    searchDate = date;
+    state = state.copyWith(searchDate: date);
     searchController.text = DateFormat('yyyy-MM-dd').format(date);
     getSales();
   }
 
   @override
   SalesHistoryState build() {
+    searchController.addListener(() {
+      state = state.copyWith(searchText: searchController.text);
+    });
     Future.microtask(getSales);
     ref.onDispose(() {
       searchController.dispose();
@@ -39,12 +41,20 @@ class SalesHistory extends _$SalesHistory {
 
   Future<void> getSales() async {
     state = state.copyWith(isLoading: true);
+    final onlyPending = state.onlyPending;
     if (searchController.text.isNotEmpty) {
       final filter = _getFilter();
-      final isDate = state.selectedFilter == FilterToSalesHistory.date;
+      final isDate =
+          state.selectedFilter == FilterToSalesHistory.date ||
+          state.selectedFilter == FilterToSalesHistory.seller;
       final result = await ref
           .read(saleRepositoryProvider)
-          .getSalesByFilter(filter, searchController.text, isDate: isDate);
+          .getSalesByFilter(
+            filter,
+            searchController.text,
+            isDate: isDate,
+            onlyPending: onlyPending,
+          );
       result.fold(
         (failure) =>
             state = state.copyWith(
@@ -61,7 +71,7 @@ class SalesHistory extends _$SalesHistory {
     }
     final result = await ref
         .read(saleRepositoryProvider)
-        .getRecentSales(limit: 20);
+        .getRecentSales(limit: 20, onlyPending: onlyPending);
     result.fold(
       (failure) =>
           state = state.copyWith(
@@ -76,6 +86,21 @@ class SalesHistory extends _$SalesHistory {
     );
   }
 
+  void togglePending() {
+    state = state.copyWith(onlyPending: !state.onlyPending);
+    getSales();
+  }
+
+  void clearFilters() {
+    searchController.clear();
+    state = state.copyWith(
+      selectedFilter: null,
+      onlyPending: false,
+      searchDate: null,
+    );
+    getSales();
+  }
+
   String _getFilter() {
     switch (state.selectedFilter) {
       case FilterToSalesHistory.patient:
@@ -84,6 +109,8 @@ class SalesHistory extends _$SalesHistory {
         return 'FOLIO REMISION';
       case FilterToSalesHistory.date:
         return 'fecha_actualizada';
+      case FilterToSalesHistory.seller:
+        return 'AUTOR NOMBRE';
       case null:
         return 'PACIENTE';
     }

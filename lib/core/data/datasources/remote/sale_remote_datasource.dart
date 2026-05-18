@@ -7,8 +7,12 @@ abstract class SaleRemoteDataSource {
     String filter,
     String query, {
     bool isDate = false,
+    bool onlyPending = false,
   });
-  Future<List<SalesModel>> getRecentSales({int limit = 20});
+  Future<List<SalesModel>> getRecentSales({
+    int limit = 20,
+    bool onlyPending = false,
+  });
   Future<int> countSalesToday({required String authorName});
   Future<int> countPatientsByBranch({required String branch});
   Future<List<String>> getSalesDatesInRange({
@@ -39,25 +43,29 @@ class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
     String filter,
     String query, {
     bool isDate = false,
+    bool onlyPending = false,
   }) async {
+    var q = client.from('ventas cortas').select();
+    if (isDate) {
+      q = q.eq(filter, query);
+    } else {
+      q = q.textSearch(filter, '%$query%', type: TextSearchType.plain);
+    }
+    if (onlyPending) q = q.gt('RESTA', 0);
     final response = isDate
-        ? await client
-            .from('ventas cortas')
-            .select()
-            .eq(filter, query)
-            .order('fecha_actualizada', ascending: false)
-        : await client
-            .from('ventas cortas')
-            .select()
-            .textSearch(filter, '%$query%', type: TextSearchType.plain);
+        ? await q.order('fecha_actualizada', ascending: false)
+        : await q;
     return response.map((json) => SalesModel.fromJson(json)).toList();
   }
 
   @override
-  Future<List<SalesModel>> getRecentSales({int limit = 20}) async {
-    final response = await client
-        .from('ventas cortas')
-        .select()
+  Future<List<SalesModel>> getRecentSales({
+    int limit = 20,
+    bool onlyPending = false,
+  }) async {
+    var q = client.from('ventas cortas').select();
+    if (onlyPending) q = q.gt('RESTA', 0);
+    final response = await q
         .limit(limit)
         .order('fecha_actualizada', ascending: false);
     return response.map((json) => SalesModel.fromJson(json)).toList();

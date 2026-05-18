@@ -18,11 +18,7 @@ class Auth extends _$Auth {
   }
 
   Future<void> _getUserData() async {
-    debugPrint('obteniendo datos del usuario ${state.authResponse?.user?.id}');
     try {
-      debugPrint(
-        'obteniendo datos del usuario 2 ${state.authResponse?.user?.id}',
-      );
       final response = await supabase.Supabase.instance.client
           .from('perfiles')
           .select()

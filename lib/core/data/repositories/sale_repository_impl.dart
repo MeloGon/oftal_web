@@ -13,10 +13,16 @@ class SaleRepositoryImpl implements SaleRepository {
     String filter,
     String query, {
     bool isDate = false,
+    bool onlyPending = false,
   }) async {
     try {
       return Right(
-        await _dataSource.getSalesByFilter(filter, query, isDate: isDate),
+        await _dataSource.getSalesByFilter(
+          filter,
+          query,
+          isDate: isDate,
+          onlyPending: onlyPending,
+        ),
       );
     } catch (e) {
       return Left(Failure.server(e.toString()));
@@ -26,9 +32,12 @@ class SaleRepositoryImpl implements SaleRepository {
   @override
   Future<Either<Failure, List<SalesModel>>> getRecentSales({
     int limit = 20,
+    bool onlyPending = false,
   }) async {
     try {
-      return Right(await _dataSource.getRecentSales(limit: limit));
+      return Right(
+        await _dataSource.getRecentSales(limit: limit, onlyPending: onlyPending),
+      );
     } catch (e) {
       return Left(Failure.server(e.toString()));
     }

@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/datatables/datatables.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
+import 'package:oftal_web/features/sales_history/views/widgets/col_header.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/filter_history_sales.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/sales_details_dialog.dart';
+import 'package:oftal_web/features/sales_history/views/widgets/sales_history_page_header.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
@@ -79,7 +81,7 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Expanded(child: _PageHeader()),
+              const Expanded(child: SalesHistoryPageHeader()),
               ShadButton.outline(
                 size: ShadButtonSize.sm,
                 onPressed:
@@ -143,57 +145,57 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
                       isResizable: false,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Estado'),
+                      label: ColHeader('Estado'),
                       fixedWidth: 52,
                       isResizable: false,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Folio'),
+                      label: ColHeader('Folio'),
                       fixedWidth: 70,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Paciente'),
+                      label: ColHeader('Paciente'),
                       fixedWidth: 210,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Fecha'),
+                      label: ColHeader('Fecha'),
                       fixedWidth: 100,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Vendedor'),
+                      label: ColHeader('Vendedor'),
                       fixedWidth: 130,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: _ColHeader('A cuenta'),
+                      label: ColHeader('A cuenta'),
                       fixedWidth: 90,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Resto'),
+                      label: ColHeader('Resto'),
                       fixedWidth: 90,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Descuento'),
+                      label: ColHeader('Descuento'),
                       fixedWidth: 90,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Total'),
+                      label: ColHeader('Total'),
                       fixedWidth: 90,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Total desc.'),
+                      label: ColHeader('Total desc.'),
                       fixedWidth: 100,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Sucursal'),
+                      label: ColHeader('Sucursal'),
                       fixedWidth: 100,
                       isResizable: true,
                     ),
@@ -208,50 +210,6 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
   }
 }
 
-// ─── Local widgets ──────────────────────────────────────────────────────────
-
-class _PageHeader extends StatelessWidget {
-  const _PageHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 4,
-      children: [
-        const Text(
-          'Historial de Ventas',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: Color(0xff18181B),
-          ),
-        ),
-        Text(
-          'Consulta y filtra todas las ventas registradas',
-          style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
-        ),
-      ],
-    );
-  }
-}
-
-class _ColHeader extends StatelessWidget {
-  const _ColHeader(this.text);
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
-        color: Color(0xff52525B),
-      ),
-    );
-  }
-}
 
 
 void _showSnackbar(

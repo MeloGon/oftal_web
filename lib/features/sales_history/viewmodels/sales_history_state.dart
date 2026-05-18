@@ -15,5 +15,8 @@ abstract class SalesHistoryState with _$SalesHistoryState {
     @Default('') String errorMessage,
     @Default(20) int rowsPerPage,
     FilterToSalesHistory? selectedFilter,
+    @Default('') String searchText,
+    DateTime? searchDate,
+    @Default(false) bool onlyPending,
   }) = _SalesHistoryState;
 }
