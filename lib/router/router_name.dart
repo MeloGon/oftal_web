@@ -5,6 +5,7 @@ class RouterName {
   static const String resins = '/dashboard/settings/resins';
   static const String mounts = '/dashboard/settings/mounts';
   static const String paymentsReport = '/dashboard/settings/payments-report';
+  static const String salesBySeller = '/dashboard/settings/sales-by-seller';
   static const String features = '/dashboard/settings/features';
   static const String auditLogs = '/dashboard/settings/audit-logs';
   static const String sell = '/dashboard/sell';

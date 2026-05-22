@@ -64,8 +64,7 @@ class SettingsView extends ConsumerWidget {
             builder: (context, constraints) {
               final features = _SettingsNavCard(
                 title: 'Funcionalidades',
-                description:
-                    'Activa o desactiva funcionalidades del sistema',
+                description: 'Activa o desactiva funcionalidades del sistema',
                 icon: Icons.tune_rounded,
                 iconColor: const Color(0xff7A6BF5),
                 iconBgColor: const Color(0xffEEECFE),
@@ -110,14 +109,7 @@ class SettingsView extends ConsumerWidget {
                 iconColor: const Color(0xff0EA5E9),
                 iconBgColor: const Color(0xffE0F2FE),
                 onTap: () async {
-                  final authorized = await showAuthorizationDialog(
-                    context: context,
-                    requiredRole: AuthorizationRole.admin,
-                    actionName: 'acceder a Resinas',
-                  );
-                  if (authorized) {
-                    ref.read(appRouterProvider).go(RouterName.resins);
-                  }
+                  ref.read(appRouterProvider).go(RouterName.resins);
                 },
               );
               final monturas = _SettingsNavCard(
@@ -126,8 +118,16 @@ class SettingsView extends ConsumerWidget {
                 icon: Icons.visibility_outlined,
                 iconColor: const Color(0xff7A6BF5),
                 iconBgColor: const Color(0xffEEECFE),
-                onTap: () async =>
-                    ref.read(appRouterProvider).go(RouterName.mounts),
+                onTap: () async {
+                  final authorized = await showAuthorizationDialog(
+                    context: context,
+                    requiredRole: AuthorizationRole.admin,
+                    actionName: 'acceder a Monturas',
+                  );
+                  if (authorized) {
+                    ref.read(appRouterProvider).go(RouterName.mounts);
+                  }
+                },
               );
               if (constraints.maxWidth < 560) {
                 return Column(
@@ -159,8 +159,7 @@ class SettingsView extends ConsumerWidget {
             builder: (context, constraints) {
               final auditLogs = _SettingsNavCard(
                 title: 'Registro de auditoría',
-                description:
-                    'Historial de cambios realizados por los usuarios',
+                description: 'Historial de cambios realizados por los usuarios',
                 icon: Icons.history_rounded,
                 iconColor: const Color(0xffEA580C),
                 iconBgColor: const Color(0xffFFF7ED),
@@ -216,14 +215,35 @@ class SettingsView extends ConsumerWidget {
                   }
                 },
               );
+              final ventasPorVendedor = _SettingsNavCard(
+                title: 'Ventas por vendedor',
+                description:
+                    'Consulta las ventas agrupadas por vendedor por mes',
+                icon: Icons.people_outline_rounded,
+                iconColor: const Color(0xff7A6BF5),
+                iconBgColor: const Color(0xffEEECFE),
+                onTap: () async {
+                  final authorized = await showAuthorizationDialog(
+                    context: context,
+                    requiredRole: AuthorizationRole.admin,
+                    actionName: 'ver ventas por vendedor',
+                  );
+                  if (authorized) {
+                    ref.read(appRouterProvider).go(RouterName.salesBySeller);
+                  }
+                },
+              );
               if (constraints.maxWidth < 560) {
-                return reporte;
+                return Column(
+                  spacing: 16,
+                  children: [reporte, ventasPorVendedor],
+                );
               }
               return Row(
                 spacing: 16,
                 children: [
                   Expanded(child: reporte),
-                  const Expanded(child: SizedBox()),
+                  Expanded(child: ventasPorVendedor),
                 ],
               );
             },

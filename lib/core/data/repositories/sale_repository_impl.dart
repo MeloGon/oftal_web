@@ -9,6 +9,18 @@ class SaleRepositoryImpl implements SaleRepository {
   SaleRepositoryImpl(this._dataSource);
 
   @override
+  Future<Either<Failure, List<SalesModel>>> getSalesByDateRange(
+    String from,
+    String to,
+  ) async {
+    try {
+      return Right(await _dataSource.getSalesByDateRange(from, to));
+    } catch (e) {
+      return Left(Failure.server(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, List<SalesModel>>> getSalesByFilter(
     String filter,
     String query, {

@@ -681,10 +681,10 @@ class Sell extends _$Sell {
       pw.Page(
         pageTheme: pw.PageTheme(
           pageFormat: PdfPageFormat.roll80.copyWith(
-            marginLeft: 8,
-            marginRight: 8,
-            marginTop: 10,
-            marginBottom: 14,
+            marginLeft: 11,
+            marginRight: 11,
+            marginTop: 0,
+            marginBottom: 0,
           ),
           theme: pw.ThemeData(
             defaultTextStyle: pw.TextStyle(font: fontNormal),

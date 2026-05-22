@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 
 abstract class SaleRemoteDataSource {
+  Future<List<SalesModel>> getSalesByDateRange(String from, String to);
   Future<List<SalesModel>> getSalesByFilter(
     String filter,
     String query, {
@@ -42,6 +43,18 @@ abstract class SaleRemoteDataSource {
 class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
   final SupabaseClient client;
   SaleRemoteDataSourceImpl(this.client);
+
+  @override
+  Future<List<SalesModel>> getSalesByDateRange(String from, String to) async {
+    final response = await client
+        .from('ventas cortas')
+        .select()
+        .gte('fecha_actualizada', from)
+        .lte('fecha_actualizada', to)
+        .order('AUTOR NOMBRE', ascending: true)
+        .order('fecha_actualizada', ascending: false);
+    return response.map((json) => SalesModel.fromJson(json)).toList();
+  }
 
   @override
   Future<List<SalesModel>> getSalesByFilter(

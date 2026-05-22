@@ -8,6 +8,7 @@ import 'package:oftal_web/features/sales_history/views/sales_history_view.dart';
 import 'package:oftal_web/features/settings/views/audit_logs/audit_logs_view.dart';
 import 'package:oftal_web/features/settings/views/features/features_view.dart';
 import 'package:oftal_web/features/settings/views/payments_report/payments_report_view.dart';
+import 'package:oftal_web/features/settings/views/sales_by_seller/sales_by_seller_view.dart';
 import 'package:oftal_web/features/settings/views/mounts/mounts_view.dart';
 import 'package:oftal_web/features/settings/views/resins/resins_view.dart';
 import 'package:oftal_web/features/views.dart';
@@ -157,6 +158,12 @@ GoRouter appRouter(Ref ref) {
                     pageBuilder:
                         (context, state) =>
                             _fadeRoute(const AuditLogsView()),
+                  ),
+                  GoRoute(
+                    path: 'sales-by-seller',
+                    pageBuilder:
+                        (context, state) =>
+                            _fadeRoute(const SalesBySellerView()),
                   ),
                 ],
               ),

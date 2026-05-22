@@ -3,6 +3,10 @@ import 'package:oftal_web/core/errors/failures.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 
 abstract class SaleRepository {
+  Future<Either<Failure, List<SalesModel>>> getSalesByDateRange(
+    String from,
+    String to,
+  );
   Future<Either<Failure, List<SalesModel>>> getSalesByFilter(
     String filter,
     String query, {
