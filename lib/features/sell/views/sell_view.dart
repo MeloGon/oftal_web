@@ -8,6 +8,7 @@ import 'package:oftal_web/features/sell/viewmodels/sell_provider.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_state.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
+import 'package:oftal_web/shared/providers/providers.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -19,6 +20,16 @@ class SellView extends ConsumerStatefulWidget {
 }
 
 class _SellViewState extends ConsumerState<SellView> {
+  String _selectedMountBranch = BranchEnum.oftalvision.name;
+
+  @override
+  void initState() {
+    super.initState();
+    final branch = ref.read(authProvider).profile?.branchName ?? '';
+    _selectedMountBranch =
+        branch.isNotEmpty ? branch : BranchEnum.oftalvision.name;
+  }
+
   @override
   Widget build(BuildContext context) {
     final sellNotifier = ref.watch(sellProvider.notifier);
@@ -176,11 +187,49 @@ class _SellViewState extends ConsumerState<SellView> {
                             ),
                           ],
                         ),
+                        if (sellState.selectedOptionToSell ==
+                            OptionsToSellEnum.mount)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            spacing: 6,
+                            children: [
+                              const Text(
+                                'Sucursal',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xff52525B),
+                                ),
+                              ),
+                              ShadSelect<String>(
+                                initialValue: _selectedMountBranch,
+                                selectedOptionBuilder:
+                                    (context, value) => Text(value),
+                                options:
+                                    BranchEnum.values
+                                        .map(
+                                          (b) => ShadOption(
+                                            value: b.name,
+                                            child: Text(b.name),
+                                          ),
+                                        )
+                                        .toList(),
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    setState(
+                                      () => _selectedMountBranch = value,
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
                         ConstrainedBox(
                           constraints: BoxConstraints(
-                            maxWidth: size.width < 700
-                                ? size.width - 48
-                                : size.width * 0.5,
+                            maxWidth:
+                                size.width < 700
+                                    ? size.width - 48
+                                    : size.width * 0.5,
                           ),
                           child: ShadInputFormField(
                             placeholder: const Text(
@@ -202,71 +251,87 @@ class _SellViewState extends ConsumerState<SellView> {
                       ],
                     ),
                     if (sellState.mounts.isNotEmpty && !sellState.isLoading)
-                      SizedBox(
-                        width: double.infinity,
-                        height: 340,
-                        child: TooltipVisibility(
-                          visible: false,
-                          child: PaginatedDataTable2(
-                            wrapInCard: false,
-                            showCheckboxColumn: false,
-                            columnSpacing: 12,
-                            horizontalMargin: 16,
-                            minWidth: 680,
-                            isHorizontalScrollBarVisible: true,
-                            isVerticalScrollBarVisible: true,
-                            headingRowHeight: 38,
-                            dataRowHeight: 44,
-                            columnResizingParameters: ColumnResizingParameters(
-                              realTime: false,
-                              widgetColor: Theme.of(context).primaryColor,
+                      Builder(
+                        builder: (context) {
+                          final filteredMounts =
+                              sellState.mounts.where((m) {
+                                final optic =
+                                    m.opticName.trim().isEmpty
+                                        ? BranchEnum.oftalvision.name
+                                        : m.opticName.trim();
+                                return optic.toUpperCase() ==
+                                    _selectedMountBranch.toUpperCase();
+                              }).toList();
+                          return SizedBox(
+                            width: double.infinity,
+                            height: 340,
+                            child: TooltipVisibility(
+                              visible: false,
+                              child: PaginatedDataTable2(
+                                wrapInCard: false,
+                                showCheckboxColumn: false,
+                                columnSpacing: 12,
+                                horizontalMargin: 16,
+                                minWidth: 680,
+                                isHorizontalScrollBarVisible: true,
+                                isVerticalScrollBarVisible: true,
+                                headingRowHeight: 38,
+                                dataRowHeight: 44,
+                                columnResizingParameters:
+                                    ColumnResizingParameters(
+                                      realTime: false,
+                                      widgetColor:
+                                          Theme.of(context).primaryColor,
+                                    ),
+                                headingRowColor: WidgetStateProperty.all(
+                                  const Color(0xffFAFAFA),
+                                ),
+                                columns: const [
+                                  DataColumn2(
+                                    label: _SellColHeader('Marca'),
+                                    size: ColumnSize.M,
+                                  ),
+                                  DataColumn2(
+                                    label: _SellColHeader('Modelo'),
+                                    size: ColumnSize.M,
+                                  ),
+                                  DataColumn2(
+                                    label: _SellColHeader('Color'),
+                                    fixedWidth: 110,
+                                  ),
+                                  DataColumn2(
+                                    label: _SellColHeader('Descripción'),
+                                    size: ColumnSize.L,
+                                  ),
+                                  DataColumn2(
+                                    label: _SellColHeader('Óptica'),
+                                    size: ColumnSize.M,
+                                  ),
+                                  DataColumn2(
+                                    label: _SellColHeader('Precio'),
+                                    fixedWidth: 95,
+                                  ),
+                                  DataColumn2(
+                                    label: _SellColHeader(''),
+                                    fixedWidth: 105,
+                                    isResizable: false,
+                                  ),
+                                ],
+                                source: MountsDataSource(
+                                  mounts: filteredMounts,
+                                  context: context,
+                                  ref: ref,
+                                ),
+                                availableRowsPerPage: const [5, 10, 20, 50],
+                                rowsPerPage: sellState.rowsPerPage,
+                                onRowsPerPageChanged:
+                                    (value) => sellNotifier.changeRowsPerPage(
+                                      value ?? 5,
+                                    ),
+                              ),
                             ),
-                            headingRowColor: WidgetStateProperty.all(
-                              const Color(0xffFAFAFA),
-                            ),
-                            columns: const [
-                              DataColumn2(
-                                label: _SellColHeader('Marca'),
-                                size: ColumnSize.M,
-                              ),
-                              DataColumn2(
-                                label: _SellColHeader('Modelo'),
-                                size: ColumnSize.M,
-                              ),
-                              DataColumn2(
-                                label: _SellColHeader('Color'),
-                                fixedWidth: 110,
-                              ),
-                              DataColumn2(
-                                label: _SellColHeader('Descripción'),
-                                size: ColumnSize.L,
-                              ),
-                              DataColumn2(
-                                label: _SellColHeader('Óptica'),
-                                size: ColumnSize.M,
-                              ),
-                              DataColumn2(
-                                label: _SellColHeader('Precio'),
-                                fixedWidth: 95,
-                              ),
-                              DataColumn2(
-                                label: _SellColHeader(''),
-                                fixedWidth: 105,
-                                isResizable: false,
-                              ),
-                            ],
-                            source: MountsDataSource(
-                              mounts: sellState.mounts,
-                              context: context,
-                              ref: ref,
-                            ),
-                            availableRowsPerPage: const [5, 10, 20, 50],
-                            rowsPerPage: sellState.rowsPerPage,
-                            onRowsPerPageChanged:
-                                (value) =>
-                                    sellNotifier.changeRowsPerPage(value ?? 5),
-                          ),
-                        ),
+                          );
+                        },
                       ),
                     if (sellState.resins.isNotEmpty && !sellState.isLoading)
                       SizedBox(
@@ -388,7 +453,9 @@ class _SellViewState extends ConsumerState<SellView> {
                         AppDatePickerButton(
                           label: 'Fecha',
                           selectedDate: sellNotifier.selectedDate,
-                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                          lastDate: DateTime.now().add(
+                            const Duration(days: 365),
+                          ),
                           onDateSelected: (date) {
                             sellNotifier.updateDate(date);
                             setState(() {});
