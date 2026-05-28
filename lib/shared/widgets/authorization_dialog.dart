@@ -141,7 +141,8 @@ class _AuthorizationDialogContentState
               width: 28,
               height: 28,
               padding: EdgeInsets.zero,
-              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+              onPressed:
+                  () => setState(() => _obscurePassword = !_obscurePassword),
               child: Icon(
                 _obscurePassword
                     ? Icons.visibility_outlined
