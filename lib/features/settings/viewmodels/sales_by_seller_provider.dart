@@ -68,6 +68,10 @@ class SalesBySeller extends AutoDisposeNotifier<SalesBySellerState> {
     );
   }
 
+  void selectAllSellers() {
+    state = state.copyWith(clearSelectedSellers: true);
+  }
+
   void clearErrorMessage() {
     state = state.copyWith(errorMessage: '', snackbarConfig: null);
   }

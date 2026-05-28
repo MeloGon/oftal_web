@@ -113,25 +113,19 @@ class SalesBySellerView extends ConsumerWidget {
             ],
           ),
 
-          // ─── Month filter ─────────────────────────────────────
-          _MonthPicker(
-            selected: state.selectedMonth,
-            onPicked: notifier.selectMonth,
-          ),
-
-          // ─── Seller chips ─────────────────────────────────────
-          if (allSellers.isNotEmpty)
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: allSellers.map(
-                (seller) => _SellerChip(
-                  label: seller,
-                  selected: state.isSellerActive(seller),
-                  onTap: () => notifier.toggleSeller(seller),
-                ),
-              ).toList(),
+          // ─── Filter bar ───────────────────────────────────────
+          _FilterBar(
+            selectedMonth: state.selectedMonth,
+            onMonthPicked: notifier.selectMonth,
+            sellers: allSellers,
+            sellerCounts: Map.fromEntries(
+              allSellers.map((s) => MapEntry(s, allBySeller[s]?.length ?? 0)),
             ),
+            isSellerActive: state.isSellerActive,
+            onToggleSeller: notifier.toggleSeller,
+            onSelectAll: notifier.selectAllSellers,
+            allActive: state.selectedSellers == null,
+          ),
 
           // ─── Content ──────────────────────────────────────────
           Expanded(
@@ -175,57 +169,28 @@ class SalesBySellerView extends ConsumerWidget {
   }
 }
 
-// ─── Month picker ─────────────────────────────────────────────────────────────
+// ─── Filter bar ───────────────────────────────────────────────────────────────
 
-// ─── Seller chip ──────────────────────────────────────────────────────────────
-
-class _SellerChip extends StatelessWidget {
-  const _SellerChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
+class _FilterBar extends StatelessWidget {
+  const _FilterBar({
+    required this.selectedMonth,
+    required this.onMonthPicked,
+    required this.sellers,
+    required this.sellerCounts,
+    required this.isSellerActive,
+    required this.onToggleSeller,
+    required this.onSelectAll,
+    required this.allActive,
   });
 
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: selected ? const Color(0xff7A6BF5) : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: selected
-                ? const Color(0xff7A6BF5)
-                : const Color(0xffE4E4E7),
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: selected ? Colors.white : const Color(0xff52525B),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ─── Month picker ─────────────────────────────────────────────────────────────
-
-class _MonthPicker extends StatelessWidget {
-  const _MonthPicker({required this.selected, required this.onPicked});
-
-  final DateTime selected;
-  final void Function(DateTime) onPicked;
+  final DateTime selectedMonth;
+  final void Function(DateTime) onMonthPicked;
+  final List<String> sellers;
+  final Map<String, int> sellerCounts;
+  final bool Function(String) isSellerActive;
+  final void Function(String) onToggleSeller;
+  final VoidCallback onSelectAll;
+  final bool allActive;
 
   static const _months = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -234,27 +199,118 @@ class _MonthPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ShadButton.outline(
-      onPressed: () async {
-        final picked = await showDialog<DateTime>(
-          context: context,
-          builder: (_) => _MonthPickerDialog(initial: selected),
-        );
-        if (picked != null) onPicked(picked);
-      },
-      child: Row(
-        spacing: 8,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.calendar_month_rounded, size: 14),
-          Text(
-            '${_months[selected.month - 1]} ${selected.year}',
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        // Month picker
+        ShadButton.outline(
+          onPressed: () async {
+            final picked = await showDialog<DateTime>(
+              context: context,
+              builder: (_) => _MonthPickerDialog(initial: selectedMonth),
+            );
+            if (picked != null) onMonthPicked(picked);
+          },
+          child: Row(
+            spacing: 8,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.calendar_month_rounded, size: 14),
+              Text('${_months[selectedMonth.month - 1]} ${selectedMonth.year}'),
+            ],
           ),
+        ),
+
+        if (sellers.isNotEmpty) ...[
+          Container(width: 1, height: 20, color: const Color(0xffE4E4E7)),
+
+          const Text(
+            'Vendedores:',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Color(0xff71717A),
+            ),
+          ),
+
+          // Todos chip
+          _SellerChip(
+            label: 'Todos',
+            selected: allActive,
+            onTap: onSelectAll,
+          ),
+
+          // Individual seller chips
+          ...sellers.map((s) => _SellerChip(
+                label: s,
+                count: sellerCounts[s],
+                selected: isSellerActive(s),
+                onTap: () => onToggleSeller(s),
+              )),
         ],
+      ],
+    );
+  }
+}
+
+// ─── Seller chip ──────────────────────────────────────────────────────────────
+
+class _SellerChip extends StatelessWidget {
+  const _SellerChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    this.count,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  final int? count;
+
+  @override
+  Widget build(BuildContext context) {
+    final chipLabel = count != null ? '$label · $count' : label;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? const Color(0xff7A6BF5) : const Color(0xffFAFAFA),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: selected ? const Color(0xff7A6BF5) : const Color(0xffE4E4E7),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 5,
+          children: [
+            if (selected)
+              const Icon(
+                Icons.check_rounded,
+                size: 12,
+                color: Colors.white,
+              ),
+            Text(
+              chipLabel,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                color: selected ? Colors.white : const Color(0xff52525B),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+
 
 class _MonthPickerDialog extends StatefulWidget {
   const _MonthPickerDialog({required this.initial});
