@@ -29,23 +29,33 @@ class PaymentsReportView extends ConsumerWidget {
 
     final allPayments = state.payments;
     final expenses = state.expenses;
-    final filteredPayments = state.selectedSucursal == null
-        ? allPayments
-        : allPayments.where((p) => p.sucursal == state.selectedSucursal).toList();
-    final availableSucursales = allPayments
-        .map((p) => p.sucursal)
-        .whereType<String>()
-        .toSet()
-        .toList()
-      ..sort();
+    final filteredPayments =
+        state.selectedSucursal == null
+            ? allPayments
+            : allPayments
+                .where((p) => p.sucursal == state.selectedSucursal)
+                .toList();
+    final filteredExpenses =
+        state.selectedSucursal == null
+            ? expenses
+            : expenses
+                .where((e) => e.sucursal == state.selectedSucursal)
+                .toList();
+    final availableSucursales =
+        allPayments.map((p) => p.sucursal).whereType<String>().toSet().toList()
+          ..sort();
     final newSales = filteredPayments.where((p) => p.isNewSale).toList();
-    final balancePayments = filteredPayments.where((p) => !p.isNewSale).toList();
+    final balancePayments =
+        filteredPayments.where((p) => !p.isNewSale).toList();
     final totalNewSales = newSales.fold(0.0, (sum, p) => sum + p.monto);
-    final totalBalancePayments = balancePayments.fold(0.0, (sum, p) => sum + p.monto);
-    final totalExpenses = expenses.fold(0.0, (sum, e) => sum + e.monto);
+    final totalBalancePayments = balancePayments.fold(
+      0.0,
+      (sum, p) => sum + p.monto,
+    );
+    final totalExpenses = filteredExpenses.fold(0.0, (sum, e) => sum + e.monto);
     final byMethodNewSales = _groupByMethod(newSales);
     final byMethodBalancePayments = _groupByMethod(balancePayments);
-    final expensesByCategory = _groupExpensesByCategory(expenses);
+    final expensesByCategory = _groupExpensesByCategory(filteredExpenses);
 
     return Padding(
       padding: const EdgeInsets.all(24),
@@ -111,113 +121,127 @@ class PaymentsReportView extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: 20,
                   children: [
-                // ── Ingresos ─────────────────────────────────
-                _SectionLabel(
-                  label: 'Ingresos',
-                  total: totalNewSales + totalBalancePayments,
-                  color: const Color(0xff0EA5E9),
-                  icon: Icons.trending_up_rounded,
-                ),
+                    // ── Ingresos ─────────────────────────────────
+                    _SectionLabel(
+                      label: 'Ingresos',
+                      total: totalNewSales + totalBalancePayments,
+                      color: const Color(0xff0EA5E9),
+                      icon: Icons.trending_up_rounded,
+                    ),
 
-                // ── Ingresos por nuevas ventas ────────────
-                _SubSectionLabel(
-                  label: 'Ingresos por nuevas ventas',
-                  total: totalNewSales,
-                  color: const Color(0xff22C55E),
-                ),
-                _SummaryRow(total: totalNewSales, byMethod: byMethodNewSales),
-                ShadCard(
-                  padding: EdgeInsets.zero,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-                        child: Text(
-                          'Detalle de nuevas ventas (${newSales.length})',
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xff18181B),
+                    // ── Ingresos por nuevas ventas ────────────
+                    _SubSectionLabel(
+                      label: 'Ingresos por nuevas ventas',
+                      total: totalNewSales,
+                      color: const Color(0xff22C55E),
+                    ),
+                    _SummaryRow(
+                      total: totalNewSales,
+                      byMethod: byMethodNewSales,
+                    ),
+                    ShadCard(
+                      padding: EdgeInsets.zero,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+                            child: Text(
+                              'Detalle de nuevas ventas (${newSales.length})',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xff18181B),
+                              ),
+                            ),
                           ),
-                        ),
+                          const Divider(height: 1, color: Color(0xffF4F4F5)),
+                          newSales.isEmpty
+                              ? const _EmptyState(
+                                label:
+                                    'Sin nuevas ventas en el período seleccionado',
+                              )
+                              : _PaymentsTable(payments: newSales),
+                        ],
                       ),
-                      const Divider(height: 1, color: Color(0xffF4F4F5)),
-                      newSales.isEmpty
-                          ? const _EmptyState(label: 'Sin nuevas ventas en el período seleccionado')
-                          : _PaymentsTable(payments: newSales),
-                    ],
-                  ),
-                ),
+                    ),
 
-                // ── Ingresos por saldos pagados ───────────
-                _SubSectionLabel(
-                  label: 'Ingresos por saldos pagados',
-                  total: totalBalancePayments,
-                  color: const Color(0xff8B5CF6),
-                ),
-                _SummaryRow(total: totalBalancePayments, byMethod: byMethodBalancePayments),
-                ShadCard(
-                  padding: EdgeInsets.zero,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-                        child: Text(
-                          'Detalle de saldos pagados (${balancePayments.length})',
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xff18181B),
+                    // ── Ingresos por saldos pagados ───────────
+                    _SubSectionLabel(
+                      label: 'Ingresos por saldos pagados',
+                      total: totalBalancePayments,
+                      color: const Color(0xff8B5CF6),
+                    ),
+                    _SummaryRow(
+                      total: totalBalancePayments,
+                      byMethod: byMethodBalancePayments,
+                    ),
+                    ShadCard(
+                      padding: EdgeInsets.zero,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+                            child: Text(
+                              'Detalle de saldos pagados (${balancePayments.length})',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xff18181B),
+                              ),
+                            ),
                           ),
-                        ),
+                          const Divider(height: 1, color: Color(0xffF4F4F5)),
+                          balancePayments.isEmpty
+                              ? const _EmptyState(
+                                label:
+                                    'Sin saldos pagados en el período seleccionado',
+                              )
+                              : _PaymentsTable(payments: balancePayments),
+                        ],
                       ),
-                      const Divider(height: 1, color: Color(0xffF4F4F5)),
-                      balancePayments.isEmpty
-                          ? const _EmptyState(label: 'Sin saldos pagados en el período seleccionado')
-                          : _PaymentsTable(payments: balancePayments),
-                    ],
-                  ),
-                ),
+                    ),
 
-                const Divider(height: 1),
+                    const Divider(height: 1),
 
-                // ── Egresos ──────────────────────────────────
-                _SectionLabel(
-                  label: 'Egresos',
-                  total: totalExpenses,
-                  color: const Color(0xffEF4444),
-                  icon: Icons.trending_down_rounded,
-                ),
-                _ExpensesSummaryRow(
-                  total: totalExpenses,
-                  byCategory: expensesByCategory,
-                ),
-                ShadCard(
-                  padding: EdgeInsets.zero,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-                        child: Text(
-                          'Detalle de egresos (${expenses.length})',
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xff18181B),
+                    // ── Egresos ──────────────────────────────────
+                    _SectionLabel(
+                      label: 'Egresos',
+                      total: totalExpenses,
+                      color: const Color(0xffEF4444),
+                      icon: Icons.trending_down_rounded,
+                    ),
+                    _ExpensesSummaryRow(
+                      total: totalExpenses,
+                      byCategory: expensesByCategory,
+                    ),
+                    ShadCard(
+                      padding: EdgeInsets.zero,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+                            child: Text(
+                              'Detalle de egresos (${filteredExpenses.length})',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xff18181B),
+                              ),
+                            ),
                           ),
-                        ),
+                          const Divider(height: 1, color: Color(0xffF4F4F5)),
+                          filteredExpenses.isEmpty
+                              ? const _EmptyState(
+                                label: 'Sin egresos en el período seleccionado',
+                              )
+                              : _ExpensesTable(expenses: filteredExpenses),
+                        ],
                       ),
-                      const Divider(height: 1, color: Color(0xffF4F4F5)),
-                      expenses.isEmpty
-                          ? const _EmptyState(label: 'Sin egresos en el período seleccionado')
-                          : _ExpensesTable(expenses: expenses),
-                    ],
-                  ),
-                ),
-              ],
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -275,44 +299,46 @@ class _PeriodFilterBar extends StatelessWidget {
           padding: const EdgeInsets.all(3),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            children: ReportPeriodFilter.values.map((f) {
-              final selected = state.filter == f;
-              return GestureDetector(
-                onTap: () => notifier.selectFilter(f),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 150),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: selected ? Colors.white : Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
-                    boxShadow: selected
-                        ? [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.06),
-                              blurRadius: 4,
-                              offset: const Offset(0, 1),
-                            ),
-                          ]
-                        : [],
-                  ),
-                  child: Text(
-                    f.label,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: selected
-                          ? FontWeight.w600
-                          : FontWeight.w400,
-                      color: selected
-                          ? const Color(0xff18181B)
-                          : const Color(0xff71717A),
+            children:
+                ReportPeriodFilter.values.map((f) {
+                  final selected = state.filter == f;
+                  return GestureDetector(
+                    onTap: () => notifier.selectFilter(f),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 150),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: selected ? Colors.white : Colors.transparent,
+                        borderRadius: BorderRadius.circular(6),
+                        boxShadow:
+                            selected
+                                ? [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.06),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 1),
+                                  ),
+                                ]
+                                : [],
+                      ),
+                      child: Text(
+                        f.label,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight:
+                              selected ? FontWeight.w600 : FontWeight.w400,
+                          color:
+                              selected
+                                  ? const Color(0xff18181B)
+                                  : const Color(0xff71717A),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
           ),
         ),
 
@@ -341,19 +367,19 @@ class _DateControls extends StatelessWidget {
   Widget build(BuildContext context) {
     return switch (state.filter) {
       ReportPeriodFilter.day => _DayPicker(
-          selected: state.selectedDay,
-          onPicked: notifier.selectDay,
-        ),
+        selected: state.selectedDay,
+        onPicked: notifier.selectDay,
+      ),
       ReportPeriodFilter.month => _MonthPicker(
-          selected: state.selectedMonth,
-          onPicked: notifier.selectMonth,
-        ),
+        selected: state.selectedMonth,
+        onPicked: notifier.selectMonth,
+      ),
       ReportPeriodFilter.range => _RangePicker(
-          start: state.rangeStart,
-          end: state.rangeEnd,
-          onStartPicked: notifier.selectRangeStart,
-          onEndPicked: notifier.selectRangeEnd,
-        ),
+        start: state.rangeStart,
+        end: state.rangeEnd,
+        onStartPicked: notifier.selectRangeStart,
+        onEndPicked: notifier.selectRangeEnd,
+      ),
     };
   }
 }
@@ -384,14 +410,19 @@ class _SucursalFilter extends StatelessWidget {
           Text('Todas las sucursales'),
         ],
       ),
-      selectedOptionBuilder: (context, value) => Row(
-        mainAxisSize: MainAxisSize.min,
-        spacing: 6,
-        children: [
-          const Icon(Icons.store_outlined, size: 14, color: Color(0xff18181B)),
-          Text(value.isEmpty ? 'Todas las sucursales' : value),
-        ],
-      ),
+      selectedOptionBuilder:
+          (context, value) => Row(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 6,
+            children: [
+              const Icon(
+                Icons.store_outlined,
+                size: 14,
+                color: Color(0xff18181B),
+              ),
+              Text(value.isEmpty ? 'Todas las sucursales' : value),
+            ],
+          ),
       initialValue: selected ?? _all,
       onChanged: (v) => onChanged(v == null || v.isEmpty ? null : v),
       options: [
@@ -511,7 +542,11 @@ class _RangePicker extends StatelessWidget {
             ],
           ),
         ),
-        const Icon(Icons.arrow_forward_rounded, size: 14, color: Color(0xff71717A)),
+        const Icon(
+          Icons.arrow_forward_rounded,
+          size: 14,
+          color: Color(0xff71717A),
+        ),
         ShadButton.outline(
           onPressed: () async {
             final picked = await showDatePicker(
@@ -646,9 +681,10 @@ class _MetricCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isTotal
-              ? iconColor.withValues(alpha: 0.3)
-              : const Color(0xffE4E4E7),
+          color:
+              isTotal
+                  ? iconColor.withValues(alpha: 0.3)
+                  : const Color(0xffE4E4E7),
           width: isTotal ? 1.5 : 1,
         ),
       ),
@@ -734,100 +770,101 @@ class _PaymentsTable extends StatelessWidget {
           DataColumn(label: _ColHeader('Notas')),
           DataColumn(label: _ColHeader('Monto'), numeric: true),
         ],
-        rows: payments.map((p) {
-          final method = p.metodoPago ?? 'otro';
-          final methodLabel = _methodLabels[method] ?? method;
-          final methodColor =
-              _methodColors[method] ?? const Color(0xff6B7280);
+        rows:
+            payments.map((p) {
+              final method = p.metodoPago ?? 'otro';
+              final methodLabel = _methodLabels[method] ?? method;
+              final methodColor =
+                  _methodColors[method] ?? const Color(0xff6B7280);
 
-          return DataRow(
-            cells: [
-              DataCell(
-                Text(
-                  p.fechaPago,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xff52525B),
-                  ),
-                ),
-              ),
-              DataCell(
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+              return DataRow(
+                cells: [
+                  DataCell(
                     Text(
-                      p.paciente ?? '—',
+                      p.fechaPago,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xff52525B),
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          p.paciente ?? '—',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Color(0xff18181B),
+                          ),
+                        ),
+                        if (p.sucursal != null)
+                          Text(
+                            'Sucursal: ${p.sucursal}',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Color(0xff71717A),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  DataCell(
+                    Text(
+                      p.folioRemision ?? p.idRemision,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xff52525B),
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: methodColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        methodLabel,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: methodColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    Text(
+                      p.notas?.isNotEmpty == true ? p.notas! : '—',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xff71717A),
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                  ),
+                  DataCell(
+                    Text(
+                      p.monto.toCurrency(),
                       style: const TextStyle(
                         fontSize: 13,
+                        fontWeight: FontWeight.w600,
                         color: Color(0xff18181B),
                       ),
                     ),
-                    if (p.sucursal != null)
-                      Text(
-                        'Sucursal: ${p.sucursal}',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: Color(0xff71717A),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              DataCell(
-                Text(
-                  p.folioRemision ?? p.idRemision,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xff52525B),
-                    fontFamily: 'monospace',
                   ),
-                ),
-              ),
-              DataCell(
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: methodColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    methodLabel,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: methodColor,
-                    ),
-                  ),
-                ),
-              ),
-              DataCell(
-                Text(
-                  p.notas?.isNotEmpty == true ? p.notas! : '—',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xff71717A),
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
-                ),
-              ),
-              DataCell(
-                Text(
-                  p.monto.toCurrency(),
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xff18181B),
-                  ),
-                ),
-              ),
-            ],
-          );
-        }).toList(),
+                ],
+              );
+            }).toList(),
       ),
     );
   }
@@ -1027,80 +1064,109 @@ class _ExpensesTable extends StatelessWidget {
           DataColumn(label: _ColHeader('Registrado por')),
           DataColumn(label: _ColHeader('Monto'), numeric: true),
         ],
-        rows: expenses.map((e) {
-          final method = e.metodoPago;
-          final methodLabel = _methodLabels[method] ?? method;
-          final methodColor = _methodColors[method] ?? const Color(0xff6B7280);
+        rows:
+            expenses.map((e) {
+              final method = e.metodoPago;
+              final methodLabel = _methodLabels[method] ?? method;
+              final methodColor =
+                  _methodColors[method] ?? const Color(0xff6B7280);
 
-          return DataRow(
-            cells: [
-              DataCell(Text(
-                e.fecha,
-                style: const TextStyle(fontSize: 12, color: Color(0xff52525B)),
-              )),
-              DataCell(
-                e.categoriaNombre != null
-                    ? _CategoryBadge(
-                        nombre: e.categoriaNombre!,
-                        color: e.categoriaColor,
-                      )
-                    : Text(
-                        'Sin categoría',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade400,
-                        ),
+              return DataRow(
+                cells: [
+                  DataCell(
+                    Text(
+                      e.fecha,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xff52525B),
                       ),
-              ),
-              DataCell(Text(
-                e.descripcion,
-                style: const TextStyle(fontSize: 13, color: Color(0xff18181B)),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-              )),
-              DataCell(
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: methodColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    methodLabel,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: methodColor,
                     ),
                   ),
-                ),
-              ),
-              DataCell(Text(
-                e.sucursal ?? 'Global',
-                style: const TextStyle(fontSize: 12, color: Color(0xff52525B)),
-              )),
-              DataCell(Text(
-                e.comprobante?.isNotEmpty == true ? e.comprobante! : '—',
-                style: const TextStyle(fontSize: 12, color: Color(0xff71717A)),
-              )),
-              DataCell(Text(
-                e.registradoPor ?? '—',
-                style: const TextStyle(fontSize: 12, color: Color(0xff52525B)),
-              )),
-              DataCell(Text(
-                e.monto.toCurrency(),
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xffEF4444),
-                ),
-              )),
-            ],
-          );
-        }).toList(),
+                  DataCell(
+                    e.categoriaNombre != null
+                        ? _CategoryBadge(
+                          nombre: e.categoriaNombre!,
+                          color: e.categoriaColor,
+                        )
+                        : Text(
+                          'Sin categoría',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade400,
+                          ),
+                        ),
+                  ),
+                  DataCell(
+                    Text(
+                      e.descripcion,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Color(0xff18181B),
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                  ),
+                  DataCell(
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: methodColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        methodLabel,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: methodColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    Text(
+                      e.sucursal ?? 'Global',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xff52525B),
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    Text(
+                      e.comprobante?.isNotEmpty == true ? e.comprobante! : '—',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xff71717A),
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    Text(
+                      e.registradoPor ?? '—',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xff52525B),
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    Text(
+                      e.monto.toCurrency(),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xffEF4444),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }).toList(),
       ),
     );
   }

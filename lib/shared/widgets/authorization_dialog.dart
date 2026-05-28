@@ -40,6 +40,7 @@ class _AuthorizationDialogContentState
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _loading = false;
+  bool _obscurePassword = true;
   String? _errorMessage;
 
   String get _roleLabel =>
@@ -133,8 +134,22 @@ class _AuthorizationDialogContentState
           ShadInputFormField(
             label: const Text('Contraseña'),
             controller: _passwordController,
-            obscureText: true,
+            obscureText: _obscurePassword,
             placeholder: const Text('••••••••'),
+            onSubmitted: (_) => _loading ? null : _submit(),
+            trailing: ShadButton.ghost(
+              width: 28,
+              height: 28,
+              padding: EdgeInsets.zero,
+              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+              child: Icon(
+                _obscurePassword
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
+                size: 16,
+                color: const Color(0xff71717A),
+              ),
+            ),
           ),
           if (_errorMessage != null)
             Text(
