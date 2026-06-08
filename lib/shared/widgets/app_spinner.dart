@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class AppSpinner extends StatefulWidget {
   const AppSpinner({
     super.key,
     this.size = 20,
-    this.color = const Color(0xff7A6BF5),
+    this.color = AppColors.primary,
   });
 
   final double size;

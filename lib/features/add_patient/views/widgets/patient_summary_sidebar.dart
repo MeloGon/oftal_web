@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/features/add_patient/viewmodels/add_patient_provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -49,14 +50,14 @@ class PatientSummarySidebar extends ConsumerWidget {
                           Icon(
                             Icons.preview_outlined,
                             size: 16,
-                            color: Color(0xff7A6BF5),
+                            color: AppColors.primary,
                           ),
                           Text(
                             'Resumen',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xff18181B),
+                              color: AppColors.zinc900,
                             ),
                           ),
                         ],
@@ -67,7 +68,7 @@ class PatientSummarySidebar extends ConsumerWidget {
                           'Vista previa del registro',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Color(0xff9CA3AF),
+                            color: AppColors.gray400,
                           ),
                         ),
                       ),
@@ -84,7 +85,7 @@ class PatientSummarySidebar extends ConsumerWidget {
                         height: 48,
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Color(0xff7A6BF5),
+                          color: AppColors.primary,
                         ),
                         alignment: Alignment.center,
                         child: Text(
@@ -106,7 +107,7 @@ class PatientSummarySidebar extends ConsumerWidget {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
-                                color: Color(0xff18181B),
+                                color: AppColors.zinc900,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -114,7 +115,7 @@ class PatientSummarySidebar extends ConsumerWidget {
                               'Sin DNI · $branch',
                               style: const TextStyle(
                                 fontSize: 12,
-                                color: Color(0xff71717A),
+                                color: AppColors.zinc500,
                               ),
                             ),
                           ],
@@ -144,14 +145,14 @@ class PatientSummarySidebar extends ConsumerWidget {
                     height: 32,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(0xffEEF2FF),
-                      border: Border.all(color: const Color(0xffC7D2FE)),
+                      color: AppColors.indigoBg,
+                      border: Border.all(color: AppColors.indigoBorder),
                     ),
                     alignment: Alignment.center,
                     child: const Icon(
                       Icons.info_outline_rounded,
                       size: 16,
-                      color: Color(0xff6366F1),
+                      color: AppColors.indigo,
                     ),
                   ),
                   Expanded(
@@ -164,7 +165,7 @@ class PatientSummarySidebar extends ConsumerWidget {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xff18181B),
+                            color: AppColors.zinc900,
                           ),
                         ),
                         Text(
@@ -201,11 +202,11 @@ class _SummaryRow extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 13, color: Color(0xff52525B)),
+          style: const TextStyle(fontSize: 13, color: AppColors.zinc600),
         ),
         Text(
           value,
-          style: const TextStyle(fontSize: 13, color: Color(0xff18181B)),
+          style: const TextStyle(fontSize: 13, color: AppColors.zinc900),
         ),
       ],
     );

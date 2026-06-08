@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/features/settings/viewmodels/audit_logs_provider.dart';
 import 'package:oftal_web/router/app_router.dart';
 import 'package:oftal_web/router/router_name.dart';
@@ -28,13 +29,13 @@ class AuditLogCard extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xffFFF7ED),
+                  color: AppColors.orangeBg,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
                   Icons.history_rounded,
                   size: 16,
-                  color: Color(0xffEA580C),
+                  color: AppColors.orange,
                 ),
               ),
               const SizedBox(width: 10),
@@ -44,7 +45,7 @@ class AuditLogCard extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xff18181B),
+                    color: AppColors.zinc900,
                   ),
                 ),
               ),
@@ -55,7 +56,7 @@ class AuditLogCard extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xff7A6BF5),
+                    color: AppColors.primary,
                   ),
                 ),
               ),
@@ -119,13 +120,13 @@ class _LogRow extends StatelessWidget {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: const Color(0xffEEECFE),
+                  color: AppColors.primaryBg,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
                   Icons.edit_calendar_outlined,
                   size: 15,
-                  color: Color(0xff7A6BF5),
+                  color: AppColors.primary,
                 ),
               ),
               Expanded(
@@ -138,7 +139,7 @@ class _LogRow extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xff18181B),
+                        color: AppColors.zinc900,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -146,7 +147,7 @@ class _LogRow extends StatelessWidget {
                       '${log.actionLabel} · Folio ${log.entityId}',
                       style: const TextStyle(
                         fontSize: 11,
-                        color: Color(0xff71717A),
+                        color: AppColors.zinc500,
                       ),
                     ),
                     Row(
@@ -156,7 +157,7 @@ class _LogRow extends StatelessWidget {
                         const Icon(
                           Icons.arrow_forward_rounded,
                           size: 11,
-                          color: Color(0xff71717A),
+                          color: AppColors.zinc500,
                         ),
                         _DateChip(log.newValue, isNew: true),
                       ],
@@ -168,7 +169,7 @@ class _LogRow extends StatelessWidget {
                 timeago.format(log.createdAt, locale: 'es'),
                 style: const TextStyle(
                   fontSize: 10,
-                  color: Color(0xffA1A1AA),
+                  color: AppColors.zinc400,
                 ),
               ),
             ],
@@ -190,7 +191,7 @@ class _DateChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: isNew ? const Color(0xffDCFCE7) : const Color(0xffF4F4F5),
+        color: isNew ? AppColors.successBg : AppColors.zinc100,
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
@@ -198,7 +199,7 @@ class _DateChip extends StatelessWidget {
         style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w600,
-          color: isNew ? const Color(0xff16A34A) : const Color(0xff52525B),
+          color: isNew ? AppColors.successDark : AppColors.zinc600,
         ),
       ),
     );

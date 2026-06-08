@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 
@@ -67,7 +68,7 @@ class ExpensesDataSource extends DataTableSource {
 String _capitalize(String s) =>
     s.isEmpty ? s : '${s[0].toUpperCase()}${s.substring(1)}';
 
-// ─── Category badge ───────────────────────────────────────────────────────────
+// --- Category badge ---
 
 class _CategoryBadge extends StatelessWidget {
   const _CategoryBadge({required this.expense});
@@ -83,7 +84,7 @@ class _CategoryBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        expense.categoriaNombre ?? 'Sin categoría',
+        expense.categoriaNombre ?? 'Sin categoria',
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,
@@ -96,12 +97,12 @@ class _CategoryBadge extends StatelessWidget {
 }
 
 Color _hexToColor(String? hex) {
-  if (hex == null || hex.isEmpty) return const Color(0xff6366F1);
+  if (hex == null || hex.isEmpty) return AppColors.indigo;
   final clean = hex.replaceFirst('#', '');
   return Color(int.parse('FF$clean', radix: 16));
 }
 
-// ─── Actions ─────────────────────────────────────────────────────────────────
+// --- Actions ---
 
 enum _ExpenseAction { edit, delete }
 
@@ -113,7 +114,7 @@ class _ExpenseActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<_ExpenseAction>(
-      icon: const Icon(Icons.more_vert, size: 18, color: Color(0xff71717A)),
+      icon: Icon(Icons.more_vert, size: 18, color: AppColors.zinc500),
       tooltip: '',
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       onSelected: (action) {
@@ -130,13 +131,13 @@ class _ExpenseActions extends StatelessWidget {
           height: 36,
           child: _MenuItem(icon: Icons.edit_outlined, label: 'Editar'),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: _ExpenseAction.delete,
           height: 36,
           child: _MenuItem(
             icon: Icons.delete_outlined,
             label: 'Eliminar',
-            color: Color(0xffEF4444),
+            color: AppColors.error,
           ),
         ),
       ],
@@ -152,7 +153,7 @@ class _MenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = color ?? const Color(0xff18181B);
+    final c = color ?? AppColors.zinc900;
     return Row(
       spacing: 8,
       children: [

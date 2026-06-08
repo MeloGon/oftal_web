@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/router/app_router.dart';
 import 'package:oftal_web/router/router_name.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/providers/providers.dart';
 import 'package:oftal_web/shared/widgets/menu_item.dart';
 
-const _kBrand = Color(0xff7A6BF5);
-const _kSidebarBg = Color(0xff18181B);
-const _kDivider = Color(0xff27272A);
+const _kBrand = AppColors.primary;
+const _kSidebarBg = AppColors.zinc900;
+const _kDivider = AppColors.zinc800;
 
 class Sidebar extends ConsumerWidget {
   const Sidebar({super.key});

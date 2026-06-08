@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class FormSectionCard extends StatelessWidget {
@@ -30,13 +31,13 @@ class FormSectionCard extends StatelessWidget {
               Row(
                 spacing: 8,
                 children: [
-                  Icon(icon, size: 16, color: const Color(0xff7A6BF5)),
+                  Icon(icon, size: 16, color: AppColors.primary),
                   Text(
                     title,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xff18181B),
+                      color: AppColors.zinc900,
                     ),
                   ),
                 ],
@@ -48,7 +49,7 @@ class FormSectionCard extends StatelessWidget {
                     subtitle!,
                     style: const TextStyle(
                       fontSize: 12,
-                      color: Color(0xff9CA3AF),
+                      color: AppColors.gray400,
                     ),
                   ),
                 ),

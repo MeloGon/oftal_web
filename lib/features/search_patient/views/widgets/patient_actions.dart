@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 
 enum _PatientAction { viewMeasurements, addMeasurement, edit, delete }
@@ -31,13 +32,13 @@ class PatientActions extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
         child: const SizedBox.square(
           dimension: 28,
-          child: Icon(Icons.add_shopping_cart, size: 18, color: Color(0xff52525B)),
+          child: Icon(Icons.add_shopping_cart, size: 18, color: AppColors.zinc600),
         ),
       );
     }
 
     return PopupMenuButton<_PatientAction>(
-      icon: const Icon(Icons.more_vert, size: 18, color: Color(0xff71717A)),
+      icon: Icon(Icons.more_vert, size: 18, color: AppColors.zinc500),
       tooltip: '',
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       onSelected: (action) {
@@ -75,7 +76,7 @@ class PatientActions extends StatelessWidget {
           child: _MenuItem(
             icon: Icons.edit_outlined,
             label: 'Editar paciente',
-            color: Color(0xff0EA5E9),
+            color: AppColors.sky,
           ),
         ),
         const PopupMenuDivider(height: 1),
@@ -85,7 +86,7 @@ class PatientActions extends StatelessWidget {
           child: _MenuItem(
             icon: Icons.delete_outline_outlined,
             label: 'Eliminar',
-            color: Color(0xffEF4444),
+            color: AppColors.error,
           ),
         ),
       ],
@@ -101,7 +102,7 @@ class _MenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = color ?? const Color(0xff18181B);
+    final c = color ?? AppColors.zinc900;
     return Row(
       spacing: 8,
       children: [

@@ -23,11 +23,11 @@ class MountsInventoryDataSource extends DataTableSource {
 
   @override
   DataRow? getRow(int index) {
-    // Mapea el índice absoluto al índice local de la página actual
+    // Mapea el indice absoluto al indice local de la pagina actual
     final localIndex = index - currentOffset;
     if (localIndex < 0 || localIndex >= pageItems.length) {
-      // Mientras se carga la nueva página, evita null (que pinta loaders por celda)
-      // Devuelve una fila placeholder con celdas vacías
+      // Mientras se carga la nueva pagina, evita null (que pinta loaders por celda)
+      // Devuelve una fila placeholder con celdas vacias
       return DataRow.byIndex(
         index: index,
         cells: const [

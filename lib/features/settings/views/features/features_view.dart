@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/features/settings/views/widgets/features_toggle_section.dart';
 
 class FeaturesView extends ConsumerWidget {
@@ -23,7 +24,7 @@ class FeaturesView extends ConsumerWidget {
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xff18181B),
+                  color: AppColors.zinc900,
                 ),
               ),
               Text(
@@ -39,7 +40,7 @@ class FeaturesView extends ConsumerWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: Color(0xff52525B),
+              color: AppColors.zinc600,
               letterSpacing: 0.3,
             ),
           ),

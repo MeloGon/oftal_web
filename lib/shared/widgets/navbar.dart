@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/router/router_name.dart';
 import 'package:oftal_web/shared/providers/providers.dart';
 
@@ -48,7 +49,7 @@ class Navbar extends ConsumerWidget {
             style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
-              color: Color(0xff18181B),
+              color: AppColors.zinc900,
             ),
           ),
 
@@ -67,10 +68,10 @@ class Navbar extends ConsumerWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xffF4F4F5),
+                    color: AppColors.zinc100,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: const Color(0xffE4E4E7),
+                      color: AppColors.zinc200,
                       width: 1,
                     ),
                   ),
@@ -82,7 +83,7 @@ class Navbar extends ConsumerWidget {
                         width: 22,
                         height: 22,
                         decoration: const BoxDecoration(
-                          color: Color(0xff7A6BF5),
+                          color: AppColors.primary,
                           shape: BoxShape.circle,
                         ),
                         child: Center(
@@ -105,7 +106,7 @@ class Navbar extends ConsumerWidget {
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
-                              color: Color(0xff3F3F46),
+                              color: AppColors.zinc700,
                             ),
                           ),
                         ),

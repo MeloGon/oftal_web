@@ -1,9 +1,10 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:oftal_web/core/enums/enums.dart';
-import 'package:oftal_web/datatables/mounts_inventory_datasource.dart';
+import 'package:oftal_web/features/settings/data/mounts_inventory_datasource.dart';
 import 'package:oftal_web/features/settings/viewmodels/mounts/mounts_provider.dart';
 import 'package:oftal_web/features/settings/views/mounts/widgets/add_mount_dialog.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
@@ -52,7 +53,7 @@ class MountsView extends ConsumerWidget {
                 icon: const Icon(Icons.arrow_back_ios_rounded, size: 16),
                 style: IconButton.styleFrom(
                   backgroundColor: Colors.white,
-                  side: const BorderSide(color: Color(0xffE4E4E7)),
+                  side: const BorderSide(color: AppColors.zinc200),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -69,14 +70,14 @@ class MountsView extends ConsumerWidget {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xff18181B),
+                        color: AppColors.zinc900,
                       ),
                     ),
                     Text(
                       'Gestiona el catálogo de armazones y monturas',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Color(0xff71717A),
+                        color: AppColors.zinc500,
                       ),
                     ),
                   ],
@@ -108,14 +109,14 @@ class MountsView extends ConsumerWidget {
                     placeholder: const Text('Buscar por marca o modelo...'),
                     leading: const Padding(
                       padding: EdgeInsets.all(8),
-                      child: Icon(Icons.search, size: 16, color: Color(0xff71717A)),
+                      child: Icon(Icons.search, size: 16, color: AppColors.zinc500),
                     ),
                     trailing: mountsState.isSearchMode
                         ? GestureDetector(
                             onTap: mountsNotifier.clearSearch,
                             child: const Padding(
                               padding: EdgeInsets.all(8),
-                              child: Icon(Icons.close, size: 16, color: Color(0xff71717A)),
+                              child: Icon(Icons.close, size: 16, color: AppColors.zinc500),
                             ),
                           )
                         : null,
@@ -146,39 +147,39 @@ class MountsView extends ConsumerWidget {
                   isHorizontalScrollBarVisible: true,
                   isVerticalScrollBarVisible: true,
                   headingRowColor: WidgetStateProperty.all(
-                    const Color(0xffFAFAFA),
+                    AppColors.zinc50,
                   ),
                   columns: const [
                     DataColumn2(
-                      label: _ColHeader('Marca'),
+                      label: DataColHeader('Marca'),
                       fixedWidth: 180,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Modelo'),
+                      label: DataColHeader('Modelo'),
                       size: ColumnSize.M,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Color'),
+                      label: DataColHeader('Color'),
                       size: ColumnSize.M,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Descripción'),
+                      label: DataColHeader('Descripción'),
                       size: ColumnSize.L,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Optica'),
+                      label: DataColHeader('Optica'),
                       size: ColumnSize.M,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Precio'),
+                      label: DataColHeader('Precio'),
                       size: ColumnSize.S,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Stock'),
+                      label: DataColHeader('Stock'),
                       size: ColumnSize.S,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Acciones'),
+                      label: DataColHeader('Acciones'),
                       size: ColumnSize.S,
                     ),
                   ],
@@ -203,23 +204,6 @@ class MountsView extends ConsumerWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _ColHeader extends StatelessWidget {
-  const _ColHeader(this.text);
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
-        color: Color(0xff52525B),
       ),
     );
   }

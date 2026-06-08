@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/core/enums/enums.dart';
+import 'package:oftal_web/features/search_patient/viewmodels/review_form_controllers.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_state.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/utils/random_id_generator.dart';
@@ -14,46 +15,49 @@ class SearchPatient extends _$SearchPatient {
   final searchController = TextEditingController();
   bool get searchIsEmpty => searchController.text.isEmpty;
 
-  final reasonConsultController = TextEditingController();
-  final clinicHistoryController = TextEditingController();
-  final odEsfController = TextEditingController();
-  final odCilController = TextEditingController();
-  final odEjeController = TextEditingController();
-  final odAvController = TextEditingController();
-  final oiEsfController = TextEditingController();
-  final oiCilController = TextEditingController();
-  final oiEjeController = TextEditingController();
-  final oiAvController = TextEditingController();
-  final addController = TextEditingController();
-  final observationReviewController = TextEditingController();
-  final dipController = TextEditingController();
-  final odCbLcController = TextEditingController();
-  final odDiamLcController = TextEditingController();
-  final oiCbLcController = TextEditingController();
-  final oiDiamLcController = TextEditingController();
-  final graduationTypeController = TextEditingController();
-  final avSinRxOdLejosController = TextEditingController();
-  final avSinRxOiLejosController = TextEditingController();
-  final cvOdLejosController = TextEditingController();
-  final cvOiLejosController = TextEditingController();
-  final avSinRxOdCercaController = TextEditingController();
-  final avSinRxOiCercaController = TextEditingController();
-  final avConRxOdCercaController = TextEditingController();
-  final avConRxOiCercaController = TextEditingController();
-  final optometricDiagnosisController = TextEditingController();
-  final dateConsultController = TextEditingController();
-  DateTime selectedConsultDate = DateTime.now();
+  late final ReviewFormControllers _reviewForm;
+
+  TextEditingController get reasonConsultController => _reviewForm.reasonConsult;
+  TextEditingController get clinicHistoryController => _reviewForm.clinicHistory;
+  TextEditingController get odEsfController => _reviewForm.odEsf;
+  TextEditingController get odCilController => _reviewForm.odCil;
+  TextEditingController get odEjeController => _reviewForm.odEje;
+  TextEditingController get odAvController => _reviewForm.odAv;
+  TextEditingController get oiEsfController => _reviewForm.oiEsf;
+  TextEditingController get oiCilController => _reviewForm.oiCil;
+  TextEditingController get oiEjeController => _reviewForm.oiEje;
+  TextEditingController get oiAvController => _reviewForm.oiAv;
+  TextEditingController get addController => _reviewForm.add;
+  TextEditingController get observationReviewController => _reviewForm.observationReview;
+  TextEditingController get dipController => _reviewForm.dip;
+  TextEditingController get odCbLcController => _reviewForm.odCbLc;
+  TextEditingController get odDiamLcController => _reviewForm.odDiamLc;
+  TextEditingController get oiCbLcController => _reviewForm.oiCbLc;
+  TextEditingController get oiDiamLcController => _reviewForm.oiDiamLc;
+  TextEditingController get graduationTypeController => _reviewForm.graduationType;
+  TextEditingController get avSinRxOdLejosController => _reviewForm.avSinRxOdLejos;
+  TextEditingController get avSinRxOiLejosController => _reviewForm.avSinRxOiLejos;
+  TextEditingController get cvOdLejosController => _reviewForm.cvOdLejos;
+  TextEditingController get cvOiLejosController => _reviewForm.cvOiLejos;
+  TextEditingController get avSinRxOdCercaController => _reviewForm.avSinRxOdCerca;
+  TextEditingController get avSinRxOiCercaController => _reviewForm.avSinRxOiCerca;
+  TextEditingController get avConRxOdCercaController => _reviewForm.avConRxOdCerca;
+  TextEditingController get avConRxOiCercaController => _reviewForm.avConRxOiCerca;
+  TextEditingController get optometricDiagnosisController => _reviewForm.optometricDiagnosis;
+  TextEditingController get dateConsultController => _reviewForm.dateConsult;
+  DateTime get selectedConsultDate => _reviewForm.selectedConsultDate;
 
   void updateConsultDate(DateTime date) {
-    selectedConsultDate = date;
-    dateConsultController.text = DateFormat('dd-MM-yyyy').format(date);
+    _reviewForm.updateConsultDate(date);
   }
 
   @override
   SearchPatientState build() {
+    _reviewForm = ReviewFormControllers();
     Future.microtask(getPatients);
     ref.onDispose(() {
       searchController.dispose();
+      _reviewForm.dispose();
     });
     return const SearchPatientState();
   }

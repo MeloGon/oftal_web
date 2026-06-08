@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-
-const _kBrand = Color(0xff7A6BF5);
-const _kBrandLight = Color(0xffEEECFE);
 
 class CardStatisticItem extends StatelessWidget {
   const CardStatisticItem({
@@ -10,8 +8,8 @@ class CardStatisticItem extends StatelessWidget {
     required this.title,
     required this.content,
     this.icon = Icons.bar_chart_outlined,
-    this.iconColor = _kBrand,
-    this.iconBgColor = _kBrandLight,
+    this.iconColor = AppColors.primary,
+    this.iconBgColor = AppColors.primaryBg,
   });
 
   final String title;
@@ -57,7 +55,7 @@ class CardStatisticItem extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.w700,
-                color: Color(0xff18181B),
+                color: AppColors.zinc900,
                 height: 1,
               ),
             ),

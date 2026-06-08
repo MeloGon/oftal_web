@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/add_patient/viewmodels/add_patient_provider.dart';
 import 'package:oftal_web/features/add_patient/views/widgets/form_section_card.dart';
@@ -27,7 +28,7 @@ class _PersonalDataSectionState extends ConsumerState<PersonalDataSection> {
       placeholder: const Text('Ej. María Alejandra González'),
       leading: const Padding(
         padding: EdgeInsets.only(right: 4),
-        child: Icon(Icons.person_outline, size: 15, color: Color(0xffA1A1AA)),
+        child: Icon(Icons.person_outline, size: 15, color: AppColors.zinc400),
       ),
       validator: (v) => v.isEmpty ? 'Campo requerido' : null,
     );
@@ -127,10 +128,10 @@ class _ReadOnlyField extends StatelessWidget {
       readOnly: true,
       label: Text(label),
       controller: controller,
-      style: const TextStyle(color: Color(0xff71717A)),
+      style: const TextStyle(color: AppColors.zinc500),
       trailing: const Padding(
         padding: EdgeInsets.only(left: 4),
-        child: Icon(Icons.lock_outline, size: 13, color: Color(0xffC4C4C7)),
+        child: Icon(Icons.lock_outline, size: 13, color: AppColors.lockIcon),
       ),
     );
   }
@@ -162,7 +163,7 @@ class _BranchSelector extends StatelessWidget {
                 fontWeight: FontWeight.w500,
                 color: selectedBranch == null
                     ? Colors.red.shade600
-                    : const Color(0xff3F3F46),
+                    : AppColors.zinc700,
               ),
             ),
             Text(

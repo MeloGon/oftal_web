@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 
 class GenderToggle extends StatelessWidget {
   const GenderToggle({
@@ -29,7 +30,7 @@ class GenderToggle extends StatelessWidget {
                 fontWeight: FontWeight.w500,
                 color: value == null
                     ? Colors.red.shade600
-                    : const Color(0xff3F3F46),
+                    : AppColors.zinc700,
               ),
             ),
             Text(
@@ -44,7 +45,7 @@ class GenderToggle extends StatelessWidget {
             border: Border.all(
               color: value == null
                   ? Colors.red.shade400
-                  : const Color(0xffE4E4E7),
+                  : AppColors.zinc200,
             ),
             borderRadius: BorderRadius.circular(8),
           ),
@@ -63,11 +64,11 @@ class GenderToggle extends StatelessWidget {
                       height: 40,
                       decoration: BoxDecoration(
                         color: selected
-                            ? const Color(0xff18181B)
+                            ? AppColors.zinc900
                             : Colors.transparent,
                         border: !isLast
                             ? const Border(
-                                right: BorderSide(color: Color(0xffE4E4E7)),
+                                right: BorderSide(color: AppColors.zinc200),
                               )
                             : null,
                       ),
@@ -79,7 +80,7 @@ class GenderToggle extends StatelessWidget {
                           fontWeight: FontWeight.w500,
                           color: selected
                               ? Colors.white
-                              : const Color(0xff3F3F46),
+                              : AppColors.zinc700,
                         ),
                       ),
                     ),

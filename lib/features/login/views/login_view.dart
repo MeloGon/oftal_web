@@ -5,10 +5,9 @@ import 'package:oftal_web/core/constants/app_strings.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/login/viewmodels/login_provider.dart';
 import 'package:oftal_web/shared/models/snackbar_config_model.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-
-const _kBrand = Color(0xff7A6BF5);
 
 class LoginView extends ConsumerStatefulWidget {
   const LoginView({super.key});
@@ -58,12 +57,12 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         Container(
                           padding: const EdgeInsets.all(7),
                           decoration: BoxDecoration(
-                            color: _kBrand.withValues(alpha: 0.12),
+                            color: AppColors.primary.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Icon(
                             Icons.bubble_chart_outlined,
-                            color: _kBrand,
+                            color: AppColors.primary,
                             size: 20,
                           ),
                         ),
@@ -73,7 +72,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 1.1,
-                            color: Color(0xff18181B),
+                            color: AppColors.zinc900,
                           ),
                         ),
                       ],

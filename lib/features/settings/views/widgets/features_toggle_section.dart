@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/features/settings/viewmodels/app_features_provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -16,8 +17,8 @@ class FeaturesToggleSection extends ConsumerWidget {
         children: [
           _FeatureToggleRow(
             icon: Icons.edit_calendar_outlined,
-            iconColor: const Color(0xff7A6BF5),
-            iconBgColor: const Color(0xffEEECFE),
+            iconColor: AppColors.primary,
+            iconBgColor: AppColors.primaryBg,
             title: 'Cambiar fecha de venta',
             description:
                 'Permite editar la fecha de una venta desde el historial',
@@ -81,14 +82,14 @@ class _FeatureToggleRow extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xff18181B),
+                    color: AppColors.zinc900,
                   ),
                 ),
                 Text(
                   description,
                   style: const TextStyle(
                     fontSize: 11,
-                    color: Color(0xff71717A),
+                    color: AppColors.zinc500,
                   ),
                 ),
               ],

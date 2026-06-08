@@ -1,8 +1,9 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/core/enums/enums.dart';
-import 'package:oftal_web/datatables/datatables.dart';
+import 'package:oftal_web/features/expenses/data/expenses_datasource.dart';
 import 'package:oftal_web/features/expenses/viewmodels/expenses_provider.dart';
 import 'package:oftal_web/features/expenses/views/widgets/expense_category_dialog.dart';
 import 'package:oftal_web/features/expenses/views/widgets/expense_form_dialog.dart';
@@ -140,8 +141,8 @@ class _ExpensesViewState extends ConsumerState<ExpensesView> {
                   label: 'Total egresos',
                   value: total.toCurrency(),
                   icon: Icons.account_balance_wallet_outlined,
-                  iconColor: const Color(0xffEF4444),
-                  iconBg: const Color(0xffFEE2E2),
+                  iconColor: AppColors.error,
+                  iconBg: AppColors.errorBg,
                 ),
               ),
               Expanded(
@@ -149,8 +150,8 @@ class _ExpensesViewState extends ConsumerState<ExpensesView> {
                   label: 'Registros',
                   value: '${state.expenses.length}',
                   icon: Icons.receipt_long_outlined,
-                  iconColor: const Color(0xff6366F1),
-                  iconBg: const Color(0xffEEECFE),
+                  iconColor: AppColors.indigo,
+                  iconBg: AppColors.primaryBg,
                 ),
               ),
               Expanded(
@@ -158,8 +159,8 @@ class _ExpensesViewState extends ConsumerState<ExpensesView> {
                   label: 'Categorías',
                   value: '${state.categories.length}',
                   icon: Icons.label_outline,
-                  iconColor: const Color(0xff10B981),
-                  iconBg: const Color(0xffD1FAE5),
+                  iconColor: AppColors.emerald,
+                  iconBg: AppColors.emeraldBg,
                 ),
               ),
             ],
@@ -182,7 +183,7 @@ class _ExpensesViewState extends ConsumerState<ExpensesView> {
                   isHorizontalScrollBarVisible: true,
                   isVerticalScrollBarVisible: true,
                   headingRowColor: WidgetStateProperty.all(
-                    const Color(0xffFAFAFA),
+                    AppColors.zinc50,
                   ),
                   source: _dataSource,
                   availableRowsPerPage: const [20],
@@ -196,42 +197,42 @@ class _ExpensesViewState extends ConsumerState<ExpensesView> {
                       isResizable: false,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Categoría'),
+                      label: DataColHeader('Categoría'),
                       fixedWidth: 160,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Fecha'),
+                      label: DataColHeader('Fecha'),
                       fixedWidth: 100,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Descripción'),
+                      label: DataColHeader('Descripción'),
                       size: ColumnSize.L,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Método pago'),
+                      label: DataColHeader('Método pago'),
                       fixedWidth: 120,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Comprobante'),
+                      label: DataColHeader('Comprobante'),
                       fixedWidth: 120,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Sucursal'),
+                      label: DataColHeader('Sucursal'),
                       fixedWidth: 100,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Registrado por'),
+                      label: DataColHeader('Registrado por'),
                       fixedWidth: 130,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Monto'),
+                      label: DataColHeader('Monto'),
                       fixedWidth: 100,
                       isResizable: true,
                     ),
@@ -262,7 +263,7 @@ class _PageHeader extends StatelessWidget {
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w700,
-            color: Color(0xff18181B),
+            color: AppColors.zinc900,
           ),
         ),
         Text(
@@ -270,23 +271,6 @@ class _PageHeader extends StatelessWidget {
           style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
         ),
       ],
-    );
-  }
-}
-
-class _ColHeader extends StatelessWidget {
-  const _ColHeader(this.text);
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
-        color: Color(0xff52525B),
-      ),
     );
   }
 }
@@ -343,7 +327,7 @@ class _SummaryCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,
-              color: Color(0xff18181B),
+              color: AppColors.zinc900,
               height: 1,
             ),
           ),

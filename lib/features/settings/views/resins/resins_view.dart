@@ -2,8 +2,9 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/core/enums/enums.dart';
-import 'package:oftal_web/datatables/resins_inventory_datasource.dart';
+import 'package:oftal_web/features/settings/data/resins_inventory_datasource.dart';
 import 'package:oftal_web/features/settings/viewmodels/resins/resins_provider.dart';
 import 'package:oftal_web/features/settings/views/resins/widgets/add_resin_dialog.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
@@ -52,7 +53,7 @@ class ResinsView extends ConsumerWidget {
                 icon: const Icon(Icons.arrow_back_ios_rounded, size: 16),
                 style: IconButton.styleFrom(
                   backgroundColor: Colors.white,
-                  side: const BorderSide(color: Color(0xffE4E4E7)),
+                  side: const BorderSide(color: AppColors.zinc200),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -69,14 +70,14 @@ class ResinsView extends ConsumerWidget {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xff18181B),
+                        color: AppColors.zinc900,
                       ),
                     ),
                     Text(
                       'Gestiona el catálogo de resinas y lentes',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Color(0xff71717A),
+                        color: AppColors.zinc500,
                       ),
                     ),
                   ],
@@ -111,43 +112,43 @@ class ResinsView extends ConsumerWidget {
                   isHorizontalScrollBarVisible: true,
                   isVerticalScrollBarVisible: true,
                   headingRowColor: WidgetStateProperty.all(
-                    const Color(0xffFAFAFA),
+                    AppColors.zinc50,
                   ),
                   columns: const [
                     DataColumn2(
-                      label: _ColHeader('Descripción'),
+                      label: DataColHeader('Descripción'),
                       fixedWidth: 230,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Diseño'),
+                      label: DataColHeader('Diseño'),
                       size: ColumnSize.M,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Linea'),
+                      label: DataColHeader('Linea'),
                       size: ColumnSize.M,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Material'),
+                      label: DataColHeader('Material'),
                       size: ColumnSize.L,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Tecnología'),
+                      label: DataColHeader('Tecnología'),
                       size: ColumnSize.L,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Cant.'),
+                      label: DataColHeader('Cant.'),
                       size: ColumnSize.S,
                     ),
                     DataColumn2(
-                      label: _ColHeader('P. Interno'),
+                      label: DataColHeader('P. Interno'),
                       size: ColumnSize.M,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Precio'),
+                      label: DataColHeader('Precio'),
                       size: ColumnSize.M,
                     ),
                     DataColumn2(
-                      label: _ColHeader('Acciones'),
+                      label: DataColHeader('Acciones'),
                       size: ColumnSize.M,
                     ),
                   ],
@@ -172,23 +173,6 @@ class ResinsView extends ConsumerWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _ColHeader extends StatelessWidget {
-  const _ColHeader(this.text);
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
-        color: Color(0xff52525B),
       ),
     );
   }

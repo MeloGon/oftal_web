@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/shared/services/authorization_service.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -148,7 +149,7 @@ class _AuthorizationDialogContentState
                     ? Icons.visibility_outlined
                     : Icons.visibility_off_outlined,
                 size: 16,
-                color: const Color(0xff71717A),
+                color: AppColors.zinc500,
               ),
             ),
           ),
@@ -156,7 +157,7 @@ class _AuthorizationDialogContentState
             Text(
               _errorMessage!,
               style: const TextStyle(
-                color: Color(0xffEF4444),
+                color: AppColors.error,
                 fontSize: 12,
               ),
             ),

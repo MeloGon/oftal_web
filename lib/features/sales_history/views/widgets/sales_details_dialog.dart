@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
@@ -44,7 +45,7 @@ class SalesDetailsDialog {
           actions: [
             if ((sale.rest ?? 0) > 0)
               ShadButton(
-                backgroundColor: const Color(0xff16A34A),
+                backgroundColor: AppColors.successDark,
                 onPressed: () {
                   ref
                       .read(salesHistoryProvider.notifier)
@@ -128,9 +129,9 @@ class _FinancialSummary extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xffFAFAFA),
+        color: AppColors.zinc50,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xffE4E4E7)),
+        border: Border.all(color: AppColors.zinc200),
       ),
       child: Column(
         spacing: 8,
@@ -143,7 +144,7 @@ class _FinancialSummary extends StatelessWidget {
             _SummaryRow(
               label: 'Descuento',
               value: sale.discount?.toCurrency() ?? '—',
-              valueColor: const Color(0xffDC2626),
+              valueColor: AppColors.errorDark,
             ),
             const Divider(height: 1),
             _SummaryRow(
@@ -181,7 +182,7 @@ class _SummaryRow extends StatelessWidget {
     final style = TextStyle(
       fontSize: 13,
       fontWeight: bold ? FontWeight.w600 : FontWeight.normal,
-      color: const Color(0xff3F3F46),
+      color: AppColors.zinc700,
     );
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -189,7 +190,7 @@ class _SummaryRow extends StatelessWidget {
         Text(label, style: style),
         Text(
           value,
-          style: style.copyWith(color: valueColor ?? const Color(0xff18181B)),
+          style: style.copyWith(color: valueColor ?? AppColors.zinc900),
         ),
       ],
     );
@@ -214,7 +215,7 @@ class _Section extends StatelessWidget {
           style: const TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w700,
-            color: Color(0xff7A6BF5),
+            color: AppColors.primary,
             letterSpacing: 0.5,
           ),
         ),
@@ -292,7 +293,7 @@ class _DetailCard extends StatelessWidget {
                     vertical: 3,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xffEEECFE),
+                    color: AppColors.primaryBg,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -300,7 +301,7 @@ class _DetailCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xff7A6BF5),
+                      color: AppColors.primary,
                     ),
                   ),
                 ),
@@ -377,7 +378,7 @@ class _PriceRow extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xffEEECFE),
+        color: AppColors.primaryBg,
         borderRadius: BorderRadius.circular(6),
       ),
       child: Row(
@@ -388,7 +389,7 @@ class _PriceRow extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: Color(0xff5B4FD9),
+              color: AppColors.primaryDark,
             ),
           ),
           Text(
@@ -396,7 +397,7 @@ class _PriceRow extends StatelessWidget {
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: Color(0xff5B4FD9),
+              color: AppColors.primaryDark,
             ),
           ),
         ],
@@ -436,14 +437,14 @@ class _FieldGrid extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xff52525B),
+                    color: AppColors.zinc600,
                   ),
                 ),
                 Text(
                   f.value,
                   style: const TextStyle(
                     fontSize: 12,
-                    color: Color(0xff18181B),
+                    color: AppColors.zinc900,
                   ),
                 ),
               ],
@@ -466,7 +467,7 @@ class _SubSectionLabel extends StatelessWidget {
       style: const TextStyle(
         fontSize: 11,
         fontWeight: FontWeight.w700,
-        color: Color(0xff7A6BF5),
+        color: AppColors.primary,
         letterSpacing: 0.5,
       ),
     );
@@ -563,9 +564,9 @@ class _PaymentRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isInitial ? const Color(0xff2563EB) : const Color(0xff16A34A);
-    final bg = isInitial ? const Color(0xffEFF6FF) : const Color(0xffF0FDF4);
-    final border = isInitial ? const Color(0xffBFDBFE) : const Color(0xffBBF7D0);
+    final color = isInitial ? AppColors.blue : AppColors.successDark;
+    final bg = isInitial ? AppColors.blueBg : AppColors.successBgLight;
+    final border = isInitial ? AppColors.blueBorder : AppColors.successBorder;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -602,7 +603,7 @@ class _PaymentRow extends StatelessWidget {
                     metodo!,
                     style: const TextStyle(
                       fontSize: 11,
-                      color: Color(0xff71717A),
+                      color: AppColors.zinc500,
                     ),
                   ),
               ],
@@ -633,7 +634,7 @@ class _TimelineDivider extends StatelessWidget {
         Container(
           width: 1,
           height: 12,
-          color: const Color(0xffD4D4D8),
+          color: AppColors.zinc300,
         ),
       ],
     );
@@ -661,14 +662,14 @@ class _TotalsRow extends StatelessWidget {
           children: [
             const Text(
               'Total abonado',
-              style: TextStyle(fontSize: 12, color: Color(0xff52525B)),
+              style: TextStyle(fontSize: 12, color: AppColors.zinc600),
             ),
             Text(
               totalAbonado.toCurrency(),
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: Color(0xff16A34A),
+                color: AppColors.successDark,
               ),
             ),
           ],
@@ -678,7 +679,7 @@ class _TotalsRow extends StatelessWidget {
           children: [
             const Text(
               'Saldo pendiente',
-              style: TextStyle(fontSize: 12, color: Color(0xff52525B)),
+              style: TextStyle(fontSize: 12, color: AppColors.zinc600),
             ),
             Text(
               isPaid ? 'Liquidado' : saldoPendiente.toCurrency(),
@@ -686,8 +687,8 @@ class _TotalsRow extends StatelessWidget {
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: isPaid
-                    ? const Color(0xff16A34A)
-                    : const Color(0xffDC2626),
+                    ? AppColors.successDark
+                    : AppColors.errorDark,
               ),
             ),
           ],
@@ -710,12 +711,12 @@ class _Chip extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       spacing: 4,
       children: [
-        Icon(icon, size: 13, color: const Color(0xff71717A)),
+        Icon(icon, size: 13, color: AppColors.zinc500),
         Text(
           label,
           style: const TextStyle(
             fontSize: 12,
-            color: Color(0xff52525B),
+            color: AppColors.zinc600,
             fontWeight: FontWeight.w500,
           ),
         ),

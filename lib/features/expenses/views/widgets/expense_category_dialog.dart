@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:oftal_web/features/expenses/viewmodels/expenses_provider.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
@@ -134,9 +135,9 @@ class _CategoryContentState extends ConsumerState<_CategoryContent> {
                       vertical: 10,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xffFAFAFA),
+                      color: AppColors.zinc50,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xffE4E4E7)),
+                      border: Border.all(color: AppColors.zinc200),
                     ),
                     child: Row(
                       children: [
@@ -162,7 +163,7 @@ class _CategoryContentState extends ConsumerState<_CategoryContent> {
                           icon: const Icon(
                             Icons.delete_outline,
                             size: 16,
-                            color: Color(0xffEF4444),
+                            color: AppColors.error,
                           ),
                           onPressed: () => _deleteCategory(cat),
                           padding: EdgeInsets.zero,
@@ -200,7 +201,7 @@ class _CategoryContentState extends ConsumerState<_CategoryContent> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: Color(0xff52525B),
+                        color: AppColors.zinc600,
                       ),
                     ),
                     ShadInput(
@@ -218,7 +219,7 @@ class _CategoryContentState extends ConsumerState<_CategoryContent> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: Color(0xff52525B),
+                        color: AppColors.zinc600,
                       ),
                     ),
                     Wrap(
@@ -238,7 +239,7 @@ class _CategoryContentState extends ConsumerState<_CategoryContent> {
                               shape: BoxShape.circle,
                               border: Border.all(
                                 color: selected
-                                    ? const Color(0xff18181B)
+                                    ? AppColors.zinc900
                                     : Colors.transparent,
                                 width: 2.5,
                               ),

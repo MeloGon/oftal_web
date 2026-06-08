@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/register_payment_dialog.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/sales_history_actions.dart';
@@ -135,7 +136,7 @@ class SalesHistoryDataSource extends DataTableSource {
   int get selectedRowCount => 0;
 }
 
-// ─── Status badge ─────────────────────────────────────────────────────────────
+// --- Status badge ---
 
 class _StatusBadge extends StatelessWidget {
   const _StatusBadge({required this.isPaid});
@@ -146,7 +147,7 @@ class _StatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
       decoration: BoxDecoration(
-        color: isPaid ? const Color(0xffDCFCE7) : const Color(0xffFFF3CD),
+        color: isPaid ? AppColors.successBg : AppColors.warningBg,
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
@@ -154,7 +155,7 @@ class _StatusBadge extends StatelessWidget {
         style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w700,
-          color: isPaid ? const Color(0xff16A34A) : const Color(0xffD97706),
+          color: isPaid ? AppColors.successDark : AppColors.warningDark,
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_provider.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
@@ -263,7 +264,7 @@ class _LabeledField extends StatelessWidget {
                 fontWeight: FontWeight.w500,
                 color: hasError
                     ? Colors.red.shade600
-                    : const Color(0xff3F3F46),
+                    : AppColors.zinc700,
               ),
             ),
             if (required)

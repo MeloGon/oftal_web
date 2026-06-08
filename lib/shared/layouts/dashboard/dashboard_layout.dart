@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/shared/providers/providers.dart';
 import 'package:oftal_web/shared/providers/navigation/navigation_provider.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
@@ -15,7 +16,7 @@ class DashboardLayout extends ConsumerWidget {
     final navigationNotifier = ref.read(navigationProvider.notifier);
 
     return Scaffold(
-      backgroundColor: const Color(0xffEDF1F2),
+      backgroundColor: AppColors.layoutBg,
       body: Stack(
         children: [
           Row(

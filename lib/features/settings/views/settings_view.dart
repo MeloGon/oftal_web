@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/settings/viewmodels/settings_provider.dart';
 import 'package:oftal_web/router/app_router.dart';
@@ -40,7 +41,7 @@ class SettingsView extends ConsumerWidget {
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xff18181B),
+                  color: AppColors.zinc900,
                 ),
               ),
               Text(
@@ -56,7 +57,7 @@ class SettingsView extends ConsumerWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: Color(0xff52525B),
+              color: AppColors.zinc600,
               letterSpacing: 0.3,
             ),
           ),
@@ -66,8 +67,8 @@ class SettingsView extends ConsumerWidget {
                 title: 'Funcionalidades',
                 description: 'Activa o desactiva funcionalidades del sistema',
                 icon: Icons.tune_rounded,
-                iconColor: const Color(0xff7A6BF5),
-                iconBgColor: const Color(0xffEEECFE),
+                iconColor: AppColors.primary,
+                iconBgColor: AppColors.primaryBg,
                 onTap: () async {
                   final authorized = await showAuthorizationDialog(
                     context: context,
@@ -96,7 +97,7 @@ class SettingsView extends ConsumerWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: Color(0xff52525B),
+              color: AppColors.zinc600,
               letterSpacing: 0.3,
             ),
           ),
@@ -106,8 +107,8 @@ class SettingsView extends ConsumerWidget {
                 title: 'Resinas',
                 description: 'Administra el catálogo de resinas y lentes',
                 icon: Icons.lens_outlined,
-                iconColor: const Color(0xff0EA5E9),
-                iconBgColor: const Color(0xffE0F2FE),
+                iconColor: AppColors.sky,
+                iconBgColor: AppColors.skyBg,
                 onTap: () async {
                   ref.read(appRouterProvider).go(RouterName.resins);
                 },
@@ -116,8 +117,8 @@ class SettingsView extends ConsumerWidget {
                 title: 'Monturas',
                 description: 'Administra el inventario de armazones',
                 icon: Icons.visibility_outlined,
-                iconColor: const Color(0xff7A6BF5),
-                iconBgColor: const Color(0xffEEECFE),
+                iconColor: AppColors.primary,
+                iconBgColor: AppColors.primaryBg,
                 onTap: () async {
                   final authorized = await showAuthorizationDialog(
                     context: context,
@@ -151,7 +152,7 @@ class SettingsView extends ConsumerWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: Color(0xff52525B),
+              color: AppColors.zinc600,
               letterSpacing: 0.3,
             ),
           ),
@@ -161,8 +162,8 @@ class SettingsView extends ConsumerWidget {
                 title: 'Registro de auditoría',
                 description: 'Historial de cambios realizados por los usuarios',
                 icon: Icons.history_rounded,
-                iconColor: const Color(0xffEA580C),
-                iconBgColor: const Color(0xffFFF7ED),
+                iconColor: AppColors.orange,
+                iconBgColor: AppColors.orangeBg,
                 onTap: () async {
                   final authorized = await showAuthorizationDialog(
                     context: context,
@@ -191,7 +192,7 @@ class SettingsView extends ConsumerWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: Color(0xff52525B),
+              color: AppColors.zinc600,
               letterSpacing: 0.3,
             ),
           ),
@@ -202,8 +203,8 @@ class SettingsView extends ConsumerWidget {
                 description:
                     'Consulta ingresos y egresos registrados por período',
                 icon: Icons.bar_chart_rounded,
-                iconColor: const Color(0xff22C55E),
-                iconBgColor: const Color(0xffDCFCE7),
+                iconColor: AppColors.success,
+                iconBgColor: AppColors.successBg,
                 onTap: () async {
                   final authorized = await showAuthorizationDialog(
                     context: context,
@@ -220,8 +221,8 @@ class SettingsView extends ConsumerWidget {
                 description:
                     'Consulta las ventas agrupadas por vendedor por mes',
                 icon: Icons.people_outline_rounded,
-                iconColor: const Color(0xff7A6BF5),
-                iconBgColor: const Color(0xffEEECFE),
+                iconColor: AppColors.primary,
+                iconBgColor: AppColors.primaryBg,
                 onTap: () async {
                   final authorized = await showAuthorizationDialog(
                     context: context,
@@ -296,7 +297,7 @@ class _SettingsNavCardState extends State<_SettingsNavCard> {
               color:
                   _hovered
                       ? widget.iconColor.withValues(alpha: 0.4)
-                      : const Color(0xffE4E4E7),
+                      : AppColors.zinc200,
               width: 1.5,
             ),
             boxShadow:
@@ -331,14 +332,14 @@ class _SettingsNavCardState extends State<_SettingsNavCard> {
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xff18181B),
+                      color: AppColors.zinc900,
                     ),
                   ),
                   Text(
                     widget.description,
                     style: const TextStyle(
                       fontSize: 12,
-                      color: Color(0xff71717A),
+                      color: AppColors.zinc500,
                     ),
                   ),
                 ],

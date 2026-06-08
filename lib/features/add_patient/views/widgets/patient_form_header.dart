@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class PatientFormHeader extends StatelessWidget {
@@ -28,7 +29,7 @@ class PatientFormHeader extends StatelessWidget {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
-                color: Color(0xff18181B),
+                color: AppColors.zinc900,
               ),
             ),
             Text(

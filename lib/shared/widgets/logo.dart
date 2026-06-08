@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 
 class Logo extends StatelessWidget {
   const Logo({super.key});
@@ -10,7 +11,7 @@ class Logo extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.bubble_chart_outlined, color: Color(0xff7A6BF5)),
+          Icon(Icons.bubble_chart_outlined, color: AppColors.primary),
           SizedBox(width: 10),
           Text('OFTALWEB', style: TextStyle(color: Colors.white, fontSize: 20)),
         ],

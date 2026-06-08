@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_provider.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -281,7 +282,7 @@ class _Section extends StatelessWidget {
           style: const TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w700,
-            color: Color(0xff7A6BF5),
+            color: AppColors.primary,
             letterSpacing: 0.5,
           ),
         ),
@@ -337,7 +338,7 @@ class _MeasureFormGrid extends StatelessWidget {
         // Header
         const TableRow(
           decoration: BoxDecoration(
-            color: Color(0xffF4F4F5),
+            color: AppColors.zinc100,
             borderRadius: BorderRadius.all(Radius.circular(6)),
           ),
           children: [
@@ -350,7 +351,7 @@ class _MeasureFormGrid extends StatelessWidget {
           (r) => TableRow(
             decoration: const BoxDecoration(
               border: Border(
-                bottom: BorderSide(color: Color(0xffF4F4F5)),
+                bottom: BorderSide(color: AppColors.zinc100),
               ),
             ),
             children: [
@@ -364,7 +365,7 @@ class _MeasureFormGrid extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xff3F3F46),
+                    color: AppColors.zinc700,
                   ),
                 ),
               ),
@@ -391,7 +392,7 @@ class _TH extends StatelessWidget {
         style: const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: Color(0xff71717A),
+          color: AppColors.zinc500,
         ),
       ),
     );

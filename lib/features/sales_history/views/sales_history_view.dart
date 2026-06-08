@@ -1,11 +1,11 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/core/enums/enums.dart';
-import 'package:oftal_web/datatables/datatables.dart';
+import 'package:oftal_web/features/sales_history/data/sales_history_datasource.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
 import 'package:oftal_web/features/settings/viewmodels/app_features_provider.dart';
-import 'package:oftal_web/features/sales_history/views/widgets/col_header.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/filter_history_sales.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/sales_details_dialog.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/sales_history_page_header.dart';
@@ -140,7 +140,7 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
                   isHorizontalScrollBarVisible: true,
                   isVerticalScrollBarVisible: true,
                   headingRowColor: WidgetStateProperty.all(
-                    const Color(0xffFAFAFA),
+                    AppColors.zinc50,
                   ),
                   source: _dataSource,
                   availableRowsPerPage: const [20],
@@ -154,57 +154,57 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
                       isResizable: false,
                     ),
                     DataColumn2(
-                      label: ColHeader('Estado'),
+                      label: DataColHeader('Estado'),
                       fixedWidth: 52,
                       isResizable: false,
                     ),
                     DataColumn2(
-                      label: ColHeader('Folio'),
+                      label: DataColHeader('Folio'),
                       fixedWidth: 70,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: ColHeader('Paciente'),
+                      label: DataColHeader('Paciente'),
                       fixedWidth: 210,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: ColHeader('Fecha'),
+                      label: DataColHeader('Fecha'),
                       fixedWidth: 100,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: ColHeader('Vendedor'),
+                      label: DataColHeader('Vendedor'),
                       fixedWidth: 130,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: ColHeader('A cuenta'),
+                      label: DataColHeader('A cuenta'),
                       fixedWidth: 90,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: ColHeader('Resto'),
+                      label: DataColHeader('Resto'),
                       fixedWidth: 90,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: ColHeader('Descuento'),
+                      label: DataColHeader('Descuento'),
                       fixedWidth: 90,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: ColHeader('Total'),
+                      label: DataColHeader('Total'),
                       fixedWidth: 90,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: ColHeader('Total desc.'),
+                      label: DataColHeader('Total desc.'),
                       fixedWidth: 100,
                       isResizable: true,
                     ),
                     DataColumn2(
-                      label: ColHeader('Sucursal'),
+                      label: DataColHeader('Sucursal'),
                       fixedWidth: 100,
                       isResizable: true,
                     ),

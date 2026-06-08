@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class AppDatePickerButton extends StatelessWidget {
@@ -48,7 +49,7 @@ class AppDatePickerButton extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
-                color: Color(0xff52525B),
+                color: AppColors.zinc600,
               ),
             ),
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/features/settings/viewmodels/audit_logs_provider.dart';
 import 'package:oftal_web/shared/models/audit_log_model.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -32,7 +33,7 @@ class AuditLogsView extends ConsumerWidget {
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xff18181B),
+                        color: AppColors.zinc900,
                       ),
                     ),
                     Text(
@@ -143,13 +144,13 @@ class _LogTile extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: const Color(0xffEEECFE),
+              color: AppColors.primaryBg,
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Icon(
               Icons.edit_calendar_outlined,
               size: 16,
-              color: Color(0xff7A6BF5),
+              color: AppColors.primary,
             ),
           ),
 
@@ -167,7 +168,7 @@ class _LogTile extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xff18181B),
+                        color: AppColors.zinc900,
                       ),
                     ),
                     Container(
@@ -176,7 +177,7 @@ class _LogTile extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xffEEECFE),
+                        color: AppColors.primaryBg,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -184,7 +185,7 @@ class _LogTile extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xff7A6BF5),
+                          color: AppColors.primary,
                         ),
                       ),
                     ),
@@ -194,7 +195,7 @@ class _LogTile extends StatelessWidget {
                   'Folio ${log.entityId}',
                   style: const TextStyle(
                     fontSize: 12,
-                    color: Color(0xff71717A),
+                    color: AppColors.zinc500,
                   ),
                 ),
                 Row(
@@ -204,7 +205,7 @@ class _LogTile extends StatelessWidget {
                     const Icon(
                       Icons.arrow_forward_rounded,
                       size: 12,
-                      color: Color(0xff71717A),
+                      color: AppColors.zinc500,
                     ),
                     _Chip(log.newValue, isNew: true),
                   ],
@@ -222,14 +223,14 @@ class _LogTile extends StatelessWidget {
                 timeago.format(log.createdAt, locale: 'es'),
                 style: const TextStyle(
                   fontSize: 11,
-                  color: Color(0xffA1A1AA),
+                  color: AppColors.zinc400,
                 ),
               ),
               Text(
                 _formatDate(log.createdAt),
                 style: const TextStyle(
                   fontSize: 10,
-                  color: Color(0xffD4D4D8),
+                  color: AppColors.zinc300,
                 ),
               ),
             ],
@@ -257,7 +258,7 @@ class _Chip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: isNew ? const Color(0xffDCFCE7) : const Color(0xffF4F4F5),
+        color: isNew ? AppColors.successBg : AppColors.zinc100,
         borderRadius: BorderRadius.circular(5),
       ),
       child: Text(
@@ -265,7 +266,7 @@ class _Chip extends StatelessWidget {
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,
-          color: isNew ? const Color(0xff16A34A) : const Color(0xff52525B),
+          color: isNew ? AppColors.successDark : AppColors.zinc600,
         ),
       ),
     );

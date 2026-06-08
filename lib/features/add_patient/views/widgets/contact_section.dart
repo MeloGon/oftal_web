@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/features/add_patient/viewmodels/add_patient_provider.dart';
 import 'package:oftal_web/features/add_patient/views/widgets/form_section_card.dart';
@@ -25,7 +26,7 @@ class ContactSection extends ConsumerWidget {
           child: Icon(
             Icons.circle_outlined,
             size: 12,
-            color: Color(0xffA1A1AA),
+            color: AppColors.zinc400,
           ),
         ),
         validator: (v) => v.isEmpty ? 'Campo requerido' : null,

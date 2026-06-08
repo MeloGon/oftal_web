@@ -8,6 +8,7 @@ import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/providers/providers.dart';
+import 'package:oftal_web/features/sell/viewmodels/sell_form_controllers.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_state.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/utils/random_id_generator.dart';
@@ -19,47 +20,31 @@ part 'sell_provider.g.dart';
 
 @Riverpod(keepAlive: true)
 class Sell extends _$Sell {
-  final searchController = TextEditingController();
-  final searchItemToSellController = TextEditingController();
-  final importController = TextEditingController();
-  final discountController = TextEditingController();
-  final totalController = TextEditingController();
-  final accountController = TextEditingController();
-  final restController = TextEditingController();
-  final dateController = TextEditingController();
-  DateTime selectedDate = DateTime.now();
+  late final SellFormControllers _form;
+
+  TextEditingController get searchController => _form.search;
+  TextEditingController get searchItemToSellController => _form.searchItemToSell;
+  TextEditingController get importController => _form.import_;
+  TextEditingController get discountController => _form.discount;
+  TextEditingController get totalController => _form.total;
+  TextEditingController get accountController => _form.account;
+  TextEditingController get restController => _form.rest;
+  TextEditingController get dateController => _form.date;
+  DateTime get selectedDate => _form.selectedDate;
 
   @override
   SellState build() {
-    dateController.text = DateFormat('dd-MM-yyyy').format(selectedDate);
-    ref.onDispose(() {
-      searchController.dispose();
-      searchItemToSellController.dispose();
-      importController.dispose();
-      discountController.dispose();
-      totalController.dispose();
-      accountController.dispose();
-      restController.dispose();
-      dateController.dispose();
-    });
+    _form = SellFormControllers();
+    ref.onDispose(_form.dispose);
     return const SellState();
   }
 
   void updateDate(DateTime date) {
-    selectedDate = date;
-    dateController.text = DateFormat('dd-MM-yyyy').format(date);
+    _form.updateDate(date);
   }
 
   void resetState() {
-    searchController.clear();
-    searchItemToSellController.clear();
-    importController.clear();
-    discountController.clear();
-    totalController.clear();
-    accountController.clear();
-    restController.clear();
-    selectedDate = DateTime.now();
-    dateController.text = DateFormat('dd-MM-yyyy').format(selectedDate);
+    _form.clearAll();
     state = const SellState();
     state = state.copyWith(selectedInitialPaymentMethod: null);
   }
@@ -411,13 +396,9 @@ class Sell extends _$Sell {
       selectedOptionToSell: null,
       selectedInitialPaymentMethod: null,
     );
-    searchController.clear();
-    searchItemToSellController.clear();
-    importController.text = '0';
-    discountController.text = '0';
-    totalController.text = '0';
-    accountController.text = '0';
-    restController.text = '0';
+    _form.search.clear();
+    _form.searchItemToSell.clear();
+    _form.resetTotals();
   }
 
   Future<void> getViewMeasurements() async {

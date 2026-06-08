@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 
-const _kBrand = Color(0xff7A6BF5);
+const _kBrand = AppColors.primary;
 
 class MenuItem extends StatefulWidget {
   final String text;

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 
-class ColHeader extends StatelessWidget {
-  const ColHeader(this.text, {super.key});
+class DataColHeader extends StatelessWidget {
+  const DataColHeader(this.text, {super.key});
   final String text;
 
   @override
@@ -11,7 +12,7 @@ class ColHeader extends StatelessWidget {
       style: const TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w600,
-        color: Color(0xff52525B),
+        color: AppColors.zinc600,
       ),
     );
   }

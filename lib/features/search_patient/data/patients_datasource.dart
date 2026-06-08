@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/enums/enums.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/core/theme/app_text_styles.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_provider.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/patient_actions.dart';
@@ -83,7 +84,7 @@ class PatientsDataSource extends DataTableSource {
   int get selectedRowCount => 0;
 }
 
-// ─── Branch badge ─────────────────────────────────────────────────────────────
+// --- Branch badge ---
 
 class _BranchBadge extends StatelessWidget {
   const _BranchBadge({required this.branch});
@@ -95,11 +96,11 @@ class _BranchBadge extends StatelessWidget {
         branch.toUpperCase().contains('OFTALVISION');
 
     final bg = isOftalvision
-        ? const Color(0xffEFF6FF)
-        : const Color(0xffF0FDF4);
+        ? AppColors.blueBg
+        : AppColors.successBgLight;
     final fg = isOftalvision
-        ? const Color(0xff1D4ED8)
-        : const Color(0xff16A34A);
+        ? AppColors.blueDark
+        : AppColors.successDark;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),

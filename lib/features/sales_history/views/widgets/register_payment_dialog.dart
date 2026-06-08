@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
@@ -146,7 +147,7 @@ class _RegisterPaymentContentState
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xff52525B),
+                          color: AppColors.zinc600,
                         ),
                       ),
                       ShadInput(
@@ -164,7 +165,7 @@ class _RegisterPaymentContentState
                           _montoError!,
                           style: const TextStyle(
                             fontSize: 11,
-                            color: Color(0xffEF4444),
+                            color: AppColors.error,
                           ),
                         ),
                     ],
@@ -189,7 +190,7 @@ class _RegisterPaymentContentState
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xff52525B),
+                          color: AppColors.zinc600,
                         ),
                       ),
                       ShadSelect<PaymentMethodEnum>(
@@ -221,7 +222,7 @@ class _RegisterPaymentContentState
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xff52525B),
+                      color: AppColors.zinc600,
                     ),
                   ),
                   ShadInput(
@@ -251,9 +252,9 @@ class _BalanceSummary extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xffFAFAFA),
+        color: AppColors.zinc50,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xffE4E4E7)),
+        border: Border.all(color: AppColors.zinc200),
       ),
       child: Column(
         spacing: 8,
@@ -265,7 +266,7 @@ class _BalanceSummary extends StatelessWidget {
           _Row(
             'Pagado hasta ahora',
             sale.account?.toCurrency() ?? '—',
-            valueColor: const Color(0xff16A34A),
+            valueColor: AppColors.successDark,
           ),
           const Divider(height: 1),
           _Row(
@@ -273,8 +274,8 @@ class _BalanceSummary extends StatelessWidget {
             sale.rest?.toCurrency() ?? '—',
             valueColor:
                 (sale.rest ?? 0) > 0
-                    ? const Color(0xffDC2626)
-                    : const Color(0xff16A34A),
+                    ? AppColors.errorDark
+                    : AppColors.successDark,
             bold: true,
           ),
         ],
@@ -295,7 +296,7 @@ class _Row extends StatelessWidget {
     final style = TextStyle(
       fontSize: 13,
       fontWeight: bold ? FontWeight.w600 : FontWeight.normal,
-      color: const Color(0xff3F3F46),
+      color: AppColors.zinc700,
     );
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -338,9 +339,9 @@ class _PaymentHistory extends ConsumerWidget {
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xffF0FDF4),
+                      color: AppColors.successBgLight,
                       borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: const Color(0xffBBF7D0)),
+                      border: Border.all(color: AppColors.successBorder),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -354,7 +355,7 @@ class _PaymentHistory extends ConsumerWidget {
                               style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xff15803D),
+                                color: AppColors.successDeep,
                               ),
                             ),
                             if (p.metodoPago != null)
@@ -362,7 +363,7 @@ class _PaymentHistory extends ConsumerWidget {
                                 p.metodoPago!,
                                 style: const TextStyle(
                                   fontSize: 11,
-                                  color: Color(0xff52525B),
+                                  color: AppColors.zinc600,
                                 ),
                               ),
                           ],
@@ -372,7 +373,7 @@ class _PaymentHistory extends ConsumerWidget {
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xff16A34A),
+                            color: AppColors.successDark,
                           ),
                         ),
                       ],
@@ -400,7 +401,7 @@ class _SectionLabel extends StatelessWidget {
       style: const TextStyle(
         fontSize: 11,
         fontWeight: FontWeight.w700,
-        color: Color(0xff7A6BF5),
+        color: AppColors.primary,
         letterSpacing: 0.5,
       ),
     );

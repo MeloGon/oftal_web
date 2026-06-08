@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 
 class SalesHistoryPageHeader extends StatelessWidget {
   const SalesHistoryPageHeader({super.key});
@@ -14,7 +15,7 @@ class SalesHistoryPageHeader extends StatelessWidget {
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w700,
-            color: Color(0xff18181B),
+            color: AppColors.zinc900,
           ),
         ),
         Text(

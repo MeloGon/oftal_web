@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_provider.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
@@ -15,16 +16,16 @@ class ResinDataSource extends DataTableSource {
     required this.ref,
   });
 
-  static const _cell = TextStyle(fontSize: 12, color: Color(0xff18181B));
+  static const _cell = TextStyle(fontSize: 12, color: AppColors.zinc900);
   static const _qty = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w600,
-    color: Color(0xff18181B),
+    color: AppColors.zinc900,
   );
   static const _price = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w600,
-    color: Color(0xff16A34A),
+    color: AppColors.successDark,
   );
 
   @override
@@ -81,7 +82,7 @@ class _AddButtonState extends State<_AddButton> {
           duration: const Duration(milliseconds: 120),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            color: _hovered ? const Color(0xff7A6BF5) : const Color(0xffEEECFE),
+            color: _hovered ? AppColors.primary : AppColors.primaryBg,
             borderRadius: BorderRadius.circular(6),
           ),
           child: Row(
@@ -91,14 +92,14 @@ class _AddButtonState extends State<_AddButton> {
               Icon(
                 Icons.add_shopping_cart_rounded,
                 size: 13,
-                color: _hovered ? Colors.white : const Color(0xff7A6BF5),
+                color: _hovered ? Colors.white : AppColors.primary,
               ),
               Text(
                 'Agregar',
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: _hovered ? Colors.white : const Color(0xff7A6BF5),
+                  color: _hovered ? Colors.white : AppColors.primary,
                 ),
               ),
             ],

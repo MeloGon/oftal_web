@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_state.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/edit_review_dialog.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
@@ -28,13 +29,13 @@ class ReviewDetailsDialog {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: const Color(0xffEEECFE),
+                  color: AppColors.primaryBg,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(
                   Icons.person_outline_rounded,
                   size: 18,
-                  color: Color(0xff7A6BF5),
+                  color: AppColors.primary,
                 ),
               ),
               Expanded(
@@ -52,7 +53,7 @@ class ReviewDetailsDialog {
                 width: 8,
                 height: 8,
                 decoration: const BoxDecoration(
-                  color: Color(0xff7A6BF5),
+                  color: AppColors.primary,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -130,7 +131,7 @@ class _ReviewCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xffE4E4E7)),
+        border: Border.all(color: AppColors.zinc200),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,10 +140,10 @@ class _ReviewCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: const BoxDecoration(
-              color: Color(0xffFAFAFA),
+              color: AppColors.zinc50,
               borderRadius: BorderRadius.vertical(top: Radius.circular(11)),
               border: Border(
-                bottom: BorderSide(color: Color(0xffE4E4E7)),
+                bottom: BorderSide(color: AppColors.zinc200),
               ),
             ),
             child: Row(
@@ -174,7 +175,7 @@ class _ReviewCard extends StatelessWidget {
                           vertical: 3,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xffEEECFE),
+                          color: AppColors.primaryBg,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -182,14 +183,14 @@ class _ReviewCard extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xff7A6BF5),
+                            color: AppColors.primary,
                           ),
                         ),
                       ),
                     Tooltip(
                       message: 'Editar medición',
                       child: Material(
-                        color: const Color(0xffEFF6FF),
+                        color: AppColors.blueBg,
                         borderRadius: BorderRadius.circular(6),
                         child: InkWell(
                           borderRadius: BorderRadius.circular(6),
@@ -203,7 +204,7 @@ class _ReviewCard extends StatelessWidget {
                             child: Icon(
                               Icons.edit_outlined,
                               size: 14,
-                              color: Color(0xff0EA5E9),
+                              color: AppColors.sky,
                             ),
                           ),
                         ),
@@ -308,9 +309,9 @@ class _ReviewCard extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xffFAFAFA),
+                      color: AppColors.zinc50,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xffE4E4E7)),
+                      border: Border.all(color: AppColors.zinc200),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,14 +323,14 @@ class _ReviewCard extends StatelessWidget {
                             Icon(
                               Icons.notes_rounded,
                               size: 13,
-                              color: Color(0xff71717A),
+                              color: AppColors.zinc500,
                             ),
                             Text(
                               'Observaciones',
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xff71717A),
+                                color: AppColors.zinc500,
                               ),
                             ),
                           ],
@@ -338,7 +339,7 @@ class _ReviewCard extends StatelessWidget {
                           review.observation!,
                           style: const TextStyle(
                             fontSize: 13,
-                            color: Color(0xff18181B),
+                            color: AppColors.zinc900,
                             height: 1.5,
                           ),
                         ),
@@ -375,7 +376,7 @@ class _MeasureGrid extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xffE4E4E7)),
+        border: Border.all(color: AppColors.zinc200),
       ),
       clipBehavior: Clip.antiAlias,
       child: Table(
@@ -387,7 +388,7 @@ class _MeasureGrid extends StatelessWidget {
         children: [
           // Header row
           const TableRow(
-            decoration: BoxDecoration(color: Color(0xffF4F4F5)),
+            decoration: BoxDecoration(color: AppColors.zinc100),
             children: [
               _TCell('', isHeader: true),
               _TCell('OD', isHeader: true),
@@ -397,7 +398,7 @@ class _MeasureGrid extends StatelessWidget {
           ...rows.asMap().entries.map(
             (e) => TableRow(
               decoration: BoxDecoration(
-                color: e.key.isEven ? Colors.white : const Color(0xffFAFAFA),
+                color: e.key.isEven ? Colors.white : AppColors.zinc50,
               ),
               children: [
                 _TCell(e.value.label, isLabel: true),
@@ -429,10 +430,10 @@ class _TCell extends StatelessWidget {
           fontWeight:
               (isHeader || isLabel) ? FontWeight.w600 : FontWeight.normal,
           color: isHeader
-              ? const Color(0xff71717A)
+              ? AppColors.zinc500
               : isLabel
-              ? const Color(0xff3F3F46)
-              : const Color(0xff18181B),
+              ? AppColors.zinc700
+              : AppColors.zinc900,
         ),
       ),
     );
@@ -454,7 +455,7 @@ class _SectionLabel extends StatelessWidget {
           width: 3,
           height: 14,
           decoration: BoxDecoration(
-            color: const Color(0xff7A6BF5),
+            color: AppColors.primary,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
@@ -463,7 +464,7 @@ class _SectionLabel extends StatelessWidget {
           style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w700,
-            color: Color(0xff7A6BF5),
+            color: AppColors.primary,
             letterSpacing: 0.3,
           ),
         ),
@@ -488,13 +489,13 @@ class _FieldRow extends StatelessWidget {
           style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: Color(0xff52525B),
+            color: AppColors.zinc600,
           ),
         ),
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(fontSize: 12, color: Color(0xff18181B)),
+            style: const TextStyle(fontSize: 12, color: AppColors.zinc900),
           ),
         ),
       ],
@@ -512,19 +513,19 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xffF4F4F5),
+        color: AppColors.zinc100,
         borderRadius: BorderRadius.circular(6),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         spacing: 5,
         children: [
-          Icon(icon, size: 12, color: const Color(0xff71717A)),
+          Icon(icon, size: 12, color: AppColors.zinc500),
           Text(
             label,
             style: const TextStyle(
               fontSize: 12,
-              color: Color(0xff52525B),
+              color: AppColors.zinc600,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -544,9 +545,9 @@ class _ValueBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: const Color(0xffF4F4F5),
+        color: AppColors.zinc100,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xffE4E4E7)),
+        border: Border.all(color: AppColors.zinc200),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -557,20 +558,20 @@ class _ValueBadge extends StatelessWidget {
             style: const TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w700,
-              color: Color(0xff71717A),
+              color: AppColors.zinc500,
             ),
           ),
           Container(
             width: 1,
             height: 12,
-            color: const Color(0xffD4D4D8),
+            color: AppColors.zinc300,
           ),
           Text(
             value,
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: Color(0xff18181B),
+              color: AppColors.zinc900,
             ),
           ),
         ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/expenses/viewmodels/expenses_provider.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
@@ -303,14 +304,14 @@ class _Field extends StatelessWidget {
           style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w500,
-            color: Color(0xff52525B),
+            color: AppColors.zinc600,
           ),
         ),
         child,
         if (error != null)
           Text(
             error!,
-            style: const TextStyle(fontSize: 11, color: Color(0xffEF4444)),
+            style: const TextStyle(fontSize: 11, color: AppColors.error),
           ),
       ],
     );

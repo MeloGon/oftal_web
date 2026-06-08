@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 
 enum _SaleAction { viewDetails, print, registerPayment, finalize, changeDate, delete }
@@ -30,7 +31,7 @@ class SalesHistoryActions extends StatelessWidget {
     final hasPending = (sale.rest ?? 0) > 0;
 
     return PopupMenuButton<_SaleAction>(
-      icon: const Icon(Icons.more_vert, size: 18, color: Color(0xff71717A)),
+      icon: Icon(Icons.more_vert, size: 18, color: AppColors.zinc500),
       tooltip: '',
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       onSelected: (action) async {
@@ -80,7 +81,7 @@ class SalesHistoryActions extends StatelessWidget {
             child: _MenuItem(
               icon: Icons.account_balance_wallet_outlined,
               label: 'Registrar abono',
-              color: Color(0xff7A6BF5),
+              color: AppColors.primary,
             ),
           ),
           const PopupMenuItem(
@@ -89,7 +90,7 @@ class SalesHistoryActions extends StatelessWidget {
             child: _MenuItem(
               icon: Icons.check_circle_outline,
               label: 'Finalizar venta',
-              color: Color(0xff16A34A),
+              color: AppColors.successDark,
             ),
           ),
         ],
@@ -109,7 +110,7 @@ class SalesHistoryActions extends StatelessWidget {
           child: _MenuItem(
             icon: Icons.delete_outlined,
             label: 'Eliminar',
-            color: Color(0xffEF4444),
+            color: AppColors.error,
           ),
         ),
       ],
@@ -136,7 +137,7 @@ class _MenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = color ?? const Color(0xff18181B);
+    final c = color ?? AppColors.zinc900;
     return Row(
       spacing: 8,
       children: [

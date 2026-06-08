@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/shared/widgets/app_spinner.dart';
 
 class LoadingDialog {
@@ -34,7 +35,7 @@ class LoadingDialog {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: const Color(0xffE4E4E7)),
+                    border: Border.all(color: AppColors.zinc200),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.08),
@@ -53,7 +54,7 @@ class LoadingDialog {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xff3F3F46),
+                          color: AppColors.zinc700,
                         ),
                       ),
                     ],
