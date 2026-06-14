@@ -524,6 +524,59 @@ class _SellViewState extends ConsumerState<SellView> {
                       ],
                     ),
 
+                    // Branch (sucursal) row
+                    Row(
+                      spacing: 10,
+                      children: [
+                        RichText(
+                          text: const TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Sucursal de venta',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.zinc700,
+                                ),
+                              ),
+                              TextSpan(
+                                text: ' *',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.error,
+                                ),
+                              ),
+                              TextSpan(
+                                text: ':',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.zinc700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        ShadSelect<BranchEnum>(
+                          placeholder: Text(AppStrings.select),
+                          initialValue: sellState.selectedBranch,
+                          selectedOptionBuilder:
+                              (context, value) => Text(value.name),
+                          options:
+                              BranchEnum.values
+                                  .map(
+                                    (e) => ShadOption(
+                                      value: e,
+                                      child: Text(e.name),
+                                    ),
+                                  )
+                                  .toList(),
+                          onChanged: sellNotifier.updateSelectedBranch,
+                        ).constrained(width: 200),
+                      ],
+                    ),
+
                     const Divider(height: 1),
 
                     // Items list

@@ -24,6 +24,7 @@ abstract class SellState with _$SellState {
     @Default(5) int rowsPerPage,
     @Default([]) List<SellerModel> sellers,
     SellerModel? selectedSeller,
+    BranchEnum? selectedBranch,
     PaymentMethodEnum? selectedInitialPaymentMethod,
   }) = _SellState;
 }

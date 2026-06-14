@@ -224,6 +224,16 @@ class Sell extends _$Sell {
       );
       return;
     }
+    if (state.selectedBranch == null) {
+      state = state.copyWith(
+        errorMessage: 'Debes seleccionar una sucursal antes de crear la venta',
+        snackbarConfig: SnackbarConfigModel(
+          title: 'Aviso',
+          type: SnackbarEnum.error,
+        ),
+      );
+      return;
+    }
     state = state.copyWith(isLoading: true);
     _checkDate();
     try {
@@ -303,7 +313,7 @@ class Sell extends _$Sell {
     try {
       final sale = SalesModel(
         id: state.idRemision,
-        branch: state.selectedPatient?.branch,
+        branch: state.selectedBranch?.name,
         date:
             DateFormat('dd-MMM-yy')
                 .format(
@@ -582,6 +592,10 @@ class Sell extends _$Sell {
 
   void updateSelectedSeller(SellerModel? seller) {
     state = state.copyWith(selectedSeller: seller);
+  }
+
+  void updateSelectedBranch(BranchEnum? branch) {
+    state = state.copyWith(selectedBranch: branch);
   }
 
   Future<void> _generatePdf(
