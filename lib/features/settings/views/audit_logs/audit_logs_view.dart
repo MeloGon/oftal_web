@@ -76,6 +76,18 @@ class AuditLogsView extends ConsumerWidget {
                     onChanged: (v) => notifier.setActionFilter(v),
                     options: const [
                       ShadOption(
+                        value: 'create_sale',
+                        child: Text('Creó venta'),
+                      ),
+                      ShadOption(
+                        value: 'delete_sale',
+                        child: Text('Eliminó venta'),
+                      ),
+                      ShadOption(
+                        value: 'register_payment',
+                        child: Text('Registró abono'),
+                      ),
+                      ShadOption(
                         value: 'change_date',
                         child: Text('Cambio de fecha'),
                       ),
@@ -151,6 +163,9 @@ class AuditLogsView extends ConsumerWidget {
 }
 
 String _actionFilterLabel(String v) => switch (v) {
+      'create_sale' => 'Creó venta',
+      'delete_sale' => 'Eliminó venta',
+      'register_payment' => 'Registró abono',
       'change_date' => 'Cambio de fecha',
       'create_mount' => 'Creó montura',
       'update_mount' => 'Editó montura',
@@ -159,6 +174,9 @@ String _actionFilterLabel(String v) => switch (v) {
     };
 
 IconData _actionIcon(String action) => switch (action) {
+      'create_sale' => Icons.point_of_sale_outlined,
+      'delete_sale' => Icons.remove_shopping_cart_outlined,
+      'register_payment' => Icons.payments_outlined,
       'change_date' => Icons.edit_calendar_outlined,
       'create_mount' => Icons.add_box_outlined,
       'update_mount' => Icons.edit_outlined,
@@ -247,9 +265,11 @@ class _LogTile extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  log.entity == 'mount'
-                      ? log.summary
-                      : 'Folio ${log.entityId}',
+                  switch (log.entity) {
+                    'mount' => log.summary,
+                    'payment' => 'Remisión ${log.entityId}',
+                    _ => 'Folio ${log.entityId}',
+                  },
                   style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.zinc500,
@@ -308,6 +328,19 @@ class _LogTile extends StatelessWidget {
                       spacing: 6,
                       runSpacing: 4,
                       children: log.mountFields
+                          .map((f) => _FieldChip(label: f.label, value: f.value))
+                          .toList(),
+                    ),
+                  ),
+
+                // Sale / payment → recorded field chips
+                if (log.infoChips.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      children: log.infoChips
                           .map((f) => _FieldChip(label: f.label, value: f.value))
                           .toList(),
                     ),

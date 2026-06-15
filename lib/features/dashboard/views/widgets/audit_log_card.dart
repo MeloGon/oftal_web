@@ -103,6 +103,9 @@ class AuditLogCard extends ConsumerWidget {
 // ─── Log row ─────────────────────────────────────────────────────────────────
 
 IconData _logIcon(String action) => switch (action) {
+      'create_sale' => Icons.point_of_sale_outlined,
+      'delete_sale' => Icons.remove_shopping_cart_outlined,
+      'register_payment' => Icons.payments_outlined,
       'change_date' => Icons.edit_calendar_outlined,
       'create_mount' => Icons.add_box_outlined,
       'update_mount' => Icons.edit_outlined,
@@ -152,9 +155,12 @@ class _LogRow extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      log.entity == 'mount'
-                          ? '${log.actionLabel} · ${log.summary}'
-                          : '${log.actionLabel} · Folio ${log.entityId}',
+                      switch (log.entity) {
+                        'mount' => '${log.actionLabel} · ${log.summary}',
+                        'payment' =>
+                          '${log.actionLabel} · Remisión ${log.entityId}',
+                        _ => '${log.actionLabel} · Folio ${log.entityId}',
+                      },
                       style: const TextStyle(
                         fontSize: 11,
                         color: AppColors.zinc500,

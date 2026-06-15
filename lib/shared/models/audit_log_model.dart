@@ -29,19 +29,23 @@ class AuditLogModel {
     );
   }
 
-  String get oldValue => (detail['old_value'] ?? detail['old'])?.toString() ?? '—';
-  String get newValue => (detail['new_value'] ?? detail['new'])?.toString() ?? '—';
+  String get oldValue =>
+      (detail['old_value'] ?? detail['old'])?.toString() ?? '—';
+  String get newValue =>
+      (detail['new_value'] ?? detail['new'])?.toString() ?? '—';
 
   String get actionLabel => switch (action) {
-        'change_date' => 'Cambió fecha',
-        'delete_sale' => 'Eliminó venta',
-        'register_payment' => 'Registró abono',
-        'finalize_sale' => 'Finalizó venta',
-        'create_mount' => 'Creó montura',
-        'update_mount' => 'Editó montura',
-        'delete_mount' => 'Eliminó montura',
-        _ => action,
-      };
+    'change_date' => 'Cambió fecha',
+    'create_sale' => 'Creó venta',
+    'delete_sale' => 'Eliminó venta',
+    'register_payment' => 'Registró abono',
+    'finalize_sale' => 'Finalizó venta',
+
+    'create_mount' => 'Creó montura',
+    'update_mount' => 'Editó montura',
+    'delete_mount' => 'Eliminó montura',
+    _ => action,
+  };
 
   /// True when the action represents a before→after value change
   /// (renders old/new chips). Other actions render a plain summary.
@@ -69,12 +73,43 @@ class AuditLogModel {
   /// Flat field list for create/delete mount (what was added / removed).
   List<({String label, String value})> get mountFields {
     // update stores new values under 'new'; create/delete keep them flat.
-    final src = action == 'update_mount'
-        ? (detail['new'] as Map?)?.cast<String, dynamic>() ?? detail
-        : detail;
+    final src =
+        action == 'update_mount'
+            ? (detail['new'] as Map?)?.cast<String, dynamic>() ?? detail
+            : detail;
     return _mountFieldLabels.entries
         .where((e) => src[e.key] != null)
         .map((e) => (label: e.value, value: '${src[e.key]}'))
+        .toList();
+  }
+
+  /// Field chips for sale / payment actions (what was recorded).
+  List<({String label, String value})> get infoChips {
+    Map<String, String> labels;
+    switch (action) {
+      case 'create_sale':
+      case 'delete_sale':
+        labels = const {
+          'paciente': 'Paciente',
+          'total': 'Total',
+          'sucursal': 'Sucursal',
+          'a_cuenta': 'A cuenta',
+          'resta': 'Resta',
+        };
+        break;
+      case 'register_payment':
+        labels = const {
+          'monto': 'Monto',
+          'metodo_pago': 'Método',
+          'fecha_pago': 'Fecha',
+        };
+        break;
+      default:
+        return const [];
+    }
+    return labels.entries
+        .where((e) => detail[e.key] != null)
+        .map((e) => (label: e.value, value: '${detail[e.key]}'))
         .toList();
   }
 
