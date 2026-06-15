@@ -13,10 +13,12 @@ abstract class AuditLogRepository {
 
   Future<Either<Failure, List<AuditLogModel>>> getRecent({int limit = 5});
 
-  Future<Either<Failure, List<AuditLogModel>>> getAll({
+  Future<Either<Failure, ({List<AuditLogModel> items, bool hasMore})>> getAll({
     String? action,
     String? userEmail,
     DateTime? from,
     DateTime? to,
+    int offset = 0,
+    int limit = 20,
   });
 }

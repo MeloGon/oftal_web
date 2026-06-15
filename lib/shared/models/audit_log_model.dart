@@ -37,6 +37,59 @@ class AuditLogModel {
         'delete_sale' => 'Eliminó venta',
         'register_payment' => 'Registró abono',
         'finalize_sale' => 'Finalizó venta',
+        'create_mount' => 'Creó montura',
+        'update_mount' => 'Editó montura',
+        'delete_mount' => 'Eliminó montura',
         _ => action,
       };
+
+  /// True when the action represents a before→after value change
+  /// (renders old/new chips). Other actions render a plain summary.
+  bool get isValueChange => action == 'change_date';
+
+  /// Human summary for non value-change actions (mounts, etc.).
+  String get summary {
+    final brand = detail['brand']?.toString() ?? '';
+    final model = detail['model']?.toString() ?? '';
+    final label = '$brand $model'.trim();
+    return label.isEmpty ? 'ID $entityId' : label;
+  }
+
+  // ─── Mount detail rendering ────────────────────────────────────────────────
+
+  static const Map<String, String> _mountFieldLabels = {
+    'brand': 'Marca',
+    'model': 'Modelo',
+    'color': 'Color',
+    'price': 'Precio',
+    'stock': 'Stock',
+    'opticName': 'Óptica',
+  };
+
+  /// Flat field list for create/delete mount (what was added / removed).
+  List<({String label, String value})> get mountFields {
+    // update stores new values under 'new'; create/delete keep them flat.
+    final src = action == 'update_mount'
+        ? (detail['new'] as Map?)?.cast<String, dynamic>() ?? detail
+        : detail;
+    return _mountFieldLabels.entries
+        .where((e) => src[e.key] != null)
+        .map((e) => (label: e.value, value: '${src[e.key]}'))
+        .toList();
+  }
+
+  /// Per-field before→after diff for update_mount (only changed fields).
+  List<({String label, String oldValue, String newValue})> get mountChanges {
+    final oldM = (detail['old'] as Map?)?.cast<String, dynamic>() ?? const {};
+    final newM = (detail['new'] as Map?)?.cast<String, dynamic>() ?? const {};
+    final out = <({String label, String oldValue, String newValue})>[];
+    for (final e in _mountFieldLabels.entries) {
+      final o = '${oldM[e.key] ?? ''}';
+      final n = '${newM[e.key] ?? ''}';
+      if (o != n) {
+        out.add((label: e.value, oldValue: o, newValue: n));
+      }
+    }
+    return out;
+  }
 }

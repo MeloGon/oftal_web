@@ -43,11 +43,13 @@ class AuditLogRepositoryImpl implements AuditLogRepository {
   }
 
   @override
-  Future<Either<Failure, List<AuditLogModel>>> getAll({
+  Future<Either<Failure, ({List<AuditLogModel> items, bool hasMore})>> getAll({
     String? action,
     String? userEmail,
     DateTime? from,
     DateTime? to,
+    int offset = 0,
+    int limit = 20,
   }) async {
     try {
       final result = await _dataSource.getAll(
@@ -55,6 +57,8 @@ class AuditLogRepositoryImpl implements AuditLogRepository {
         userEmail: userEmail,
         from: from,
         to: to,
+        offset: offset,
+        limit: limit,
       );
       return Right(result);
     } catch (e) {

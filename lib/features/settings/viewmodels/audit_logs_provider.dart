@@ -27,25 +27,49 @@ class AuditLogsNotifier extends Notifier<AuditLogsState> {
           userEmail: state.filterUser.isEmpty ? null : state.filterUser,
           from: state.filterFrom,
           to: state.filterTo,
+          offset: state.offset,
+          limit: state.rowsPerPage,
         );
     result.fold(
       (_) => state = state.copyWith(isLoading: false),
-      (logs) => state = state.copyWith(logs: logs, isLoading: false),
+      (data) => state = state.copyWith(
+        logs: data.items,
+        hasMore: data.hasMore,
+        isLoading: false,
+      ),
     );
   }
 
   void setActionFilter(String? action) {
-    state = state.copyWith(filterAction: action);
+    state = state.copyWith(filterAction: action, offset: 0);
     load();
   }
 
   void setUserFilter(String user) {
-    state = state.copyWith(filterUser: user);
+    state = state.copyWith(filterUser: user, offset: 0);
     load();
   }
 
   void setDateRange(DateTime? from, DateTime? to) {
-    state = state.copyWith(filterFrom: from, filterTo: to);
+    state = state.copyWith(filterFrom: from, filterTo: to, offset: 0);
+    load();
+  }
+
+  void nextPage() {
+    if (!state.hasMore) return;
+    state = state.copyWith(offset: state.offset + state.rowsPerPage);
+    load();
+  }
+
+  void prevPage() {
+    if (state.offset == 0) return;
+    final newOffset = (state.offset - state.rowsPerPage).clamp(0, 1 << 31);
+    state = state.copyWith(offset: newOffset);
+    load();
+  }
+
+  void changeRowsPerPage(int newSize) {
+    state = state.copyWith(rowsPerPage: newSize, offset: 0);
     load();
   }
 
@@ -70,6 +94,9 @@ class AuditLogsState {
     this.filterUser = '',
     this.filterFrom,
     this.filterTo,
+    this.offset = 0,
+    this.rowsPerPage = 20,
+    this.hasMore = false,
   });
 
   final List<AuditLogModel> logs;
@@ -78,6 +105,11 @@ class AuditLogsState {
   final String filterUser;
   final DateTime? filterFrom;
   final DateTime? filterTo;
+  final int offset;
+  final int rowsPerPage;
+  final bool hasMore;
+
+  int get pageNumber => (offset ~/ rowsPerPage) + 1;
 
   AuditLogsState copyWith({
     List<AuditLogModel>? logs,
@@ -86,6 +118,9 @@ class AuditLogsState {
     String? filterUser,
     DateTime? filterFrom,
     DateTime? filterTo,
+    int? offset,
+    int? rowsPerPage,
+    bool? hasMore,
   }) {
     return AuditLogsState(
       logs: logs ?? this.logs,
@@ -94,6 +129,9 @@ class AuditLogsState {
       filterUser: filterUser ?? this.filterUser,
       filterFrom: filterFrom ?? this.filterFrom,
       filterTo: filterTo ?? this.filterTo,
+      offset: offset ?? this.offset,
+      rowsPerPage: rowsPerPage ?? this.rowsPerPage,
+      hasMore: hasMore ?? this.hasMore,
     );
   }
 }

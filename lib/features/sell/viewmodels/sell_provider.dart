@@ -36,7 +36,15 @@ class Sell extends _$Sell {
   SellState build() {
     _form = SellFormControllers();
     ref.onDispose(_form.dispose);
-    return const SellState();
+    return SellState(selectedBranch: _defaultBranch);
+  }
+
+  BranchEnum get _defaultBranch {
+    final branchName = ref.read(authProvider).profile?.branchName ?? '';
+    return BranchEnum.values.firstWhere(
+      (e) => e.name == branchName,
+      orElse: () => BranchEnum.oftalvision,
+    );
   }
 
   void updateDate(DateTime date) {
@@ -46,7 +54,10 @@ class Sell extends _$Sell {
   void resetState() {
     _form.clearAll();
     state = const SellState();
-    state = state.copyWith(selectedInitialPaymentMethod: null);
+    state = state.copyWith(
+      selectedInitialPaymentMethod: null,
+      selectedBranch: _defaultBranch,
+    );
   }
 
   Future<void> searchPatient() async {

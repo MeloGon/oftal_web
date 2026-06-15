@@ -5,6 +5,7 @@ import 'package:oftal_web/features/settings/viewmodels/mounts/mounts_state.dart'
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/utils/random_id_generator.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'mounts_provider.g.dart';
 
@@ -110,13 +111,12 @@ class Mounts extends _$Mounts {
   Future<void> addMount() async {
     state = state.copyWith(isLoading: true);
     try {
-      final mount =
-          state.selectedMount == null
-              ? _createMount()
-              : _createMount(isForEdit: true);
-      final result = state.selectedMount == null
-          ? await ref.read(mountRepositoryProvider).insertMount(mount)
-          : await ref.read(mountRepositoryProvider).updateMount(mount);
+      final isUpdate = state.selectedMount != null;
+      final oldMount = state.selectedMount;
+      final mount = isUpdate ? _createMount(isForEdit: true) : _createMount();
+      final result = isUpdate
+          ? await ref.read(mountRepositoryProvider).updateMount(mount)
+          : await ref.read(mountRepositoryProvider).insertMount(mount);
       result.fold(
         (failure) => state = state.copyWith(
           errorMessage: failure.message,
@@ -127,16 +127,21 @@ class Mounts extends _$Mounts {
           ),
         ),
         (_) async {
+          await _logMount(
+            action: isUpdate ? 'update_mount' : 'create_mount',
+            mount: mount,
+            oldMount: isUpdate ? oldMount : null,
+          );
           state = state.copyWith(
             snackbarConfig: SnackbarConfigModel(
               title: 'Aviso',
               type: SnackbarEnum.success,
             ),
-            errorMessage: state.selectedMount == null
-                ? 'Montura creada correctamente'
-                : 'Montura actualizada correctamente',
+            errorMessage: isUpdate
+                ? 'Montura actualizada correctamente'
+                : 'Montura creada correctamente',
           );
-          if (state.selectedMount != null) {
+          if (isUpdate) {
             state = state.copyWith(selectedMount: null);
           }
           clearAddMountForm();
@@ -198,6 +203,13 @@ class Mounts extends _$Mounts {
 
   Future<void> deleteMount(int id) async {
     state = state.copyWith(isLoading: true);
+    MountModel? deleted;
+    for (final m in state.mounts) {
+      if (m.id == id) {
+        deleted = m;
+        break;
+      }
+    }
     final result = await ref.read(mountRepositoryProvider).deleteMount(id);
     result.fold(
       (failure) => state = state.copyWith(
@@ -209,6 +221,11 @@ class Mounts extends _$Mounts {
         ),
       ),
       (_) async {
+        await _logMount(
+          action: 'delete_mount',
+          mount: deleted,
+          entityId: '$id',
+        );
         state = state.copyWith(
           snackbarConfig: SnackbarConfigModel(
             title: 'Aviso',
@@ -219,6 +236,42 @@ class Mounts extends _$Mounts {
         await fetchPage(offset: state.offset, limit: state.rowsPerPage);
       },
     );
+  }
+
+  // ─── Audit logging ──────────────────────────────────────────────────────────
+
+  String get _userEmail =>
+      Supabase.instance.client.auth.currentUser?.email ?? '';
+
+  Map<String, dynamic> _mountFields(MountModel m) => {
+        'brand': m.brand,
+        'model': m.model,
+        'color': m.color,
+        'price': m.price,
+        'stock': m.stock,
+        'opticName': m.opticName,
+      };
+
+  /// Best-effort audit log; failure must not block the mount operation.
+  Future<void> _logMount({
+    required String action,
+    MountModel? mount,
+    MountModel? oldMount,
+    String? entityId,
+  }) async {
+    if (mount == null && entityId == null) return;
+    final detail = <String, dynamic>{
+      if (mount != null) ..._mountFields(mount),
+      if (oldMount != null) 'old': _mountFields(oldMount),
+      if (mount != null && oldMount != null) 'new': _mountFields(mount),
+    };
+    await ref.read(auditLogRepositoryProvider).log(
+          action: action,
+          entity: 'mount',
+          entityId: entityId ?? '${mount?.id ?? ''}',
+          userEmail: _userEmail,
+          detail: detail,
+        );
   }
 
   Future<void> editMount(MountModel mount) async {

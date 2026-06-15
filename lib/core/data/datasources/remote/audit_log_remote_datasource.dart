@@ -12,11 +12,13 @@ abstract class AuditLogRemoteDataSource {
 
   Future<List<AuditLogModel>> getRecent({int limit = 5});
 
-  Future<List<AuditLogModel>> getAll({
+  Future<({List<AuditLogModel> items, bool hasMore})> getAll({
     String? action,
     String? userEmail,
     DateTime? from,
     DateTime? to,
+    int offset = 0,
+    int limit = 20,
   });
 }
 
@@ -52,11 +54,13 @@ class AuditLogRemoteDataSourceImpl implements AuditLogRemoteDataSource {
   }
 
   @override
-  Future<List<AuditLogModel>> getAll({
+  Future<({List<AuditLogModel> items, bool hasMore})> getAll({
     String? action,
     String? userEmail,
     DateTime? from,
     DateTime? to,
+    int offset = 0,
+    int limit = 20,
   }) async {
     var query = _client.from('audit_logs').select();
 
@@ -69,7 +73,15 @@ class AuditLogRemoteDataSourceImpl implements AuditLogRemoteDataSource {
       query = query.lte('created_at', to.toIso8601String());
     }
 
-    final response = await query.order('created_at', ascending: false);
-    return response.map((r) => AuditLogModel.fromJson(r)).toList();
+    // Fetch limit+1 to detect if more pages exist without a count query.
+    final response = await query
+        .order('created_at', ascending: false)
+        .range(offset, offset + limit);
+    final rows = response.map((r) => AuditLogModel.fromJson(r)).toList();
+    final hasMore = rows.length > limit;
+    return (
+      items: hasMore ? rows.sublist(0, limit) : rows,
+      hasMore: hasMore,
+    );
   }
 }

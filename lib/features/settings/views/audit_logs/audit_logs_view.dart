@@ -75,11 +75,25 @@ class AuditLogsView extends ConsumerWidget {
                     placeholder: const Text('Filtrar por acción'),
                     onChanged: (v) => notifier.setActionFilter(v),
                     options: const [
-                      ShadOption(value: 'change_date', child: Text('Cambio de fecha')),
+                      ShadOption(
+                        value: 'change_date',
+                        child: Text('Cambio de fecha'),
+                      ),
+                      ShadOption(
+                        value: 'create_mount',
+                        child: Text('Creó montura'),
+                      ),
+                      ShadOption(
+                        value: 'update_mount',
+                        child: Text('Editó montura'),
+                      ),
+                      ShadOption(
+                        value: 'delete_mount',
+                        child: Text('Eliminó montura'),
+                      ),
                     ],
-                    selectedOptionBuilder: (ctx, v) => Text(
-                      v == 'change_date' ? 'Cambio de fecha' : v,
-                    ),
+                    selectedOptionBuilder: (ctx, v) =>
+                        Text(_actionFilterLabel(v)),
                   ),
                 ),
                 SizedBox(
@@ -105,11 +119,52 @@ class AuditLogsView extends ConsumerWidget {
                   : _LogsTable(logs: state.logs),
             ),
           ),
+
+          // ─── Pagination ──────────────────────────────────
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                'Página ${state.pageNumber}',
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              ),
+              const SizedBox(width: 12),
+              ShadButton.outline(
+                size: ShadButtonSize.sm,
+                enabled: state.offset > 0 && !state.isLoading,
+                onPressed: notifier.prevPage,
+                child: const Icon(Icons.chevron_left, size: 16),
+              ),
+              const SizedBox(width: 6),
+              ShadButton.outline(
+                size: ShadButtonSize.sm,
+                enabled: state.hasMore && !state.isLoading,
+                onPressed: notifier.nextPage,
+                child: const Icon(Icons.chevron_right, size: 16),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 }
+
+String _actionFilterLabel(String v) => switch (v) {
+      'change_date' => 'Cambio de fecha',
+      'create_mount' => 'Creó montura',
+      'update_mount' => 'Editó montura',
+      'delete_mount' => 'Eliminó montura',
+      _ => v,
+    };
+
+IconData _actionIcon(String action) => switch (action) {
+      'change_date' => Icons.edit_calendar_outlined,
+      'create_mount' => Icons.add_box_outlined,
+      'update_mount' => Icons.edit_outlined,
+      'delete_mount' => Icons.delete_outline,
+      _ => Icons.history_rounded,
+    };
 
 // ─── Table ────────────────────────────────────────────────────────────────────
 
@@ -147,8 +202,8 @@ class _LogTile extends StatelessWidget {
               color: AppColors.primaryBg,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(
-              Icons.edit_calendar_outlined,
+            child: Icon(
+              _actionIcon(log.action),
               size: 16,
               color: AppColors.primary,
             ),
@@ -192,24 +247,71 @@ class _LogTile extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  'Folio ${log.entityId}',
+                  log.entity == 'mount'
+                      ? log.summary
+                      : 'Folio ${log.entityId}',
                   style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.zinc500,
                   ),
                 ),
-                Row(
-                  spacing: 6,
-                  children: [
-                    _Chip(log.oldValue, isNew: false),
-                    const Icon(
-                      Icons.arrow_forward_rounded,
-                      size: 12,
-                      color: AppColors.zinc500,
+                if (log.isValueChange)
+                  Row(
+                    spacing: 6,
+                    children: [
+                      _Chip(log.oldValue, isNew: false),
+                      const Icon(
+                        Icons.arrow_forward_rounded,
+                        size: 12,
+                        color: AppColors.zinc500,
+                      ),
+                      _Chip(log.newValue, isNew: true),
+                    ],
+                  ),
+
+                // Update mount → per-field before→after diff
+                if (log.action == 'update_mount')
+                  ...log.mountChanges.map(
+                    (c) => Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Row(
+                        spacing: 6,
+                        children: [
+                          Text(
+                            '${c.label}:',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.zinc600,
+                            ),
+                          ),
+                          _Chip(c.oldValue.isEmpty ? '—' : c.oldValue,
+                              isNew: false),
+                          const Icon(
+                            Icons.arrow_forward_rounded,
+                            size: 12,
+                            color: AppColors.zinc500,
+                          ),
+                          _Chip(c.newValue.isEmpty ? '—' : c.newValue,
+                              isNew: true),
+                        ],
+                      ),
                     ),
-                    _Chip(log.newValue, isNew: true),
-                  ],
-                ),
+                  ),
+
+                // Create / delete mount → full field list (what was added/removed)
+                if (log.action == 'create_mount' ||
+                    log.action == 'delete_mount')
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      children: log.mountFields
+                          .map((f) => _FieldChip(label: f.label, value: f.value))
+                          .toList(),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -267,6 +369,45 @@ class _Chip extends StatelessWidget {
           fontSize: 11,
           fontWeight: FontWeight.w600,
           color: isNew ? AppColors.successDark : AppColors.zinc600,
+        ),
+      ),
+    );
+  }
+}
+
+class _FieldChip extends StatelessWidget {
+  const _FieldChip({required this.label, required this.value});
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: AppColors.zinc100,
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: '$label: ',
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: AppColors.zinc500,
+              ),
+            ),
+            TextSpan(
+              text: value,
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: AppColors.zinc700,
+              ),
+            ),
+          ],
         ),
       ),
     );

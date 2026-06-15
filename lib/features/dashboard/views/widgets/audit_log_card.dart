@@ -102,6 +102,14 @@ class AuditLogCard extends ConsumerWidget {
 
 // ─── Log row ─────────────────────────────────────────────────────────────────
 
+IconData _logIcon(String action) => switch (action) {
+      'change_date' => Icons.edit_calendar_outlined,
+      'create_mount' => Icons.add_box_outlined,
+      'update_mount' => Icons.edit_outlined,
+      'delete_mount' => Icons.delete_outline,
+      _ => Icons.history_rounded,
+    };
+
 class _LogRow extends StatelessWidget {
   const _LogRow({required this.log});
   final AuditLogModel log;
@@ -123,8 +131,8 @@ class _LogRow extends StatelessWidget {
                   color: AppColors.primaryBg,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(
-                  Icons.edit_calendar_outlined,
+                child: Icon(
+                  _logIcon(log.action),
                   size: 15,
                   color: AppColors.primary,
                 ),
@@ -144,24 +152,27 @@ class _LogRow extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      '${log.actionLabel} · Folio ${log.entityId}',
+                      log.entity == 'mount'
+                          ? '${log.actionLabel} · ${log.summary}'
+                          : '${log.actionLabel} · Folio ${log.entityId}',
                       style: const TextStyle(
                         fontSize: 11,
                         color: AppColors.zinc500,
                       ),
                     ),
-                    Row(
-                      spacing: 4,
-                      children: [
-                        _DateChip(log.oldValue),
-                        const Icon(
-                          Icons.arrow_forward_rounded,
-                          size: 11,
-                          color: AppColors.zinc500,
-                        ),
-                        _DateChip(log.newValue, isNew: true),
-                      ],
-                    ),
+                    if (log.isValueChange)
+                      Row(
+                        spacing: 4,
+                        children: [
+                          _DateChip(log.oldValue),
+                          const Icon(
+                            Icons.arrow_forward_rounded,
+                            size: 11,
+                            color: AppColors.zinc500,
+                          ),
+                          _DateChip(log.newValue, isNew: true),
+                        ],
+                      ),
                   ],
                 ),
               ),
