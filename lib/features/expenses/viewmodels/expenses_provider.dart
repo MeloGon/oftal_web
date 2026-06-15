@@ -33,8 +33,13 @@ class Expenses extends _$Expenses {
 
   Future<void> getExpenses() async {
     state = state.copyWith(isLoading: true);
-    final result =
-        await ref.read(expenseRepositoryProvider).getExpenses();
+    final result = await ref.read(expenseRepositoryProvider).getExpenses(
+          search: state.searchQuery.isEmpty ? null : state.searchQuery,
+          branch: state.filterBranch,
+          registeredBy: state.filterRegisteredBy,
+          offset: state.offset,
+          limit: state.rowsPerPage,
+        );
     result.fold(
       (f) => state = state.copyWith(
         isLoading: false,
@@ -44,7 +49,11 @@ class Expenses extends _$Expenses {
           type: SnackbarEnum.error,
         ),
       ),
-      (list) => state = state.copyWith(expenses: list, isLoading: false),
+      (data) => state = state.copyWith(
+        expenses: data.items,
+        hasMore: data.hasMore,
+        isLoading: false,
+      ),
     );
   }
 
@@ -85,6 +94,7 @@ class Expenses extends _$Expenses {
       (_) {
         state = state.copyWith(
           isLoading: false,
+          offset: 0,
           errorMessage: 'Egreso registrado correctamente',
           snackbarConfig: SnackbarConfigModel(
             title: 'Aviso',
@@ -180,8 +190,43 @@ class Expenses extends _$Expenses {
     );
   }
 
-  void changeRowsPerPage(int value) =>
-      state = state.copyWith(rowsPerPage: value);
+  void setSearchQuery(String query) {
+    state = state.copyWith(searchQuery: query, offset: 0);
+    getExpenses();
+  }
+
+  void setBranchFilter(String? branch) {
+    state = state.copyWith(filterBranch: branch, offset: 0);
+    getExpenses();
+  }
+
+  void setRegisteredByFilter(String? registeredBy) {
+    state = state.copyWith(filterRegisteredBy: registeredBy, offset: 0);
+    getExpenses();
+  }
+
+  void clearFilters() {
+    state = state.copyWith(
+      searchQuery: '',
+      filterBranch: null,
+      filterRegisteredBy: null,
+      offset: 0,
+    );
+    getExpenses();
+  }
+
+  void nextPage() {
+    if (!state.hasMore) return;
+    state = state.copyWith(offset: state.offset + state.rowsPerPage);
+    getExpenses();
+  }
+
+  void prevPage() {
+    if (state.offset == 0) return;
+    final newOffset = (state.offset - state.rowsPerPage).clamp(0, 1 << 31);
+    state = state.copyWith(offset: newOffset);
+    getExpenses();
+  }
 
   void clearErrorMessage() =>
       state = state.copyWith(errorMessage: '', snackbarConfig: null);

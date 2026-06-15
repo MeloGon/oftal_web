@@ -1,12 +1,15 @@
-import 'package:data_table_2/data_table_2.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/core/enums/enums.dart';
-import 'package:oftal_web/features/expenses/data/expenses_datasource.dart';
+import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/features/expenses/viewmodels/expenses_provider.dart';
 import 'package:oftal_web/features/expenses/views/widgets/expense_category_dialog.dart';
+import 'package:oftal_web/features/expenses/views/widgets/expense_filter_bar.dart';
 import 'package:oftal_web/features/expenses/views/widgets/expense_form_dialog.dart';
+import 'package:oftal_web/features/expenses/views/widgets/expense_summary_cards.dart';
+import 'package:oftal_web/features/expenses/views/widgets/expense_tile.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
@@ -20,58 +23,25 @@ class ExpensesView extends ConsumerStatefulWidget {
 }
 
 class _ExpensesViewState extends ConsumerState<ExpensesView> {
-  late ExpensesDataSource _dataSource;
+  Timer? _searchDebounce;
 
   @override
-  void initState() {
-    super.initState();
-    final initial = ref.read(expensesProvider).expenses;
-    _dataSource = ExpensesDataSource(
-      expenses: initial,
-      context: context,
-      onEdit: _handleEdit,
-      onDelete: _handleDelete,
-    );
+  void dispose() {
+    _searchDebounce?.cancel();
+    super.dispose();
   }
 
-  void _handleEdit(ExpenseModel expense) {
-    ExpenseFormDialog().show(context, ref, expense: expense);
-  }
-
-  void _handleDelete(ExpenseModel expense) {
-    showShadDialog(
-      context: context,
-      builder: (dialogCtx) => ShadDialog.alert(
-        title: const Text('Eliminar egreso'),
-        description: Text(
-          '¿Eliminar el egreso "${expense.descripcion}"? Esta acción no se puede deshacer.',
-        ),
-        actions: [
-          ShadButton.outline(
-            onPressed: () => Navigator.of(dialogCtx).pop(),
-            child: const Text('Cancelar'),
-          ),
-          ShadButton.destructive(
-            onPressed: () {
-              Navigator.of(dialogCtx).pop();
-              if (expense.id != null) {
-                ref
-                    .read(expensesProvider.notifier)
-                    .deleteExpense(expense.id!);
-              }
-            },
-            child: const Text('Eliminar'),
-          ),
-        ],
-      ),
-    );
+  void _onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      ref.read(expensesProvider.notifier).setSearchQuery(value);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(expensesProvider);
     final notifier = ref.read(expensesProvider.notifier);
-    _dataSource.update(state.expenses, context);
 
     ref.listenLoading(
       expensesProvider.select((s) => s.isLoading),
@@ -103,7 +73,27 @@ class _ExpensesViewState extends ConsumerState<ExpensesView> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Expanded(child: _PageHeader()),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 4,
+                  children: [
+                    const Text(
+                      'Egresos',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.zinc900,
+                      ),
+                    ),
+                    Text(
+                      'Registra y consulta todos los gastos',
+                      style:
+                          TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                    ),
+                  ],
+                ),
+              ),
               ShadButton.outline(
                 size: ShadButtonSize.sm,
                 onPressed: () => ExpenseCategoryDialog().show(context, ref),
@@ -132,204 +122,103 @@ class _ExpensesViewState extends ConsumerState<ExpensesView> {
             ],
           ),
 
-          // ─── Summary cards ────────────────────────────────────
-          Row(
-            spacing: 12,
-            children: [
-              Expanded(
-                child: _SummaryCard(
-                  label: 'Total egresos',
-                  value: total.toCurrency(),
-                  icon: Icons.account_balance_wallet_outlined,
-                  iconColor: AppColors.error,
-                  iconBg: AppColors.errorBg,
-                ),
-              ),
-              Expanded(
-                child: _SummaryCard(
-                  label: 'Registros',
-                  value: '${state.expenses.length}',
-                  icon: Icons.receipt_long_outlined,
-                  iconColor: AppColors.indigo,
-                  iconBg: AppColors.primaryBg,
-                ),
-              ),
-              Expanded(
-                child: _SummaryCard(
-                  label: 'Categorías',
-                  value: '${state.categories.length}',
-                  icon: Icons.label_outline,
-                  iconColor: AppColors.emerald,
-                  iconBg: AppColors.emeraldBg,
-                ),
-              ),
-            ],
+          // ─── Summary ──────────────────────────────────────────
+          ExpenseSummaryCards(
+            totalAmount: total.toCurrency(),
+            recordCount: '${state.expenses.length}',
+            categoryCount: '${state.categories.length}',
           ),
 
-          // ─── Table ────────────────────────────────────────────
+          // ─── Filters ──────────────────────────────────────────
+          ExpenseFilterBar(
+            state: state,
+            onSearchChanged: _onSearchChanged,
+          ),
+
+          // ─── List ─────────────────────────────────────────────
           Expanded(
             child: ShadCard(
               padding: EdgeInsets.zero,
-              child: TooltipVisibility(
-                visible: false,
-                child: PaginatedDataTable2(
-                  headingRowHeight: 40,
-                  showCheckboxColumn: false,
-                  wrapInCard: false,
-                  fixedLeftColumns: 1,
-                  columnSpacing: 12,
-                  horizontalMargin: 16,
-                  minWidth: 1100,
-                  isHorizontalScrollBarVisible: true,
-                  isVerticalScrollBarVisible: true,
-                  headingRowColor: WidgetStateProperty.all(
-                    AppColors.zinc50,
-                  ),
-                  source: _dataSource,
-                  availableRowsPerPage: const [20],
-                  rowsPerPage: state.rowsPerPage,
-                  onRowsPerPageChanged:
-                      (v) => notifier.changeRowsPerPage(v ?? 20),
-                  columns: const [
-                    DataColumn2(
-                      label: SizedBox.shrink(),
-                      fixedWidth: 48,
-                      isResizable: false,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Categoría'),
-                      fixedWidth: 160,
-                      isResizable: true,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Fecha'),
-                      fixedWidth: 100,
-                      isResizable: true,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Descripción'),
-                      size: ColumnSize.L,
-                      isResizable: true,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Método pago'),
-                      fixedWidth: 120,
-                      isResizable: true,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Comprobante'),
-                      fixedWidth: 120,
-                      isResizable: true,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Sucursal'),
-                      fixedWidth: 100,
-                      isResizable: true,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Registrado por'),
-                      fixedWidth: 130,
-                      isResizable: true,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Monto'),
-                      fixedWidth: 100,
-                      isResizable: true,
-                    ),
-                  ],
-                ),
-              ),
+              child: state.isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : state.expenses.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            spacing: 8,
+                            children: [
+                              Icon(Icons.receipt_long_outlined,
+                                  size: 36, color: Colors.grey.shade300),
+                              Text(
+                                'Sin egresos registrados',
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey.shade500),
+                              ),
+                            ],
+                          ),
+                        )
+                      : ExpensesList(
+                          expenses: state.expenses,
+                          onEdit: (e) => ExpenseFormDialog()
+                              .show(context, ref, expense: e),
+                          onDelete: (e) => _confirmDelete(e),
+                        ),
             ),
+          ),
+
+          // ─── Pagination ───────────────────────────────────────
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                'Página ${state.pageNumber}',
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              ),
+              const SizedBox(width: 12),
+              ShadButton.outline(
+                size: ShadButtonSize.sm,
+                enabled: state.offset > 0 && !state.isLoading,
+                onPressed: notifier.prevPage,
+                child: const Icon(Icons.chevron_left, size: 16),
+              ),
+              const SizedBox(width: 6),
+              ShadButton.outline(
+                size: ShadButtonSize.sm,
+                enabled: state.hasMore && !state.isLoading,
+                onPressed: notifier.nextPage,
+                child: const Icon(Icons.chevron_right, size: 16),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
-}
 
-// ─── Local widgets ────────────────────────────────────────────────────────────
-
-class _PageHeader extends StatelessWidget {
-  const _PageHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 4,
-      children: [
-        const Text(
-          'Egresos',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: AppColors.zinc900,
-          ),
+  void _confirmDelete(ExpenseModel expense) {
+    showShadDialog(
+      context: context,
+      builder: (dialogCtx) => ShadDialog.alert(
+        title: const Text('Eliminar egreso'),
+        description: Text(
+          '¿Eliminar el egreso "${expense.descripcion}"? Esta acción no se puede deshacer.',
         ),
-        Text(
-          'Registra y consulta todos los gastos',
-          style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
-        ),
-      ],
-    );
-  }
-}
-
-class _SummaryCard extends StatelessWidget {
-  const _SummaryCard({
-    required this.label,
-    required this.value,
-    required this.icon,
-    required this.iconColor,
-    required this.iconBg,
-  });
-  final String label;
-  final String value;
-  final IconData icon;
-  final Color iconColor;
-  final Color iconBg;
-
-  @override
-  Widget build(BuildContext context) {
-    return ShadCard(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 12,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            spacing: 12,
-            children: [
-              Expanded(
-                child: Text(
-                  label,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: iconBg,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, size: 16, color: iconColor),
-              ),
-            ],
+        actions: [
+          ShadButton.outline(
+            onPressed: () => Navigator.of(dialogCtx).pop(),
+            child: const Text('Cancelar'),
           ),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-              color: AppColors.zinc900,
-              height: 1,
-            ),
+          ShadButton.destructive(
+            onPressed: () {
+              Navigator.of(dialogCtx).pop();
+              if (expense.id != null) {
+                ref
+                    .read(expensesProvider.notifier)
+                    .deleteExpense(expense.id!);
+              }
+            },
+            child: const Text('Eliminar'),
           ),
         ],
       ),

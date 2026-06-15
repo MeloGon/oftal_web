@@ -10,7 +10,16 @@ abstract class ExpensesState with _$ExpensesState {
     @Default('') String errorMessage,
     @Default(<ExpenseModel>[]) List<ExpenseModel> expenses,
     @Default(<ExpenseCategoryModel>[]) List<ExpenseCategoryModel> categories,
+    @Default(0) int offset,
     @Default(20) int rowsPerPage,
+    @Default(false) bool hasMore,
+    @Default('') String searchQuery,
+    String? filterBranch,
+    String? filterRegisteredBy,
     SnackbarConfigModel? snackbarConfig,
   }) = _ExpensesState;
+
+  const ExpensesState._();
+
+  int get pageNumber => (offset ~/ rowsPerPage) + 1;
 }

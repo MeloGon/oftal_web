@@ -2,7 +2,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 
 abstract class ExpenseRemoteDataSource {
-  Future<List<ExpenseModel>> getExpenses({int limit = 50});
+  Future<({List<ExpenseModel> items, bool hasMore})> getExpenses({
+    String? search,
+    String? branch,
+    String? registeredBy,
+    int offset = 0,
+    int limit = 20,
+  });
   Future<List<ExpenseModel>> getExpensesByDateRange(String from, String to);
   Future<void> insertExpense(ExpenseModel expense);
   Future<void> updateExpense(ExpenseModel expense);
@@ -18,13 +24,37 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
   ExpenseRemoteDataSourceImpl(this.client);
 
   @override
-  Future<List<ExpenseModel>> getExpenses({int limit = 50}) async {
-    final response = await client
+  Future<({List<ExpenseModel> items, bool hasMore})> getExpenses({
+    String? search,
+    String? branch,
+    String? registeredBy,
+    int offset = 0,
+    int limit = 20,
+  }) async {
+    var query = client
         .from('egresos')
-        .select('*, categorias_egresos(nombre, color)')
+        .select('*, categorias_egresos(nombre, color)');
+
+    if (search != null && search.isNotEmpty) {
+      query = query.or('descripcion.ilike.%$search%,comprobante.ilike.%$search%');
+    }
+    if (branch != null) {
+      query = query.eq('sucursal', branch);
+    }
+    if (registeredBy != null) {
+      query = query.eq('registrado_por', registeredBy);
+    }
+
+    final response = await query
         .order('fecha', ascending: false)
-        .limit(limit);
-    return response.map((json) => ExpenseModel.fromJson(json)).toList();
+        .range(offset, offset + limit);
+    final rows =
+        response.map((json) => ExpenseModel.fromJson(json)).toList();
+    final hasMore = rows.length > limit;
+    return (
+      items: hasMore ? rows.sublist(0, limit) : rows,
+      hasMore: hasMore,
+    );
   }
 
   @override

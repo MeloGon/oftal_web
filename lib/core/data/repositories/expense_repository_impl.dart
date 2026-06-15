@@ -9,11 +9,22 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   ExpenseRepositoryImpl(this._dataSource);
 
   @override
-  Future<Either<Failure, List<ExpenseModel>>> getExpenses({
-    int limit = 50,
+  Future<Either<Failure, ({List<ExpenseModel> items, bool hasMore})>>
+      getExpenses({
+    String? search,
+    String? branch,
+    String? registeredBy,
+    int offset = 0,
+    int limit = 20,
   }) async {
     try {
-      return Right(await _dataSource.getExpenses(limit: limit));
+      return Right(await _dataSource.getExpenses(
+        search: search,
+        branch: branch,
+        registeredBy: registeredBy,
+        offset: offset,
+        limit: limit,
+      ));
     } catch (e) {
       return Left(Failure.server(e.toString()));
     }
