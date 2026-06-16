@@ -43,6 +43,8 @@ class PaymentsTable extends StatelessWidget {
           DataColumn(label: DataColHeader('Método de pago')),
           DataColumn(label: DataColHeader('Notas')),
           DataColumn(label: DataColHeader('Monto'), numeric: true),
+          DataColumn(label: DataColHeader('Total venta'), numeric: true),
+          DataColumn(label: DataColHeader('Saldo'), numeric: true),
         ],
         rows:
             payments.map((p) {
@@ -133,6 +135,29 @@ class PaymentsTable extends StatelessWidget {
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: AppColors.zinc900,
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    Text(
+                      p.totalVenta?.toCurrency() ?? '—',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.zinc600,
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    Text(
+                      p.saldoPendiente?.toCurrency() ?? '—',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: (p.saldoPendiente ?? 0) > 0
+                            ? FontWeight.w600
+                            : FontWeight.normal,
+                        color: (p.saldoPendiente ?? 0) > 0
+                            ? AppColors.error
+                            : AppColors.zinc500,
                       ),
                     ),
                   ),

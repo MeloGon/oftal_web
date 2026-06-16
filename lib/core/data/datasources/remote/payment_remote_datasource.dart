@@ -55,7 +55,7 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
 
     final salesResponse = await client
         .from('ventas cortas')
-        .select('"ID REMISION", "PACIENTE", "FOLIO REMISION", "SUCURSAL"')
+        .select('"ID REMISION", "PACIENTE", "FOLIO REMISION", "SUCURSAL", "TOTAL CON DESCUENTO", "TOTAL", "RESTA"')
         .inFilter('ID REMISION', remisionIds);
 
     final salesMap = <String, Map<String, dynamic>>{};

@@ -10,6 +10,8 @@ class DailyPaymentModel {
   final String? folioRemision;
   final String? sucursal;
   final String paymentType;
+  final double? totalVenta;
+  final double? saldoPendiente;
 
   const DailyPaymentModel({
     this.id,
@@ -23,6 +25,8 @@ class DailyPaymentModel {
     this.folioRemision,
     this.sucursal,
     this.paymentType = 'abono_saldo',
+    this.totalVenta,
+    this.saldoPendiente,
   });
 
   bool get isNewSale => paymentType == 'nueva_venta';
@@ -42,5 +46,8 @@ class DailyPaymentModel {
     folioRemision: saleJson?['FOLIO REMISION'] as String?,
     sucursal: saleJson?['SUCURSAL'] as String?,
     paymentType: (json['tipo_pago'] as String?) ?? 'abono_saldo',
+    totalVenta: (saleJson?['TOTAL CON DESCUENTO'] as num?)?.toDouble()
+        ?? (saleJson?['TOTAL'] as num?)?.toDouble(),
+    saldoPendiente: (saleJson?['RESTA'] as num?)?.toDouble(),
   );
 }
