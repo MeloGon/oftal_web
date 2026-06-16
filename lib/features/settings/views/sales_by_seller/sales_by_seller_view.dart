@@ -55,100 +55,173 @@ class SalesBySellerView extends ConsumerWidget {
       )),
     );
 
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 20,
-        children: [
-          // ─── Header ──────────────────────────────────────────
-          Row(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 650;
+        final padding = compact
+            ? const EdgeInsets.all(16)
+            : const EdgeInsets.all(24);
+
+        return Padding(
+          padding: padding,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: compact ? 16 : 20,
             children: [
-              IconButton(
-                onPressed: () => context.pop(),
-                icon: const Icon(Icons.arrow_back_ios_rounded, size: 16),
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  side: const BorderSide(color: AppColors.zinc200),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 2,
+              // ─── Header ──────────────────────────────────────────
+              if (compact) ...[
+                Row(
                   children: [
-                    Text(
-                      'Reportes \u00b7 Ventas por vendedor',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.zinc900,
+                    IconButton(
+                      onPressed: () => context.pop(),
+                      icon: const Icon(Icons.arrow_back_ios_rounded, size: 16),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(color: AppColors.zinc200),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
-                    Text(
-                      'Ventas agrupadas por vendedor seg\u00fan el mes seleccionado',
-                      style: TextStyle(fontSize: 12, color: AppColors.zinc500),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 2,
+                        children: [
+                          const Text(
+                            'Ventas por vendedor',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.zinc900,
+                            ),
+                          ),
+                          const Text(
+                            'Ventas agrupadas por vendedor',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: AppColors.zinc500,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-              ),
-              if (sellerTotals.isNotEmpty)
-                ShadButton.outline(
-                  onPressed: () => showDialog(
-                    context: context,
-                    builder: (_) => CommissionsDialog(
-                      sellerTotals: sellerTotals,
+                if (sellerTotals.isNotEmpty)
+                  SizedBox(
+                    width: double.infinity,
+                    child: ShadButton.outline(
+                      onPressed: () => showDialog(
+                        context: context,
+                        builder: (_) => CommissionsDialog(
+                          sellerTotals: sellerTotals,
+                        ),
+                      ),
+                      child: const Row(
+                        spacing: 8,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.calculate_outlined, size: 16),
+                          Text('Cálculo de comisiones'),
+                        ],
+                      ),
                     ),
                   ),
-                  child: const Row(
-                    spacing: 8,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.calculate_outlined, size: 16),
-                      Text('C\u00e1lculo de comisiones'),
-                    ],
-                  ),
+              ] else
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => context.pop(),
+                      icon: const Icon(Icons.arrow_back_ios_rounded, size: 16),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(color: AppColors.zinc200),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 2,
+                        children: [
+                          Text(
+                            'Reportes · Ventas por vendedor',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.zinc900,
+                            ),
+                          ),
+                          Text(
+                            'Ventas agrupadas por vendedor según el mes seleccionado',
+                            style: TextStyle(
+                                fontSize: 12, color: AppColors.zinc500),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (sellerTotals.isNotEmpty)
+                      ShadButton.outline(
+                        onPressed: () => showDialog(
+                          context: context,
+                          builder: (_) => CommissionsDialog(
+                            sellerTotals: sellerTotals,
+                          ),
+                        ),
+                        child: const Row(
+                          spacing: 8,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.calculate_outlined, size: 16),
+                            Text('Cálculo de comisiones'),
+                          ],
+                        ),
+                      ),
+                  ],
                 ),
+
+              // ─── Filter bar ───────────────────────────────────────
+              FilterBar(
+                selectedMonth: state.selectedMonth,
+                onMonthPicked: notifier.selectMonth,
+                sellers: allSellers,
+                sellerCounts: Map.fromEntries(
+                  allSellers
+                      .map((s) => MapEntry(s, allBySeller[s]?.length ?? 0)),
+                ),
+                isSellerActive: state.isSellerActive,
+                onToggleSeller: notifier.toggleSeller,
+                onSelectAll: notifier.selectAllSellers,
+                allActive: state.selectedSellers == null,
+              ),
+
+              // ─── Content ──────────────────────────────────────────
+              Expanded(
+                child: SingleChildScrollView(
+                  child: bySeller.isEmpty && !state.isLoading
+                      ? const EmptyState(
+                          label: 'Sin ventas en el período seleccionado')
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: compact ? 20 : 24,
+                          children: bySeller.entries.map((entry) {
+                            return SellerSection(
+                              sellerName: entry.key,
+                              sales: entry.value,
+                            );
+                          }).toList(),
+                        ),
+                ),
+              ),
             ],
           ),
-
-          // ─── Filter bar ───────────────────────────────────────
-          FilterBar(
-            selectedMonth: state.selectedMonth,
-            onMonthPicked: notifier.selectMonth,
-            sellers: allSellers,
-            sellerCounts: Map.fromEntries(
-              allSellers.map((s) => MapEntry(s, allBySeller[s]?.length ?? 0)),
-            ),
-            isSellerActive: state.isSellerActive,
-            onToggleSeller: notifier.toggleSeller,
-            onSelectAll: notifier.selectAllSellers,
-            allActive: state.selectedSellers == null,
-          ),
-
-          // ─── Content ──────────────────────────────────────────
-          Expanded(
-            child: SingleChildScrollView(
-              child: bySeller.isEmpty && !state.isLoading
-                  ? const EmptyState(label: 'Sin ventas en el período seleccionado')
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 24,
-                      children: bySeller.entries.map((entry) {
-                        return SellerSection(
-                          sellerName: entry.key,
-                          sales: entry.value,
-                        );
-                      }).toList(),
-                    ),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
