@@ -60,7 +60,7 @@ class RecentSalesList extends ConsumerWidget {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: state.recentSales.length,
-              separatorBuilder: (_, __) =>
+              separatorBuilder: (_, _) =>
                   const Divider(height: 1, color: AppColors.zinc100),
               itemBuilder: (context, i) =>
                   SaleRow(sale: state.recentSales[i]),

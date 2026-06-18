@@ -7,8 +7,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'expenses_provider.g.dart';
 
-// FutureProvider (no build_runner) para el donut del dashboard
-final expensesSummaryProvider = FutureProvider<Map<String, double>>((ref) async {
+@riverpod
+Future<Map<String, double>> expensesSummary(Ref ref) async {
   final now = DateTime.now();
   final from =
       '${now.year}-${now.month.toString().padLeft(2, '0')}-01';
@@ -17,7 +17,7 @@ final expensesSummaryProvider = FutureProvider<Map<String, double>>((ref) async 
       .read(expenseRepositoryProvider)
       .getExpensesByCategory(from, to);
   return result.fold((_) => <String, double>{}, (data) => data);
-});
+}
 
 @Riverpod(keepAlive: true)
 class Expenses extends _$Expenses {

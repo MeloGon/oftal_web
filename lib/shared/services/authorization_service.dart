@@ -13,7 +13,7 @@ class AuthorizationService {
   }) async {
     final tempClient = SupabaseClient(
       AppEnviroment.url,
-      AppEnviroment.anonKey,
+      AppEnviroment.publishableKey,
     );
 
     try {

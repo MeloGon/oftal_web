@@ -10,7 +10,7 @@ class LoadingDialog {
       barrierDismissible: false,
       barrierColor: Colors.transparent,
       transitionDuration: const Duration(milliseconds: 200),
-      transitionBuilder: (_, animation, __, child) => FadeTransition(
+      transitionBuilder: (_, animation, _, child) => FadeTransition(
         opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
         child: ScaleTransition(
           scale: Tween<double>(begin: 0.95, end: 1.0).animate(
@@ -19,7 +19,7 @@ class LoadingDialog {
           child: child,
         ),
       ),
-      pageBuilder: (_, __, ___) {
+      pageBuilder: (_, _, _) {
         return BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
           child: Container(

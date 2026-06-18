@@ -28,7 +28,7 @@ class PatientResultList extends StatelessWidget {
           child: ListView.separated(
             shrinkWrap: true,
             itemCount: patients.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 6),
+            separatorBuilder: (_, _) => const SizedBox(height: 6),
             itemBuilder:
                 (context, i) => PatientCard(
                   patient: patients[i],

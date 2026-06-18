@@ -1,16 +1,14 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/settings/viewmodels/sales_by_seller_state.dart';
 import 'package:oftal_web/shared/models/snackbar_config_model.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final salesBySellerProvider =
-    AutoDisposeNotifierProvider<SalesBySeller, SalesBySellerState>(
-      SalesBySeller.new,
-    );
+part 'sales_by_seller_provider.g.dart';
 
-class SalesBySeller extends AutoDisposeNotifier<SalesBySellerState> {
+@riverpod
+class SalesBySeller extends _$SalesBySeller {
   static final _fmt = DateFormat('yyyy-MM-dd');
 
   @override

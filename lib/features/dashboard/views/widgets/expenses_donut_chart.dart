@@ -67,7 +67,7 @@ class ExpensesDonutChart extends ConsumerWidget {
                 ),
               ),
             ),
-            error: (_, __) => const SizedBox(
+            error: (_, _) => const SizedBox(
               height: 100,
               child: Center(
                 child: Text(

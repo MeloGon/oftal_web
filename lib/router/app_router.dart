@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:oftal_web/features/search_patient/views/search_patient_view.dart';
-import 'package:oftal_web/features/sell/views/sell_view.dart';
+import 'package:oftal_web/features/dashboard/views/dashboard_view.dart';
 import 'package:oftal_web/features/expenses/views/expenses_view.dart';
 import 'package:oftal_web/features/sales_history/views/sales_history_view.dart';
+import 'package:oftal_web/features/search_patient/views/search_patient_view.dart';
+import 'package:oftal_web/features/sell/views/sell_view.dart';
 import 'package:oftal_web/features/settings/views/audit_logs/audit_logs_view.dart';
 import 'package:oftal_web/features/settings/views/features/features_view.dart';
-import 'package:oftal_web/features/settings/views/payments_report/payments_report_view.dart';
-import 'package:oftal_web/features/settings/views/sales_by_seller/sales_by_seller_view.dart';
 import 'package:oftal_web/features/settings/views/mounts/mounts_view.dart';
+import 'package:oftal_web/features/settings/views/payments_report/payments_report_view.dart';
 import 'package:oftal_web/features/settings/views/resins/resins_view.dart';
+import 'package:oftal_web/features/settings/views/sales_by_seller/sales_by_seller_view.dart';
 import 'package:oftal_web/features/views.dart';
 import 'package:oftal_web/router/router_name.dart';
 import 'package:oftal_web/shared/layouts/auth/auth_layout.dart';
 import 'package:oftal_web/shared/layouts/dashboard/dashboard_layout.dart';
 import 'package:oftal_web/shared/layouts/splash/splash_layout.dart';
 import 'package:oftal_web/shared/providers/providers.dart';
-import 'package:oftal_web/features/dashboard/views/dashboard_view.dart';
 import 'package:oftal_web/shared/views/no_page_found_view.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -75,15 +74,13 @@ GoRouter appRouter(Ref ref) {
         ],
       ),
       StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) =>
-            DashboardLayout(child: navigationShell),
+        builder: (context, state, navigationShell) => DashboardLayout(child: navigationShell),
         branches: [
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: RouterName.dashboard,
-                pageBuilder:
-                    (context, state) => _fadeRoute(const DashboardView()),
+                pageBuilder: (context, state) => _fadeRoute(const DashboardView()),
               ),
             ],
           ),
@@ -91,13 +88,9 @@ GoRouter appRouter(Ref ref) {
             routes: [
               GoRoute(
                 path: RouterName.searchPatient,
-                pageBuilder:
-                    (context, state) =>
-                        _fadeRoute(const SearchPatientView()),
+                pageBuilder: (context, state) => _fadeRoute(const SearchPatientView()),
                 redirect: (context, state) {
-                  ref
-                      .read(navigationProvider.notifier)
-                      .setCurrentPage(RouterName.searchPatient);
+                  ref.read(navigationProvider.notifier).setCurrentPage(RouterName.searchPatient);
                   return null;
                 },
               ),
@@ -107,12 +100,9 @@ GoRouter appRouter(Ref ref) {
             routes: [
               GoRoute(
                 path: RouterName.addPatient,
-                pageBuilder:
-                    (context, state) => _fadeRoute(const AddPatientView()),
+                pageBuilder: (context, state) => _fadeRoute(const AddPatientView()),
                 redirect: (context, state) {
-                  ref
-                      .read(navigationProvider.notifier)
-                      .setCurrentPage(RouterName.addPatient);
+                  ref.read(navigationProvider.notifier).setCurrentPage(RouterName.addPatient);
                   return null;
                 },
               ),
@@ -122,48 +112,35 @@ GoRouter appRouter(Ref ref) {
             routes: [
               GoRoute(
                 path: RouterName.settings,
-                pageBuilder:
-                    (context, state) => _fadeRoute(const SettingsView()),
+                pageBuilder: (context, state) => _fadeRoute(const SettingsView()),
                 redirect: (context, state) {
-                  ref
-                      .read(navigationProvider.notifier)
-                      .setCurrentPage(RouterName.settings);
+                  ref.read(navigationProvider.notifier).setCurrentPage(RouterName.settings);
                   return null;
                 },
                 routes: [
                   GoRoute(
                     path: 'resins',
-                    pageBuilder:
-                        (context, state) => _fadeRoute(const ResinsView()),
+                    pageBuilder: (context, state) => _fadeRoute(const ResinsView()),
                   ),
                   GoRoute(
                     path: 'mounts',
-                    pageBuilder:
-                        (context, state) => _fadeRoute(const MountsView()),
+                    pageBuilder: (context, state) => _fadeRoute(const MountsView()),
                   ),
                   GoRoute(
                     path: 'payments-report',
-                    pageBuilder:
-                        (context, state) =>
-                            _fadeRoute(const PaymentsReportView()),
+                    pageBuilder: (context, state) => _fadeRoute(const PaymentsReportView()),
                   ),
                   GoRoute(
                     path: 'features',
-                    pageBuilder:
-                        (context, state) =>
-                            _fadeRoute(const FeaturesView()),
+                    pageBuilder: (context, state) => _fadeRoute(const FeaturesView()),
                   ),
                   GoRoute(
                     path: 'audit-logs',
-                    pageBuilder:
-                        (context, state) =>
-                            _fadeRoute(const AuditLogsView()),
+                    pageBuilder: (context, state) => _fadeRoute(const AuditLogsView()),
                   ),
                   GoRoute(
                     path: 'sales-by-seller',
-                    pageBuilder:
-                        (context, state) =>
-                            _fadeRoute(const SalesBySellerView()),
+                    pageBuilder: (context, state) => _fadeRoute(const SalesBySellerView()),
                   ),
                 ],
               ),
@@ -173,12 +150,9 @@ GoRouter appRouter(Ref ref) {
             routes: [
               GoRoute(
                 path: RouterName.sell,
-                pageBuilder:
-                    (context, state) => _fadeRoute(const SellView()),
+                pageBuilder: (context, state) => _fadeRoute(const SellView()),
                 redirect: (context, state) {
-                  ref
-                      .read(navigationProvider.notifier)
-                      .setCurrentPage(RouterName.sell);
+                  ref.read(navigationProvider.notifier).setCurrentPage(RouterName.sell);
                   return null;
                 },
               ),
@@ -188,12 +162,9 @@ GoRouter appRouter(Ref ref) {
             routes: [
               GoRoute(
                 path: RouterName.salesHistory,
-                pageBuilder:
-                    (context, state) => _fadeRoute(const SalesHistoryView()),
+                pageBuilder: (context, state) => _fadeRoute(const SalesHistoryView()),
                 redirect: (context, state) {
-                  ref
-                      .read(navigationProvider.notifier)
-                      .setCurrentPage(RouterName.salesHistory);
+                  ref.read(navigationProvider.notifier).setCurrentPage(RouterName.salesHistory);
                   return null;
                 },
               ),
@@ -203,12 +174,9 @@ GoRouter appRouter(Ref ref) {
             routes: [
               GoRoute(
                 path: RouterName.expenses,
-                pageBuilder:
-                    (context, state) => _fadeRoute(const ExpensesView()),
+                pageBuilder: (context, state) => _fadeRoute(const ExpensesView()),
                 redirect: (context, state) {
-                  ref
-                      .read(navigationProvider.notifier)
-                      .setCurrentPage(RouterName.expenses);
+                  ref.read(navigationProvider.notifier).setCurrentPage(RouterName.expenses);
                   return null;
                 },
               ),

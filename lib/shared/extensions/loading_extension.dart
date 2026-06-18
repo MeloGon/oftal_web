@@ -6,12 +6,12 @@ import 'package:oftal_web/shared/widgets/loading_dialog.dart';
 extension LoadingListener on WidgetRef {
   /// Escucha cambios en [isLoadingProvider] y muestra/oculta el [LoadingDialog]
   /// automáticamente. [onHidden] se ejecuta justo después de cerrar el dialog.
-  void listenLoading(
-    ProviderListenable<bool> isLoadingProvider,
+  void listenLoading<T>(
+    T isLoadingProvider,
     BuildContext context, {
     VoidCallback? onHidden,
   }) {
-    listen<bool>(isLoadingProvider, (previous, next) {
+    listen<bool>(isLoadingProvider as dynamic, (previous, next) {
       if (next && !(previous ?? false)) {
         LoadingDialog().show(context);
       }

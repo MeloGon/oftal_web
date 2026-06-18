@@ -88,7 +88,7 @@ class ExpenseFilterBar extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  error: (_, __) => const Text('Error cargando vendedores'),
+                  error: (_, _) => const Text('Error cargando vendedores'),
                 ),
           ),
           ShadButton.outline(

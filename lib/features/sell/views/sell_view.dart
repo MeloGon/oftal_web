@@ -592,7 +592,7 @@ class _SellViewState extends ConsumerState<SellView> {
                       ListView.separated(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        separatorBuilder: (_, __) => const SizedBox(height: 8),
+                        separatorBuilder: (_, _) => const SizedBox(height: 8),
                         itemCount: sellState.itemsToSell.length,
                         itemBuilder: (context, index) {
                           final item = sellState.itemsToSell[index];

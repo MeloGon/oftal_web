@@ -1,17 +1,16 @@
-import 'dart:html' as html;
+import 'dart:js_interop';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:web/web.dart' as web;
 
 class PdfWebExample extends StatelessWidget {
   const PdfWebExample({super.key});
 
   Future<void> generatePdf(String nombre, String fecha) async {
-    // 1️⃣ Crear el documento PDF
     final pdf = pw.Document();
 
-    // 2️⃣ Agregar contenido
     pdf.addPage(
       pw.Page(
         build:
@@ -26,7 +25,6 @@ class PdfWebExample extends StatelessWidget {
                       style: pw.TextStyle(fontSize: 20),
                     ),
                   ),
-                  // pw.Text('OFTALVISION', style: pw.TextStyle(fontSize: 20)),
                   pw.Text(
                     'Folio de venta 3424944',
                     style: pw.TextStyle(fontSize: 20),
@@ -77,18 +75,18 @@ class PdfWebExample extends StatelessWidget {
       ),
     );
 
-    // 3️⃣ Convertir a bytes
     final Uint8List bytes = await pdf.save();
 
-    // 4️⃣ Crear un blob y descargarlo
-    final blob = html.Blob([bytes], 'application/pdf');
-    final url = html.Url.createObjectUrlFromBlob(blob);
-    // ignore: unused_local_variable
-    final anchor =
-        html.AnchorElement(href: url)
-          ..setAttribute('download', 'recibo.pdf')
-          ..click();
-    html.Url.revokeObjectUrl(url);
+    final blob = web.Blob(
+      [bytes.toJS].toJS,
+      web.BlobPropertyBag(type: 'application/pdf'),
+    );
+    final url = web.URL.createObjectURL(blob);
+    final anchor = web.HTMLAnchorElement()
+      ..href = url
+      ..download = 'recibo.pdf';
+    anchor.click();
+    web.URL.revokeObjectURL(url);
   }
 
   @override

@@ -74,7 +74,7 @@ class FilterHistorySales extends ConsumerWidget {
               height: 36,
               child: Center(child: LinearProgressIndicator()),
             ),
-            error: (_, __) => const SizedBox.shrink(),
+            error: (_, _) => const SizedBox.shrink(),
             data: (sellers) {
               final selected = sellers.cast<SellerModel?>().firstWhere(
                 (s) => s?.name == salesHistoryState.searchText,

@@ -72,7 +72,7 @@ class AuditLogCard extends ConsumerWidget {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                 ),
-            error: (_, __) => const _EmptyLogs(),
+            error: (_, _) => const _EmptyLogs(),
             data:
                 (logs) =>
                     logs.isEmpty

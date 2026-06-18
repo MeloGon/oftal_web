@@ -18,7 +18,7 @@ void main() async {
 
   await supabase.Supabase.initialize(
     url: AppEnviroment.url,
-    anonKey: AppEnviroment.anonKey,
+    publishableKey: AppEnviroment.publishableKey,
   );
 
   await LocalStorage.init();

@@ -83,7 +83,7 @@ class StepCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (action != null) action!,
+              ?action,
             ],
           ),
           const Divider(height: 1),
