@@ -37,6 +37,7 @@ abstract class SaleRemoteDataSource {
     String folioSale,
     String fecha,
     String fechaActualizada,
+    String idRemision,
   );
 }
 
@@ -176,11 +177,23 @@ class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
     String folioSale,
     String fecha,
     String fechaActualizada,
+    String idRemision,
   ) async {
     await client.from('ventas cortas').update({
       'FECHA': fecha,
       'fecha_actualizada': fechaActualizada,
     }).eq('FOLIO REMISION', folioSale);
+
+    await client.from('ventas').update({
+      'FECHA DE VENTA': fecha,
+      'fecha_ventas_actualizada': fechaActualizada,
+    }).eq('FOLIO DE VENTA', folioSale);
+
+    await client
+        .from('pagos')
+        .update({'fecha_pago': fechaActualizada})
+        .eq('id_remision', idRemision)
+        .eq('tipo_pago', 'nueva_venta');
   }
 
   @override

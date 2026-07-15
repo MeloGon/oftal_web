@@ -159,9 +159,10 @@ class SaleRepositoryImpl implements SaleRepository {
     String folioSale,
     String fecha,
     String fechaActualizada,
+    String idRemision,
   ) async {
     try {
-      await _dataSource.updateSaleDate(folioSale, fecha, fechaActualizada);
+      await _dataSource.updateSaleDate(folioSale, fecha, fechaActualizada, idRemision);
       return const Right(unit);
     } catch (e) {
       return Left(Failure.server(e.toString()));
