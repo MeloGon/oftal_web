@@ -43,5 +43,6 @@ abstract class SaleRepository {
     String folioSale,
     String fecha,
     String fechaActualizada,
+    String idRemision,
   );
 }

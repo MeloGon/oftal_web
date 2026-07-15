@@ -98,7 +98,7 @@ class SalesHistory extends _$SalesHistory {
     final fechaActualizada = DateFormat('yyyy-MM-dd').format(date);
     final result = await ref
         .read(saleRepositoryProvider)
-        .updateSaleDate(sale.folioSale!, fecha, fechaActualizada);
+        .updateSaleDate(sale.folioSale!, fecha, fechaActualizada, sale.id!);
     result.fold(
       (failure) => state = state.copyWith(
         isLoading: false,
