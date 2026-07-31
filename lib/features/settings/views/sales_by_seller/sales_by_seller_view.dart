@@ -44,15 +44,18 @@ class SalesBySellerView extends ConsumerWidget {
     final allBySeller = _groupBySeller(state.sales);
     final bySeller = Map.of(allBySeller)
       ..removeWhere((seller, _) => !state.isSellerActive(seller));
+    final canPrintReport = bySeller.isNotEmpty && !state.isLoading;
 
     final sellerTotals = Map.fromEntries(
-      allBySeller.entries.map((e) => MapEntry(
-        e.key,
-        e.value.fold<double>(
-          0,
-          (sum, s) => sum + (s.totalWithDiscount ?? s.total ?? 0),
+      allBySeller.entries.map(
+        (e) => MapEntry(
+          e.key,
+          e.value.fold<double>(
+            0,
+            (sum, s) => sum + (s.totalWithDiscount ?? s.total ?? 0),
+          ),
         ),
-      )),
+      ),
     );
 
     return LayoutBuilder(
@@ -129,6 +132,22 @@ class SalesBySellerView extends ConsumerWidget {
                       ),
                     ),
                   ),
+                SizedBox(
+                  width: double.infinity,
+                  child: ShadButton.outline(
+                    onPressed: canPrintReport
+                        ? notifier.generateSalesBySellerReportPdf
+                        : null,
+                    child: const Row(
+                      spacing: 8,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.print_outlined, size: 16),
+                        Text('Imprimir reporte'),
+                      ],
+                    ),
+                  ),
+                ),
               ] else
                 Row(
                   children: [
@@ -160,7 +179,9 @@ class SalesBySellerView extends ConsumerWidget {
                           Text(
                             'Ventas agrupadas por vendedor según el mes seleccionado',
                             style: TextStyle(
-                                fontSize: 12, color: AppColors.zinc500),
+                              fontSize: 12,
+                              color: AppColors.zinc500,
+                            ),
                           ),
                         ],
                       ),
@@ -182,6 +203,20 @@ class SalesBySellerView extends ConsumerWidget {
                           ],
                         ),
                       ),
+                    const SizedBox(width: 8),
+                    ShadButton.outline(
+                      onPressed: canPrintReport
+                          ? notifier.generateSalesBySellerReportPdf
+                          : null,
+                      child: const Row(
+                        spacing: 8,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.print_outlined, size: 16),
+                          Text('Imprimir reporte'),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
 
@@ -191,8 +226,9 @@ class SalesBySellerView extends ConsumerWidget {
                 onMonthPicked: notifier.selectMonth,
                 sellers: allSellers,
                 sellerCounts: Map.fromEntries(
-                  allSellers
-                      .map((s) => MapEntry(s, allBySeller[s]?.length ?? 0)),
+                  allSellers.map(
+                    (s) => MapEntry(s, allBySeller[s]?.length ?? 0),
+                  ),
                 ),
                 isSellerActive: state.isSellerActive,
                 onToggleSeller: notifier.toggleSeller,
@@ -205,7 +241,8 @@ class SalesBySellerView extends ConsumerWidget {
                 child: SingleChildScrollView(
                   child: bySeller.isEmpty && !state.isLoading
                       ? const EmptyState(
-                          label: 'Sin ventas en el período seleccionado')
+                          label: 'Sin ventas en el período seleccionado',
+                        )
                       : Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           spacing: compact ? 20 : 24,
@@ -238,9 +275,12 @@ class SalesBySellerView extends ConsumerWidget {
   }
 
   static String _toTitleCase(String name) {
-    return name.split(' ').map((w) {
-      if (w.isEmpty) return w;
-      return w[0].toUpperCase() + w.substring(1).toLowerCase();
-    }).join(' ');
+    return name
+        .split(' ')
+        .map((w) {
+          if (w.isEmpty) return w;
+          return w[0].toUpperCase() + w.substring(1).toLowerCase();
+        })
+        .join(' ');
   }
 }
