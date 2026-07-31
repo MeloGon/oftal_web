@@ -337,6 +337,12 @@ class Sell extends _$Sell {
                   DateFormat('dd-MM-yyyy').parse(dateController.text),
                 )
                 .toString(),
+        fechaVentaIso:
+            DateFormat('yyyy-MM-dd')
+                .format(
+                  DateFormat('dd-MM-yyyy').parse(dateController.text),
+                )
+                .toString(),
         patient: state.selectedPatient?.name,
         authorName: state.selectedSeller?.name ?? '',
         total: double.parse(importController.text),

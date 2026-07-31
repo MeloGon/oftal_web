@@ -50,10 +50,10 @@ class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
     final response = await client
         .from('ventas cortas')
         .select()
-        .gte('fecha_actualizada', from)
-        .lte('fecha_actualizada', to)
+        .gte('fecha_venta_iso', from)
+        .lte('fecha_venta_iso', to)
         .order('AUTOR NOMBRE', ascending: true)
-        .order('fecha_actualizada', ascending: false);
+        .order('fecha_venta_iso', ascending: false);
     return response.map((json) => SalesModel.fromJson(json)).toList();
   }
 
@@ -182,6 +182,7 @@ class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
     await client.from('ventas cortas').update({
       'FECHA': fecha,
       'fecha_actualizada': fechaActualizada,
+      'fecha_venta_iso': fechaActualizada,
     }).eq('FOLIO REMISION', folioSale);
 
     await client.from('ventas').update({

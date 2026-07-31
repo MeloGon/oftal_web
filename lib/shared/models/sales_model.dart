@@ -50,6 +50,13 @@ class SalesModel with _$SalesModel {
     includeToJson: true,
   )
   final String? updatedDate;
+  @override
+  @JsonKey(
+    name: 'fecha_venta_iso',
+    includeFromJson: true,
+    includeToJson: true,
+  )
+  final String? fechaVentaIso;
 
   SalesModel({
     required this.id,
@@ -64,6 +71,7 @@ class SalesModel with _$SalesModel {
     required this.rest,
     required this.folioSale,
     required this.updatedDate,
+    this.fechaVentaIso,
   });
 
   factory SalesModel.fromJson(Map<String, Object?> json) =>
@@ -84,5 +92,6 @@ class SalesModel with _$SalesModel {
     rest: 0,
     folioSale: '',
     updatedDate: '',
+    fechaVentaIso: '',
   );
 }
