@@ -8,6 +8,7 @@ class RouterName {
   static const String salesBySeller = '/dashboard/settings/sales-by-seller';
   static const String features = '/dashboard/settings/features';
   static const String auditLogs = '/dashboard/settings/audit-logs';
+  static const String usersManagement = '/dashboard/settings/users-management';
   static const String sell = '/dashboard/sell';
   static const String salesHistory = '/dashboard/sales-history';
   static const String expenses = '/dashboard/expenses';

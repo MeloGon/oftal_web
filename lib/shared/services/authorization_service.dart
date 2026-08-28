@@ -1,7 +1,7 @@
 import 'package:oftal_web/core/constants/app_enviroment.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-enum AuthorizationRole { supervisor, admin }
+enum AuthorizationRole { supervisor, admin, adminOrSupervisor, megadmin }
 
 class AuthorizationService {
   /// Verifica credenciales de un supervisor/admin sin afectar la sesión activa.
@@ -36,7 +36,10 @@ class AuthorizationService {
 
       return switch (requiredRole) {
         AuthorizationRole.supervisor => role == 'supervisor',
-        AuthorizationRole.admin => role == 'admin',
+        AuthorizationRole.admin => role == 'admin' || role == 'megadmin',
+        AuthorizationRole.adminOrSupervisor =>
+          role == 'admin' || role == 'supervisor' || role == 'megadmin',
+        AuthorizationRole.megadmin => role == 'megadmin',
       };
     } on AuthException {
       return false;

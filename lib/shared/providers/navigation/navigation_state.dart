@@ -9,5 +9,7 @@ abstract class NavigationState with _$NavigationState {
     @Default(false) bool isMenuOpen,
     @Default(false) bool isAuthenticated,
     @Default(false) bool isAdmin,
+    @Default(false) bool isSupervisor,
+    @Default(false) bool isMegaadmin,
   }) = _NavigationState;
 }

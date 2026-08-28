@@ -18,18 +18,21 @@ import 'package:oftal_web/core/data/datasources/remote/resin_remote_datasource.d
 import 'package:oftal_web/core/data/datasources/remote/review_remote_datasource.dart';
 import 'package:oftal_web/core/data/datasources/remote/sale_remote_datasource.dart';
 import 'package:oftal_web/core/data/datasources/remote/seller_remote_datasource.dart';
+import 'package:oftal_web/core/data/datasources/remote/user_admin_remote_datasource.dart';
 import 'package:oftal_web/core/data/repositories/mount_repository_impl.dart';
 import 'package:oftal_web/core/data/repositories/patient_repository_impl.dart';
 import 'package:oftal_web/core/data/repositories/resin_repository_impl.dart';
 import 'package:oftal_web/core/data/repositories/review_repository_impl.dart';
 import 'package:oftal_web/core/data/repositories/sale_repository_impl.dart';
 import 'package:oftal_web/core/data/repositories/seller_repository_impl.dart';
+import 'package:oftal_web/core/data/repositories/user_admin_repository_impl.dart';
 import 'package:oftal_web/core/domain/repositories/mount_repository.dart';
 import 'package:oftal_web/core/domain/repositories/patient_repository.dart';
 import 'package:oftal_web/core/domain/repositories/resin_repository.dart';
 import 'package:oftal_web/core/domain/repositories/review_repository.dart';
 import 'package:oftal_web/core/domain/repositories/sale_repository.dart';
 import 'package:oftal_web/core/domain/repositories/seller_repository.dart';
+import 'package:oftal_web/core/domain/repositories/user_admin_repository.dart';
 
 // ─── Supabase client ───────────────────────────────────────────────────────────
 final supabaseClientProvider = Provider<SupabaseClient>((ref) {
@@ -118,4 +121,13 @@ final auditLogRemoteDataSourceProvider =
 
 final auditLogRepositoryProvider = Provider<AuditLogRepository>((ref) {
   return AuditLogRepositoryImpl(ref.read(auditLogRemoteDataSourceProvider));
+});
+
+final userAdminRemoteDataSourceProvider =
+    Provider<UserAdminRemoteDataSource>((ref) {
+  return UserAdminRemoteDataSourceImpl(ref.read(supabaseClientProvider));
+});
+
+final userAdminRepositoryProvider = Provider<UserAdminRepository>((ref) {
+  return UserAdminRepositoryImpl(ref.read(userAdminRemoteDataSourceProvider));
 });

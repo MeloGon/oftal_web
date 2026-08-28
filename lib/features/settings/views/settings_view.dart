@@ -6,6 +6,7 @@ import 'package:oftal_web/features/settings/viewmodels/settings_provider.dart';
 import 'package:oftal_web/router/app_router.dart';
 import 'package:oftal_web/router/router_name.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
+import 'package:oftal_web/shared/providers/navigation/navigation_provider.dart';
 import 'package:oftal_web/shared/services/authorization_service.dart';
 import 'package:oftal_web/shared/widgets/authorization_dialog.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
@@ -15,6 +16,9 @@ class SettingsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isAdmin = ref.watch(navigationProvider).isAdmin;
+    final isMegaadmin = ref.watch(navigationProvider).isMegaadmin;
+
     ref.listen(settingsProvider, (previous, next) {
       if (next.errorMessage.isNotEmpty &&
           previous?.errorMessage != next.errorMessage) {
@@ -52,139 +56,143 @@ class SettingsView extends ConsumerWidget {
           ),
 
           // ─── Feature flags ───────────────────────────────
-          const Text(
-            'Funcionalidades',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.zinc600,
-              letterSpacing: 0.3,
+          if (isAdmin) ...[
+            const Text(
+              'Funcionalidades',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppColors.zinc600,
+                letterSpacing: 0.3,
+              ),
             ),
-          ),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final features = _SettingsNavCard(
-                title: 'Funcionalidades',
-                description: 'Activa o desactiva funcionalidades del sistema',
-                icon: Icons.tune_rounded,
-                iconColor: AppColors.primary,
-                iconBgColor: AppColors.primaryBg,
-                onTap: () async {
-                  final authorized = await showAuthorizationDialog(
-                    context: context,
-                    requiredRole: AuthorizationRole.admin,
-                    actionName: 'acceder a Funcionalidades',
-                  );
-                  if (authorized) {
-                    ref.read(appRouterProvider).go(RouterName.features);
-                  }
-                },
-              );
-              if (constraints.maxWidth < 560) return features;
-              return Row(
-                spacing: 16,
-                children: [
-                  Expanded(child: features),
-                  const Expanded(child: SizedBox()),
-                ],
-              );
-            },
-          ),
-
-          // ─── Inventory options ────────────────────────────
-          const Text(
-            'Inventario',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.zinc600,
-              letterSpacing: 0.3,
-            ),
-          ),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final resinas = _SettingsNavCard(
-                title: 'Resinas',
-                description: 'Administra el catálogo de resinas y lentes',
-                icon: Icons.lens_outlined,
-                iconColor: AppColors.sky,
-                iconBgColor: AppColors.skyBg,
-                onTap: () async {
-                  ref.read(appRouterProvider).go(RouterName.resins);
-                },
-              );
-              final monturas = _SettingsNavCard(
-                title: 'Monturas',
-                description: 'Administra el inventario de armazones',
-                icon: Icons.visibility_outlined,
-                iconColor: AppColors.primary,
-                iconBgColor: AppColors.primaryBg,
-                onTap: () async {
-                  final authorized = await showAuthorizationDialog(
-                    context: context,
-                    requiredRole: AuthorizationRole.admin,
-                    actionName: 'acceder a Monturas',
-                  );
-                  if (authorized) {
-                    ref.read(appRouterProvider).go(RouterName.mounts);
-                  }
-                },
-              );
-              if (constraints.maxWidth < 560) {
-                return Column(
-                  spacing: 16,
-                  children: [resinas, monturas],
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final features = _SettingsNavCard(
+                  title: 'Funcionalidades',
+                  description:
+                      'Activa o desactiva funcionalidades del sistema',
+                  icon: Icons.tune_rounded,
+                  iconColor: AppColors.primary,
+                  iconBgColor: AppColors.primaryBg,
+                  onTap: () async {
+                    final authorized = await showAuthorizationDialog(
+                      context: context,
+                      requiredRole: AuthorizationRole.admin,
+                      actionName: 'acceder a Funcionalidades',
+                    );
+                    if (authorized) {
+                      ref.read(appRouterProvider).go(RouterName.features);
+                    }
+                  },
                 );
-              }
-              return Row(
-                spacing: 16,
-                children: [
-                  Expanded(child: resinas),
-                  Expanded(child: monturas),
-                ],
-              );
-            },
-          ),
-
-          // ─── Admin section ────────────────────────────────
-          const Text(
-            'Administración',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.zinc600,
-              letterSpacing: 0.3,
+                if (constraints.maxWidth < 560) return features;
+                return Row(
+                  spacing: 16,
+                  children: [
+                    Expanded(child: features),
+                    const Expanded(child: SizedBox()),
+                  ],
+                );
+              },
             ),
-          ),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final auditLogs = _SettingsNavCard(
-                title: 'Registro de auditoría',
-                description: 'Historial de cambios realizados por los usuarios',
-                icon: Icons.history_rounded,
-                iconColor: AppColors.orange,
-                iconBgColor: AppColors.orangeBg,
-                onTap: () async {
-                  final authorized = await showAuthorizationDialog(
-                    context: context,
-                    requiredRole: AuthorizationRole.admin,
-                    actionName: 'ver el registro de auditoría',
+
+            // ─── Inventory options ────────────────────────────
+            const Text(
+              'Inventario',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppColors.zinc600,
+                letterSpacing: 0.3,
+              ),
+            ),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final resinas = _SettingsNavCard(
+                  title: 'Resinas',
+                  description: 'Administra el catálogo de resinas y lentes',
+                  icon: Icons.lens_outlined,
+                  iconColor: AppColors.sky,
+                  iconBgColor: AppColors.skyBg,
+                  onTap: () async {
+                    ref.read(appRouterProvider).go(RouterName.resins);
+                  },
+                );
+                final monturas = _SettingsNavCard(
+                  title: 'Monturas',
+                  description: 'Administra el inventario de armazones',
+                  icon: Icons.visibility_outlined,
+                  iconColor: AppColors.primary,
+                  iconBgColor: AppColors.primaryBg,
+                  onTap: () async {
+                    final authorized = await showAuthorizationDialog(
+                      context: context,
+                      requiredRole: AuthorizationRole.admin,
+                      actionName: 'acceder a Monturas',
+                    );
+                    if (authorized) {
+                      ref.read(appRouterProvider).go(RouterName.mounts);
+                    }
+                  },
+                );
+                if (constraints.maxWidth < 560) {
+                  return Column(
+                    spacing: 16,
+                    children: [resinas, monturas],
                   );
-                  if (authorized) {
-                    ref.read(appRouterProvider).go(RouterName.auditLogs);
-                  }
-                },
-              );
-              if (constraints.maxWidth < 560) return auditLogs;
-              return Row(
-                spacing: 16,
-                children: [
-                  Expanded(child: auditLogs),
-                  const Expanded(child: SizedBox()),
-                ],
-              );
-            },
-          ),
+                }
+                return Row(
+                  spacing: 16,
+                  children: [
+                    Expanded(child: resinas),
+                    Expanded(child: monturas),
+                  ],
+                );
+              },
+            ),
+
+            // ─── Admin section ────────────────────────────────
+            const Text(
+              'Administración',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppColors.zinc600,
+                letterSpacing: 0.3,
+              ),
+            ),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final auditLogs = _SettingsNavCard(
+                  title: 'Registro de auditoría',
+                  description:
+                      'Historial de cambios realizados por los usuarios',
+                  icon: Icons.history_rounded,
+                  iconColor: AppColors.orange,
+                  iconBgColor: AppColors.orangeBg,
+                  onTap: () async {
+                    final authorized = await showAuthorizationDialog(
+                      context: context,
+                      requiredRole: AuthorizationRole.admin,
+                      actionName: 'ver el registro de auditoría',
+                    );
+                    if (authorized) {
+                      ref.read(appRouterProvider).go(RouterName.auditLogs);
+                    }
+                  },
+                );
+                if (constraints.maxWidth < 560) return auditLogs;
+                return Row(
+                  spacing: 16,
+                  children: [
+                    Expanded(child: auditLogs),
+                    const Expanded(child: SizedBox()),
+                  ],
+                );
+              },
+            ),
+          ],
 
           // ─── Reports section ──────────────────────────────
           const Text(
@@ -208,7 +216,7 @@ class SettingsView extends ConsumerWidget {
                 onTap: () async {
                   final authorized = await showAuthorizationDialog(
                     context: context,
-                    requiredRole: AuthorizationRole.admin,
+                    requiredRole: AuthorizationRole.adminOrSupervisor,
                     actionName: 'ver el reporte de ingresos',
                   );
                   if (authorized) {
@@ -216,6 +224,9 @@ class SettingsView extends ConsumerWidget {
                   }
                 },
               );
+              if (!isAdmin) {
+                return reporte;
+              }
               final ventasPorVendedor = _SettingsNavCard(
                 title: 'Ventas por vendedor',
                 description:
@@ -249,6 +260,51 @@ class SettingsView extends ConsumerWidget {
               );
             },
           ),
+
+          // ─── Super admin section ──────────────────────────
+          if (isMegaadmin) ...[
+            const Text(
+              'Súper administración',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppColors.zinc600,
+                letterSpacing: 0.3,
+              ),
+            ),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final usersManagement = _SettingsNavCard(
+                  title: 'Gestionar usuarios',
+                  description:
+                      'Restablece la contraseña de cualquier usuario',
+                  icon: Icons.admin_panel_settings_outlined,
+                  iconColor: AppColors.error,
+                  iconBgColor: AppColors.error.withValues(alpha: 0.1),
+                  onTap: () async {
+                    final authorized = await showAuthorizationDialog(
+                      context: context,
+                      requiredRole: AuthorizationRole.megadmin,
+                      actionName: 'gestionar usuarios',
+                    );
+                    if (authorized) {
+                      ref
+                          .read(appRouterProvider)
+                          .go(RouterName.usersManagement);
+                    }
+                  },
+                );
+                if (constraints.maxWidth < 560) return usersManagement;
+                return Row(
+                  spacing: 16,
+                  children: [
+                    Expanded(child: usersManagement),
+                    const Expanded(child: SizedBox()),
+                  ],
+                );
+              },
+            ),
+          ],
         ],
       ),
     );

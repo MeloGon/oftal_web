@@ -22,11 +22,16 @@ class ProfileModel with _$ProfileModel {
   @JsonKey(name: 'rol', includeFromJson: true, includeToJson: true)
   final String? role;
 
+  @override
+  @JsonKey(name: 'email', includeFromJson: true, includeToJson: true)
+  final String? email;
+
   ProfileModel({
     this.id,
     this.name,
     this.branchName,
     this.role,
+    this.email,
   });
 
   factory ProfileModel.fromJson(Map<String, Object?> json) =>

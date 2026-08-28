@@ -11,6 +11,7 @@ import 'package:oftal_web/features/settings/views/mounts/mounts_view.dart';
 import 'package:oftal_web/features/settings/views/payments_report/payments_report_view.dart';
 import 'package:oftal_web/features/settings/views/resins/resins_view.dart';
 import 'package:oftal_web/features/settings/views/sales_by_seller/sales_by_seller_view.dart';
+import 'package:oftal_web/features/settings/views/users_management/users_management_view.dart';
 import 'package:oftal_web/features/views.dart';
 import 'package:oftal_web/router/router_name.dart';
 import 'package:oftal_web/shared/layouts/auth/auth_layout.dart';
@@ -141,6 +142,10 @@ GoRouter appRouter(Ref ref) {
                   GoRoute(
                     path: 'sales-by-seller',
                     pageBuilder: (context, state) => _fadeRoute(const SalesBySellerView()),
+                  ),
+                  GoRoute(
+                    path: 'users-management',
+                    pageBuilder: (context, state) => _fadeRoute(const UsersManagementView()),
                   ),
                 ],
               ),

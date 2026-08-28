@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/shared/services/authorization_service.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Muestra un dialog que solicita credenciales de un supervisor o admin.
 /// Retorna `true` si la autorización fue exitosa, `false` en caso contrario.
@@ -44,10 +45,18 @@ class _AuthorizationDialogContentState
   bool _obscurePassword = true;
   String? _errorMessage;
 
-  String get _roleLabel =>
-      widget.requiredRole == AuthorizationRole.admin
-          ? 'administrador'
-          : 'supervisor';
+  String get _roleLabel => switch (widget.requiredRole) {
+    AuthorizationRole.admin => 'administrador',
+    AuthorizationRole.supervisor => 'supervisor',
+    AuthorizationRole.adminOrSupervisor => 'administrador o supervisor',
+    AuthorizationRole.megadmin => 'megadmin',
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.text = Supabase.instance.client.auth.currentUser?.email ?? '';
+  }
 
   @override
   void dispose() {

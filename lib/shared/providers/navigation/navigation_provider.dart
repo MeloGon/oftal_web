@@ -32,6 +32,10 @@ class Navigation extends _$Navigation {
 
   Future<void> isAdmin() async {
     final profile = await LocalStorage.getProfile();
-    state = state.copyWith(isAdmin: profile.role == 'admin');
+    state = state.copyWith(
+      isAdmin: profile.role == 'admin' || profile.role == 'megadmin',
+      isSupervisor: profile.role == 'supervisor',
+      isMegaadmin: profile.role == 'megadmin',
+    );
   }
 }

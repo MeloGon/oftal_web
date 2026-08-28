@@ -129,7 +129,8 @@ class Sidebar extends ConsumerWidget {
                 ref.read(appRouterProvider).go(RouterName.expenses),
             isActive: navigationState.currentPage == RouterName.expenses,
           ),
-          if (ref.read(navigationProvider).isAdmin)
+          if (ref.read(navigationProvider).isAdmin ||
+              ref.read(navigationProvider).isSupervisor)
             MenuItem(
               text: 'Configuración',
               icon: Icons.tune_outlined,
