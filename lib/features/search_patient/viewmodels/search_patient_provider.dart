@@ -64,13 +64,13 @@ class SearchPatient extends _$SearchPatient {
 
   Future<void> getPatients() async {
     state = state.copyWith(isLoading: true);
-    final result = searchIsEmpty
-        ? await ref
-            .read(patientRepositoryProvider)
-            .getLastPatients(limit: 10)
-        : await ref
-            .read(patientRepositoryProvider)
-            .searchPatients(searchController.text);
+    final result = await ref
+        .read(patientRepositoryProvider)
+        .searchPatientsPage(
+          query: searchController.text,
+          offset: state.offset,
+          limit: state.pageSize,
+        );
     result.fold(
       (failure) => state = state.copyWith(
         errorMessage: failure.message,
@@ -80,8 +80,31 @@ class SearchPatient extends _$SearchPatient {
         ),
         isLoading: false,
       ),
-      (patients) => state = state.copyWith(patients: patients, isLoading: false),
+      (data) => state = state.copyWith(
+        patients: data.items,
+        hasMore: data.hasMore,
+        isLoading: false,
+      ),
     );
+  }
+
+  /// Runs a new search from the first page.
+  void search() {
+    state = state.copyWith(offset: 0);
+    getPatients();
+  }
+
+  void nextPage() {
+    if (!state.hasMore) return;
+    state = state.copyWith(offset: state.offset + state.pageSize);
+    getPatients();
+  }
+
+  void prevPage() {
+    if (state.offset == 0) return;
+    final newOffset = (state.offset - state.pageSize).clamp(0, 1 << 31);
+    state = state.copyWith(offset: newOffset);
+    getPatients();
   }
 
   Future<void> getReviews(String patientName) async {
@@ -276,10 +299,6 @@ class SearchPatient extends _$SearchPatient {
     avConRxOiCercaController.clear();
     optometricDiagnosisController.clear();
     dateConsultController.clear();
-  }
-
-  void changeRowsPerPage(int value) {
-    state = state.copyWith(rowsPerPage: value);
   }
 
   Future<void> deletePatient(int id) async {

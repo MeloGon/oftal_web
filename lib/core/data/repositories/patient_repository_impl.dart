@@ -20,6 +20,22 @@ class PatientRepositoryImpl implements PatientRepository {
   }
 
   @override
+  Future<Either<Failure, ({List<PatientModel> items, bool hasMore})>>
+  searchPatientsPage({String query = '', int offset = 0, int limit = 10}) async {
+    try {
+      return Right(
+        await _dataSource.searchPatientsPage(
+          query: query,
+          offset: offset,
+          limit: limit,
+        ),
+      );
+    } catch (e) {
+      return Left(Failure.server(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, List<PatientModel>>> getLastPatients({
     int limit = 5,
   }) async {

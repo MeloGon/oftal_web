@@ -3,6 +3,11 @@ import 'package:oftal_web/shared/models/shared_models.dart';
 
 abstract class PatientRemoteDataSource {
   Future<List<PatientModel>> searchPatients(String query);
+  Future<({List<PatientModel> items, bool hasMore})> searchPatientsPage({
+    String query = '',
+    int offset = 0,
+    int limit = 10,
+  });
   Future<List<PatientModel>> getLastPatients({int limit = 5});
   Future<int> countByBranch(String branch);
   Future<void> insertPatient(PatientModel patient);
@@ -21,6 +26,31 @@ class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
         .select()
         .textSearch('"NOMBRE COMPLETO"', '%$query%', type: TextSearchType.plain);
     return response.map((json) => PatientModel.fromJson(json)).toList();
+  }
+
+  @override
+  Future<({List<PatientModel> items, bool hasMore})> searchPatientsPage({
+    String query = '',
+    int offset = 0,
+    int limit = 10,
+  }) async {
+    var q = client.from('pacientes').select();
+    if (query.isNotEmpty) {
+      q = q.textSearch(
+        '"NOMBRE COMPLETO"',
+        '%$query%',
+        type: TextSearchType.plain,
+      );
+    }
+    final response = await q
+        .order('fecha_registro_actualizada', ascending: false)
+        .range(offset, offset + limit);
+    final rows = response.map((json) => PatientModel.fromJson(json)).toList();
+    final hasMore = rows.length > limit;
+    return (
+      items: hasMore ? rows.sublist(0, limit) : rows,
+      hasMore: hasMore,
+    );
   }
 
   @override

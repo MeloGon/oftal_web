@@ -1,4 +1,3 @@
-import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/enums/enums.dart';
@@ -6,13 +5,13 @@ import 'package:oftal_web/features/search_patient/viewmodels/search_patient_prov
 import 'package:oftal_web/features/search_patient/views/widgets/add_review_dialog.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/edit_patient_dialog.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/patients_empty_state.dart';
-import 'package:oftal_web/features/search_patient/views/widgets/patients_table.dart';
+import 'package:oftal_web/features/search_patient/views/widgets/patient_tile.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/review_details_dialog.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/search_patient_bar.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/search_patient_header.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
-import 'package:oftal_web/shared/models/snackbar_config_model.dart';
-import 'package:oftal_web/shared/widgets/custom_snackbar.dart';
+import 'package:oftal_web/shared/models/shared_models.dart';
+import 'package:oftal_web/shared/widgets/widgets.dart';
 
 class SearchPatientView extends ConsumerStatefulWidget {
   const SearchPatientView({super.key});
@@ -22,17 +21,10 @@ class SearchPatientView extends ConsumerStatefulWidget {
 }
 
 class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
-  final PaginatorController _paginatorController = PaginatorController();
-
-  @override
-  void dispose() {
-    _paginatorController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final searchPatientState = ref.watch(searchPatientProvider);
+    final notifier = ref.read(searchPatientProvider.notifier);
 
     ref.listenLoading(
       searchPatientProvider.select((s) => s.isLoading),
@@ -84,11 +76,29 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
         spacing: 20,
         children: [
           const SearchPatientHeader(),
-          SearchPatientBar(paginatorController: _paginatorController),
-          if (searchPatientState.patients.isNotEmpty)
-            PatientsTable(paginatorController: _paginatorController)
-          else
-            const PatientsEmptyState(),
+          const SearchPatientBar(),
+          if (searchPatientState.patients.isEmpty &&
+              searchPatientState.offset == 0)
+            const PatientsEmptyState()
+          else ...[
+            Expanded(
+              child: PagedListCard<PatientModel>(
+                items: searchPatientState.patients,
+                emptyLabel: 'Sin pacientes',
+                emptyIcon: Icons.people_outline,
+                itemBuilder: (_, patient) => PatientTile(patient: patient),
+              ),
+            ),
+            ListPaginationBar(
+              label: 'Página ${searchPatientState.pageNumber}',
+              canPrev: searchPatientState.offset > 0 &&
+                  !searchPatientState.isLoading,
+              canNext: searchPatientState.hasMore &&
+                  !searchPatientState.isLoading,
+              onPrev: notifier.prevPage,
+              onNext: notifier.nextPage,
+            ),
+          ],
         ],
       ),
     );

@@ -15,7 +15,13 @@ abstract class SearchPatientState with _$SearchPatientState {
     @Default(false) bool isReviewDialogOpen,
     @Default(false) bool isEditDialogOpen,
     PatientModel? patientToEdit,
-    @Default(10) int rowsPerPage,
+    @Default(0) int offset,
+    @Default(10) int pageSize,
+    @Default(false) bool hasMore,
     @Default('') String patientName,
   }) = _SearchPatientState;
+
+  const SearchPatientState._();
+
+  int get pageNumber => (offset ~/ pageSize) + 1;
 }
