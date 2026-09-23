@@ -22,7 +22,7 @@ class SalesHistory extends _$SalesHistory {
   final searchController = TextEditingController();
 
   void updateSearchDate(DateTime date) {
-    state = state.copyWith(searchDate: date);
+    state = state.copyWith(searchDate: date, offset: 0);
     searchController.text = DateFormat('yyyy-MM-dd').format(date);
     getSales();
   }
@@ -41,37 +41,19 @@ class SalesHistory extends _$SalesHistory {
 
   Future<void> getSales() async {
     state = state.copyWith(isLoading: true);
-    final onlyPending = state.onlyPending;
-    if (searchController.text.isNotEmpty) {
-      final filter = _getFilter();
-      final isDate =
-          state.selectedFilter == FilterToSalesHistory.date ||
-          state.selectedFilter == FilterToSalesHistory.seller;
-      final result = await ref
-          .read(saleRepositoryProvider)
-          .getSalesByFilter(
-            filter,
-            searchController.text,
-            isDate: isDate,
-            onlyPending: onlyPending,
-          );
-      result.fold(
-        (failure) =>
-            state = state.copyWith(
-              errorMessage: failure.message,
-              snackbarConfig: SnackbarConfigModel(
-                title: 'Error',
-                type: SnackbarEnum.error,
-              ),
-              isLoading: false,
-            ),
-        (sales) => state = state.copyWith(sales: sales, isLoading: false),
-      );
-      return;
-    }
+    final hasQuery = searchController.text.isNotEmpty;
     final result = await ref
         .read(saleRepositoryProvider)
-        .getRecentSales(limit: 20, onlyPending: onlyPending);
+        .getSalesPage(
+          filter: hasQuery ? _getFilter() : null,
+          query: hasQuery ? searchController.text : null,
+          isDate:
+              state.selectedFilter == FilterToSalesHistory.date ||
+              state.selectedFilter == FilterToSalesHistory.seller,
+          onlyPending: state.onlyPending,
+          offset: state.offset,
+          limit: state.pageSize,
+        );
     result.fold(
       (failure) =>
           state = state.copyWith(
@@ -82,12 +64,36 @@ class SalesHistory extends _$SalesHistory {
             ),
             isLoading: false,
           ),
-      (sales) => state = state.copyWith(sales: sales, isLoading: false),
+      (data) =>
+          state = state.copyWith(
+            sales: data.items,
+            hasMore: data.hasMore,
+            isLoading: false,
+          ),
     );
   }
 
+  /// Runs a new search from the first page.
+  void search() {
+    state = state.copyWith(offset: 0);
+    getSales();
+  }
+
+  void nextPage() {
+    if (!state.hasMore) return;
+    state = state.copyWith(offset: state.offset + state.pageSize);
+    getSales();
+  }
+
+  void prevPage() {
+    if (state.offset == 0) return;
+    final newOffset = (state.offset - state.pageSize).clamp(0, 1 << 31);
+    state = state.copyWith(offset: newOffset);
+    getSales();
+  }
+
   void togglePending() {
-    state = state.copyWith(onlyPending: !state.onlyPending);
+    state = state.copyWith(onlyPending: !state.onlyPending, offset: 0);
     getSales();
   }
 
@@ -129,6 +135,7 @@ class SalesHistory extends _$SalesHistory {
       selectedFilter: null,
       onlyPending: false,
       searchDate: null,
+      offset: 0,
     );
     getSales();
   }
@@ -181,12 +188,8 @@ class SalesHistory extends _$SalesHistory {
     state = state.copyWith(saleSelectedForDetails: null);
   }
 
-  void changeRowsPerPage(int value) {
-    state = state.copyWith(rowsPerPage: value);
-  }
-
   void selectFilter(FilterToSalesHistory filter) {
-    state = state.copyWith(selectedFilter: filter);
+    state = state.copyWith(selectedFilter: filter, offset: 0);
     searchController.clear();
     getSales();
   }

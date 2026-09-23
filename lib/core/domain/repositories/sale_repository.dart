@@ -7,11 +7,14 @@ abstract class SaleRepository {
     String from,
     String to,
   );
-  Future<Either<Failure, List<SalesModel>>> getSalesByFilter(
-    String filter,
-    String query, {
+  Future<Either<Failure, ({List<SalesModel> items, bool hasMore})>>
+  getSalesPage({
+    String? filter,
+    String? query,
     bool isDate = false,
     bool onlyPending = false,
+    int offset = 0,
+    int limit = 20,
   });
   Future<Either<Failure, List<SalesModel>>> getRecentSales({
     int limit = 20,

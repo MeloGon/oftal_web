@@ -1,12 +1,10 @@
-import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/core/enums/enums.dart';
-import 'package:oftal_web/features/sales_history/data/sales_history_datasource.dart';
 import 'package:oftal_web/features/sales_history/viewmodels/sales_history_provider.dart';
 import 'package:oftal_web/features/settings/viewmodels/app_features_provider.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/filter_history_sales.dart';
+import 'package:oftal_web/features/sales_history/views/widgets/sale_history_tile.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/sales_details_dialog.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/sales_history_page_header.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
@@ -22,19 +20,10 @@ class SalesHistoryView extends ConsumerStatefulWidget {
 }
 
 class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
-  late SalesHistoryDataSource _dataSource;
-
   @override
   void initState() {
     super.initState();
-    final initialSales = ref.read(salesHistoryProvider).sales;
-    _dataSource = SalesHistoryDataSource(
-      sales: initialSales,
-      context: context,
-      ref: ref,
-      changeDateEnabled: ref.read(appFeaturesProvider).changeDateEnabled,
-    );
-    if (initialSales.isEmpty) {
+    if (ref.read(salesHistoryProvider).sales.isEmpty) {
       Future.microtask(
         () => ref.read(salesHistoryProvider.notifier).getSales(),
       );
@@ -47,11 +36,6 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
     final salesNotifier = ref.read(salesHistoryProvider.notifier);
     final changeDateEnabled = ref.watch(
       appFeaturesProvider.select((s) => s.changeDateEnabled),
-    );
-    _dataSource.update(
-      salesState.sales,
-      context,
-      changeDateEnabled: changeDateEnabled,
     );
 
     ref.listenLoading(
@@ -118,108 +102,32 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
             ),
           ),
 
-          // ─── Table card ───────────────────────────────────
+          // ─── List ─────────────────────────────────────────
           Expanded(
-            child: ShadCard(
-            padding: EdgeInsets.zero,
-            child: MaterialUiScope(
-                showTooltips: false,
-                child: PaginatedDataTable2(
-                  headingRowHeight: 40,
-                  showCheckboxColumn: false,
-                  wrapInCard: false,
-                  fixedLeftColumns: 1,
-                  columnSpacing: 12,
-                  columnResizingParameters: ColumnResizingParameters(
-                    desktopMode: true,
-                    realTime: false,
-                    widgetColor: Theme.of(context).primaryColor,
-                  ),
-                  horizontalMargin: 16,
-                  minWidth: 1500,
-                  isHorizontalScrollBarVisible: true,
-                  isVerticalScrollBarVisible: true,
-                  headingRowColor: WidgetStateProperty.all(
-                    AppColors.zinc50,
-                  ),
-                  source: _dataSource,
-                  availableRowsPerPage: const [20],
-                  rowsPerPage: salesState.rowsPerPage,
-                  onRowsPerPageChanged:
-                      (value) => salesNotifier.changeRowsPerPage(value ?? 20),
-                  columns: [
-                    const DataColumn2(
-                      label: SizedBox.shrink(),
-                      fixedWidth: 48,
-                      isResizable: false,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Estado'),
-                      fixedWidth: 52,
-                      isResizable: false,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Folio'),
-                      fixedWidth: 70,
-                      isResizable: true,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Paciente'),
-                      fixedWidth: 210,
-                      isResizable: true,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Fecha'),
-                      fixedWidth: 100,
-                      isResizable: true,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Vendedor'),
-                      fixedWidth: 130,
-                      isResizable: true,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('A cuenta'),
-                      fixedWidth: 90,
-                      isResizable: true,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Resto'),
-                      fixedWidth: 90,
-                      isResizable: true,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Descuento'),
-                      fixedWidth: 90,
-                      isResizable: true,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Total'),
-                      fixedWidth: 90,
-                      isResizable: true,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Total desc.'),
-                      fixedWidth: 100,
-                      isResizable: true,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Sucursal'),
-                      fixedWidth: 100,
-                      isResizable: true,
-                    ),
-                  ],
-                ),
+            child: PagedListCard<SalesModel>(
+              items: salesState.sales,
+              emptyLabel: 'Sin ventas',
+              emptyIcon: Icons.point_of_sale_outlined,
+              itemBuilder: (_, sale) => SaleHistoryTile(
+                sale: sale,
+                changeDateEnabled: changeDateEnabled,
               ),
             ),
+          ),
+
+          // ─── Pagination ───────────────────────────────────
+          ListPaginationBar(
+            label: 'Página ${salesState.pageNumber}',
+            canPrev: salesState.offset > 0 && !salesState.isLoading,
+            canNext: salesState.hasMore && !salesState.isLoading,
+            onPrev: salesNotifier.prevPage,
+            onNext: salesNotifier.nextPage,
           ),
         ],
       ),
     );
   }
 }
-
-
 
 void _showSnackbar(
   BuildContext context,

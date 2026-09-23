@@ -13,10 +13,16 @@ abstract class SalesHistoryState with _$SalesHistoryState {
     @Default([]) List<SalesDetailsModel> saleDetails,
     SnackbarConfigModel? snackbarConfig,
     @Default('') String errorMessage,
-    @Default(20) int rowsPerPage,
+    @Default(0) int offset,
+    @Default(20) int pageSize,
+    @Default(false) bool hasMore,
     FilterToSalesHistory? selectedFilter,
     @Default('') String searchText,
     DateTime? searchDate,
     @Default(false) bool onlyPending,
   }) = _SalesHistoryState;
+
+  const SalesHistoryState._();
+
+  int get pageNumber => (offset ~/ pageSize) + 1;
 }

@@ -54,13 +54,13 @@ class FilterHistorySales extends ConsumerWidget {
                   ? 'Ingresa el nombre del paciente'
                   : 'Ingresa el numero de folio',
             ),
-            onSubmitted: (_) => salesHistoryNotifier.getSales(),
+            onSubmitted: (_) => salesHistoryNotifier.search(),
             trailing: salesHistoryState.searchText.isEmpty
                 ? null
                 : ShadButton(
                     onPressed: () {
                       salesHistoryNotifier.searchController.clear();
-                      salesHistoryNotifier.getSales();
+                      salesHistoryNotifier.search();
                     },
                     child: const Icon(Icons.close),
                   ),
@@ -91,7 +91,7 @@ class FilterHistorySales extends ConsumerWidget {
                 onChanged: (seller) {
                   if (seller != null) {
                     salesHistoryNotifier.searchController.text = seller.name;
-                    salesHistoryNotifier.getSales();
+                    salesHistoryNotifier.search();
                   }
                 },
               ).constrained(width: 220);

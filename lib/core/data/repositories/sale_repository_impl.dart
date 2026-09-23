@@ -21,19 +21,24 @@ class SaleRepositoryImpl implements SaleRepository {
   }
 
   @override
-  Future<Either<Failure, List<SalesModel>>> getSalesByFilter(
-    String filter,
-    String query, {
+  Future<Either<Failure, ({List<SalesModel> items, bool hasMore})>>
+  getSalesPage({
+    String? filter,
+    String? query,
     bool isDate = false,
     bool onlyPending = false,
+    int offset = 0,
+    int limit = 20,
   }) async {
     try {
       return Right(
-        await _dataSource.getSalesByFilter(
-          filter,
-          query,
+        await _dataSource.getSalesPage(
+          filter: filter,
+          query: query,
           isDate: isDate,
           onlyPending: onlyPending,
+          offset: offset,
+          limit: limit,
         ),
       );
     } catch (e) {

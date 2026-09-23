@@ -4,11 +4,13 @@ import 'package:oftal_web/shared/models/shared_models.dart';
 
 abstract class SaleRemoteDataSource {
   Future<List<SalesModel>> getSalesByDateRange(String from, String to);
-  Future<List<SalesModel>> getSalesByFilter(
-    String filter,
-    String query, {
+  Future<({List<SalesModel> items, bool hasMore})> getSalesPage({
+    String? filter,
+    String? query,
     bool isDate = false,
     bool onlyPending = false,
+    int offset = 0,
+    int limit = 20,
   });
   Future<List<SalesModel>> getRecentSales({
     int limit = 20,
@@ -58,23 +60,32 @@ class SaleRemoteDataSourceImpl implements SaleRemoteDataSource {
   }
 
   @override
-  Future<List<SalesModel>> getSalesByFilter(
-    String filter,
-    String query, {
+  Future<({List<SalesModel> items, bool hasMore})> getSalesPage({
+    String? filter,
+    String? query,
     bool isDate = false,
     bool onlyPending = false,
+    int offset = 0,
+    int limit = 20,
   }) async {
     var q = client.from('ventas cortas').select();
-    if (isDate) {
-      q = q.eq(filter, query);
-    } else {
-      q = q.textSearch(filter, '%$query%', type: TextSearchType.plain);
+    if (filter != null && query != null && query.isNotEmpty) {
+      if (isDate) {
+        q = q.eq(filter, query);
+      } else {
+        q = q.textSearch(filter, '%$query%', type: TextSearchType.plain);
+      }
     }
     if (onlyPending) q = q.gt('RESTA', 0);
-    final response = isDate
-        ? await q.order('fecha_actualizada', ascending: false)
-        : await q;
-    return response.map((json) => SalesModel.fromJson(json)).toList();
+    final response = await q
+        .order('fecha_actualizada', ascending: false)
+        .range(offset, offset + limit);
+    final rows = response.map((json) => SalesModel.fromJson(json)).toList();
+    final hasMore = rows.length > limit;
+    return (
+      items: hasMore ? rows.sublist(0, limit) : rows,
+      hasMore: hasMore,
+    );
   }
 
   @override
