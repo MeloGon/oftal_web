@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/features/settings/viewmodels/audit_logs_provider.dart';
 import 'package:oftal_web/shared/models/audit_log_model.dart';
+import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -122,39 +123,22 @@ class AuditLogsView extends ConsumerWidget {
 
           // ─── Table ───────────────────────────────────────
           Expanded(
-            child: ShadCard(
-              padding: EdgeInsets.zero,
-              child: state.isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : state.logs.isEmpty
-                  ? _EmptyState()
-                  : _LogsTable(logs: state.logs),
+            child: PagedListCard<AuditLogModel>(
+              items: state.logs,
+              isLoading: state.isLoading,
+              emptyLabel: 'Sin registros de auditoría',
+              emptyIcon: Icons.history_rounded,
+              itemBuilder: (_, log) => _LogTile(log: log),
             ),
           ),
 
           // ─── Pagination ──────────────────────────────────
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(
-                'Página ${state.pageNumber}',
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-              ),
-              const SizedBox(width: 12),
-              ShadButton.outline(
-                size: ShadButtonSize.sm,
-                enabled: state.offset > 0 && !state.isLoading,
-                onPressed: notifier.prevPage,
-                child: const Icon(Icons.chevron_left, size: 16),
-              ),
-              const SizedBox(width: 6),
-              ShadButton.outline(
-                size: ShadButtonSize.sm,
-                enabled: state.hasMore && !state.isLoading,
-                onPressed: notifier.nextPage,
-                child: const Icon(Icons.chevron_right, size: 16),
-              ),
-            ],
+          ListPaginationBar(
+            label: 'Página ${state.pageNumber}',
+            canPrev: state.offset > 0 && !state.isLoading,
+            canNext: state.hasMore && !state.isLoading,
+            onPrev: notifier.prevPage,
+            onNext: notifier.nextPage,
           ),
         ],
       ),
@@ -183,23 +167,6 @@ IconData _actionIcon(String action) => switch (action) {
       'delete_mount' => Icons.delete_outline,
       _ => Icons.history_rounded,
     };
-
-// ─── Table ────────────────────────────────────────────────────────────────────
-
-class _LogsTable extends StatelessWidget {
-  const _LogsTable({required this.logs});
-  final List<AuditLogModel> logs;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: logs.length,
-      separatorBuilder: (_, _) => const Divider(height: 1),
-      itemBuilder: (context, i) => _LogTile(log: logs[i]),
-    );
-  }
-}
 
 class _LogTile extends StatelessWidget {
   const _LogTile({required this.log});
@@ -328,7 +295,7 @@ class _LogTile extends StatelessWidget {
                       spacing: 6,
                       runSpacing: 4,
                       children: log.mountFields
-                          .map((f) => _FieldChip(label: f.label, value: f.value))
+                          .map((f) => FieldChip(label: f.label, value: f.value))
                           .toList(),
                     ),
                   ),
@@ -341,7 +308,7 @@ class _LogTile extends StatelessWidget {
                       spacing: 6,
                       runSpacing: 4,
                       children: log.infoChips
-                          .map((f) => _FieldChip(label: f.label, value: f.value))
+                          .map((f) => FieldChip(label: f.label, value: f.value))
                           .toList(),
                     ),
                   ),
@@ -403,64 +370,6 @@ class _Chip extends StatelessWidget {
           fontWeight: FontWeight.w600,
           color: isNew ? AppColors.successDark : AppColors.zinc600,
         ),
-      ),
-    );
-  }
-}
-
-class _FieldChip extends StatelessWidget {
-  const _FieldChip({required this.label, required this.value});
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: AppColors.zinc100,
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: RichText(
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: '$label: ',
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: AppColors.zinc500,
-              ),
-            ),
-            TextSpan(
-              text: value,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: AppColors.zinc700,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        spacing: 8,
-        children: [
-          Icon(Icons.history_rounded, size: 36, color: Colors.grey.shade300),
-          Text(
-            'Sin registros de auditoría',
-            style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
-          ),
-        ],
       ),
     );
   }

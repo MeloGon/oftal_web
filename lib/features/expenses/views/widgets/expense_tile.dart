@@ -2,32 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
-
-class ExpensesList extends StatelessWidget {
-  const ExpensesList({
-    super.key,
-    required this.expenses,
-    required this.onEdit,
-    required this.onDelete,
-  });
-  final List<ExpenseModel> expenses;
-  final void Function(ExpenseModel) onEdit;
-  final void Function(ExpenseModel) onDelete;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: expenses.length,
-      separatorBuilder: (_, _) => const Divider(height: 1),
-      itemBuilder: (context, i) => ExpenseTile(
-        expense: expenses[i],
-        onEdit: () => onEdit(expenses[i]),
-        onDelete: () => onDelete(expenses[i]),
-      ),
-    );
-  }
-}
+import 'package:oftal_web/shared/widgets/field_chip.dart';
 
 class ExpenseTile extends StatelessWidget {
   const ExpenseTile({
@@ -108,24 +83,24 @@ class ExpenseTile extends StatelessWidget {
                   spacing: 6,
                   runSpacing: 4,
                   children: [
-                    _FieldChip(label: 'Fecha', value: expense.fecha),
-                    _FieldChip(
+                    FieldChip(label: 'Fecha', value: expense.fecha),
+                    FieldChip(
                       label: 'Método',
                       value: _capitalize(expense.metodoPago),
                     ),
                     if (expense.comprobante != null &&
                         expense.comprobante!.isNotEmpty)
-                      _FieldChip(
+                      FieldChip(
                         label: 'Comprobante',
                         value: expense.comprobante!,
                       ),
                     if (expense.sucursal != null)
-                      _FieldChip(
+                      FieldChip(
                         label: 'Sucursal',
                         value: expense.sucursal!,
                       ),
                     if (expense.registradoPor != null)
-                      _FieldChip(
+                      FieldChip(
                         label: 'Por',
                         value: expense.registradoPor!,
                       ),
@@ -207,41 +182,3 @@ Color _hexToColor(String? hex) {
 String _capitalize(String s) =>
     s.isEmpty ? s : '${s[0].toUpperCase()}${s.substring(1)}';
 
-class _FieldChip extends StatelessWidget {
-  const _FieldChip({required this.label, required this.value});
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: AppColors.zinc100,
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: RichText(
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: '$label: ',
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: AppColors.zinc500,
-              ),
-            ),
-            TextSpan(
-              text: value,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: AppColors.zinc700,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

@@ -137,59 +137,27 @@ class _ExpensesViewState extends ConsumerState<ExpensesView> {
 
           // ─── List ─────────────────────────────────────────────
           Expanded(
-            child: ShadCard(
-              padding: EdgeInsets.zero,
-              child: state.isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : state.expenses.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            spacing: 8,
-                            children: [
-                              Icon(Icons.receipt_long_outlined,
-                                  size: 36, color: Colors.grey.shade300),
-                              Text(
-                                'Sin egresos registrados',
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey.shade500),
-                              ),
-                            ],
-                          ),
-                        )
-                      : ExpensesList(
-                          expenses: state.expenses,
-                          onEdit: (e) => ExpenseFormDialog()
-                              .show(context, ref, expense: e),
-                          onDelete: (e) => _confirmDelete(e),
-                        ),
+            child: PagedListCard<ExpenseModel>(
+              items: state.expenses,
+              isLoading: state.isLoading,
+              emptyLabel: 'Sin egresos registrados',
+              emptyIcon: Icons.receipt_long_outlined,
+              itemBuilder: (context, e) => ExpenseTile(
+                expense: e,
+                onEdit: () =>
+                    ExpenseFormDialog().show(context, ref, expense: e),
+                onDelete: () => _confirmDelete(e),
+              ),
             ),
           ),
 
           // ─── Pagination ───────────────────────────────────────
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(
-                'Página ${state.pageNumber}',
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-              ),
-              const SizedBox(width: 12),
-              ShadButton.outline(
-                size: ShadButtonSize.sm,
-                enabled: state.offset > 0 && !state.isLoading,
-                onPressed: notifier.prevPage,
-                child: const Icon(Icons.chevron_left, size: 16),
-              ),
-              const SizedBox(width: 6),
-              ShadButton.outline(
-                size: ShadButtonSize.sm,
-                enabled: state.hasMore && !state.isLoading,
-                onPressed: notifier.nextPage,
-                child: const Icon(Icons.chevron_right, size: 16),
-              ),
-            ],
+          ListPaginationBar(
+            label: 'Página ${state.pageNumber}',
+            canPrev: state.offset > 0 && !state.isLoading,
+            canNext: state.hasMore && !state.isLoading,
+            onPrev: notifier.prevPage,
+            onNext: notifier.nextPage,
           ),
         ],
       ),
