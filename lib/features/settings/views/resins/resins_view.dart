@@ -1,12 +1,11 @@
-import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/core/enums/enums.dart';
-import 'package:oftal_web/features/settings/data/resins_inventory_datasource.dart';
 import 'package:oftal_web/features/settings/viewmodels/resins/resins_provider.dart';
 import 'package:oftal_web/features/settings/views/resins/widgets/add_resin_dialog.dart';
+import 'package:oftal_web/features/settings/views/resins/widgets/resin_inventory_tile.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -16,7 +15,6 @@ class ResinsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final width = MediaQuery.sizeOf(context).width;
     final resinsState = ref.watch(resinsProvider);
     final resinsNotifier = ref.read(resinsProvider.notifier);
 
@@ -97,82 +95,32 @@ class ResinsView extends ConsumerWidget {
             ],
           ),
 
-          // ─── Table card ───────────────────────────────────
+          // ─── List ─────────────────────────────────────────
           Expanded(
-           child: ShadCard(
-            padding: EdgeInsets.zero,
-            child: MaterialUiScope(
-             child: LoadingOverlay(
+            child: PagedListCard<ResinModel>(
+              items: resinsState.resins,
               isLoading: resinsState.isLoading,
-              child: PaginatedDataTable2(
-                  wrapInCard: false,
-                  columnSpacing: 12,
-                  horizontalMargin: 16,
-                  headingRowHeight: 40,
-                  minWidth: width * 0.88,
-                  isHorizontalScrollBarVisible: true,
-                  isVerticalScrollBarVisible: true,
-                  headingRowColor: WidgetStateProperty.all(
-                    AppColors.zinc50,
-                  ),
-                  columns: const [
-                    DataColumn2(
-                      label: DataColHeader('Descripción'),
-                      fixedWidth: 230,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Diseño'),
-                      size: ColumnSize.M,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Linea'),
-                      size: ColumnSize.M,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Material'),
-                      size: ColumnSize.L,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Tecnología'),
-                      size: ColumnSize.L,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Cant.'),
-                      size: ColumnSize.S,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('P. Interno'),
-                      size: ColumnSize.M,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Precio'),
-                      size: ColumnSize.M,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Acciones'),
-                      size: ColumnSize.M,
-                    ),
-                  ],
-                  source: ResinInventoryDataSource(
-                    pageItems: resinsState.resins,
-                    totalItems: resinsState.totalCount,
-                    currentOffset: resinsState.offset,
-                    isLoading: resinsState.isLoading,
-                    context: context,
-                    ref: ref,
-                  ),
-                  availableRowsPerPage: const [10, 20, 30, 50],
-                  rowsPerPage: resinsState.rowsPerPage,
-                  onRowsPerPageChanged: (value) =>
-                      resinsNotifier.changeRowsPerPage(value ?? 10),
-                  onPageChanged: (rowIndex) => resinsNotifier.fetchPage(
-                    offset: rowIndex,
-                    limit: resinsState.rowsPerPage,
-                  ),
-                ),
-              ),
-             ),
+              emptyLabel: 'Sin resinas registradas',
+              emptyIcon: Icons.lens_outlined,
+              itemBuilder: (_, r) => ResinInventoryTile(resin: r),
             ),
+          ),
+          ListPaginationBar(
+            label: 'Página ${resinsState.offset ~/ resinsState.rowsPerPage + 1}',
+            canPrev: resinsState.offset > 0 && !resinsState.isLoading,
+            canNext: resinsState.hasMore && !resinsState.isLoading,
+            onPrev: () => resinsNotifier.fetchPage(
+              offset: (resinsState.offset - resinsState.rowsPerPage)
+                  .clamp(0, 1 << 31),
+              limit: resinsState.rowsPerPage,
+            ),
+            onNext: () => resinsNotifier.fetchPage(
+              offset: resinsState.offset + resinsState.rowsPerPage,
+              limit: resinsState.rowsPerPage,
+            ),
+            pageSizes: const [10, 20, 30, 50],
+            pageSize: resinsState.rowsPerPage,
+            onPageSizeChanged: resinsNotifier.changeRowsPerPage,
           ),
         ],
       ),

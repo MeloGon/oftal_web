@@ -1,12 +1,11 @@
-import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:oftal_web/core/enums/enums.dart';
-import 'package:oftal_web/features/settings/data/mounts_inventory_datasource.dart';
 import 'package:oftal_web/features/settings/viewmodels/mounts/mounts_provider.dart';
 import 'package:oftal_web/features/settings/views/mounts/widgets/add_mount_dialog.dart';
+import 'package:oftal_web/features/settings/views/mounts/widgets/mount_inventory_tile.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -16,7 +15,6 @@ class MountsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final width = MediaQuery.sizeOf(context).width;
     final mountsState = ref.watch(mountsProvider);
     final mountsNotifier = ref.read(mountsProvider.notifier);
 
@@ -132,79 +130,47 @@ class MountsView extends ConsumerWidget {
             ],
           ),
 
-          // ─── Table card ───────────────────────────────────
-          Expanded(
-           child: ShadCard(
-            padding: EdgeInsets.zero,
-            child: MaterialUiScope(
-             child: LoadingOverlay(
-              isLoading: mountsState.isLoading,
-              child: PaginatedDataTable2(
-                  wrapInCard: false,
-                  columnSpacing: 12,
-                  horizontalMargin: 16,
-                  headingRowHeight: 40,
-                  minWidth: width * 0.88,
-                  isHorizontalScrollBarVisible: true,
-                  isVerticalScrollBarVisible: true,
-                  headingRowColor: WidgetStateProperty.all(
-                    AppColors.zinc50,
-                  ),
-                  columns: const [
-                    DataColumn2(
-                      label: DataColHeader('Marca'),
-                      fixedWidth: 180,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Modelo'),
-                      size: ColumnSize.M,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Color'),
-                      size: ColumnSize.M,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Descripción'),
-                      size: ColumnSize.L,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Optica'),
-                      size: ColumnSize.M,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Precio'),
-                      size: ColumnSize.S,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Stock'),
-                      size: ColumnSize.S,
-                    ),
-                    DataColumn2(
-                      label: DataColHeader('Acciones'),
-                      size: ColumnSize.S,
-                    ),
-                  ],
-                  source: MountsInventoryDataSource(
-                    pageItems: mountsState.mounts,
-                    totalItems: mountsState.totalCount,
-                    currentOffset: mountsState.offset,
-                    isLoading: mountsState.isLoading,
-                    context: context,
-                    ref: ref,
-                  ),
-                  availableRowsPerPage: const [10, 50, 100],
-                  rowsPerPage: mountsState.rowsPerPage,
-                  onRowsPerPageChanged: (value) =>
-                      mountsNotifier.changeRowsPerPage(value ?? 10),
-                  onPageChanged: (rowIndex) => mountsNotifier.fetchPage(
-                    offset: rowIndex,
-                    limit: mountsState.rowsPerPage,
-                  ),
-                ),
+          // ─── List ─────────────────────────────────────────
+          if (mountsState.isSearchMode)
+            Expanded(
+              child: ClientPagedList<MountModel>(
+                items: mountsState.mounts,
+                pageSize: mountsState.rowsPerPage,
+                isLoading: mountsState.isLoading,
+                emptyLabel: 'Sin resultados',
+                emptyIcon: Icons.search_off_rounded,
+                itemBuilder: (_, m) => MountInventoryTile(mount: m),
               ),
-             ),
+            )
+          else ...[
+            Expanded(
+              child: PagedListCard<MountModel>(
+                items: mountsState.mounts,
+                isLoading: mountsState.isLoading,
+                emptyLabel: 'Sin monturas registradas',
+                emptyIcon: Icons.visibility_outlined,
+                itemBuilder: (_, m) => MountInventoryTile(mount: m),
+              ),
             ),
-          ),
+            ListPaginationBar(
+              label:
+                  'Página ${mountsState.offset ~/ mountsState.rowsPerPage + 1}',
+              canPrev: mountsState.offset > 0 && !mountsState.isLoading,
+              canNext: mountsState.hasMore && !mountsState.isLoading,
+              onPrev: () => mountsNotifier.fetchPage(
+                offset: (mountsState.offset - mountsState.rowsPerPage)
+                    .clamp(0, 1 << 31),
+                limit: mountsState.rowsPerPage,
+              ),
+              onNext: () => mountsNotifier.fetchPage(
+                offset: mountsState.offset + mountsState.rowsPerPage,
+                limit: mountsState.rowsPerPage,
+              ),
+              pageSizes: const [10, 50, 100],
+              pageSize: mountsState.rowsPerPage,
+              onPageSizeChanged: mountsNotifier.changeRowsPerPage,
+            ),
+          ],
         ],
       ),
     );
