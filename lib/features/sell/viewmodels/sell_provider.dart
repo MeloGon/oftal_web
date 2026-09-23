@@ -544,10 +544,6 @@ class Sell extends _$Sell {
     html.Url.revokeObjectUrl(url);
   }
 
-  void changeRowsPerPage(int value) {
-    state = state.copyWith(rowsPerPage: value);
-  }
-
   void updateItemPrice(int index, double newPrice) {
     final items = List<SalesDetailsModel>.from(state.itemsToSell);
     final item = items[index];

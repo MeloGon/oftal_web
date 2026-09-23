@@ -21,7 +21,6 @@ abstract class SellState with _$SellState {
     @Default('') String idFolio,
     DiscountReasonEnum? selectedDiscountReason,
     @Default([]) List<ResinModel> resins,
-    @Default(5) int rowsPerPage,
     @Default([]) List<SellerModel> sellers,
     SellerModel? selectedSeller,
     BranchEnum? selectedBranch,

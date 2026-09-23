@@ -1,15 +1,13 @@
-import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/constants/constants.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/core/theme/app_colors.dart';
-import 'package:oftal_web/features/sell/data/mounts_datasource.dart';
-import 'package:oftal_web/features/sell/data/resin_datasource.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_provider.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_state.dart';
 import 'package:oftal_web/features/sell/views/widgets/page_header.dart';
 import 'package:oftal_web/features/sell/views/widgets/patient_result_list.dart';
+import 'package:oftal_web/features/sell/views/widgets/sell_catalog_tiles.dart';
 import 'package:oftal_web/features/sell/views/widgets/sell_item_card.dart';
 import 'package:oftal_web/features/sell/views/widgets/step_card.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
@@ -270,70 +268,15 @@ class _SellViewState extends ConsumerState<SellView> {
                               }).toList();
                           return SizedBox(
                             width: double.infinity,
-                            height: 340,
-                            child: MaterialUiScope(
-                              showTooltips: false,
-                              child: PaginatedDataTable2(
-                                wrapInCard: false,
-                                showCheckboxColumn: false,
-                                columnSpacing: 12,
-                                horizontalMargin: 16,
-                                minWidth: 680,
-                                isHorizontalScrollBarVisible: true,
-                                isVerticalScrollBarVisible: true,
-                                headingRowHeight: 38,
-                                dataRowHeight: 44,
-                                columnResizingParameters:
-                                    ColumnResizingParameters(
-                                      realTime: false,
-                                      widgetColor:
-                                          Theme.of(context).primaryColor,
-                                    ),
-                                headingRowColor: WidgetStateProperty.all(
-                                  AppColors.zinc50,
-                                ),
-                                columns: const [
-                                  DataColumn2(
-                                    label: DataColHeader('Marca'),
-                                    size: ColumnSize.M,
-                                  ),
-                                  DataColumn2(
-                                    label: DataColHeader('Modelo'),
-                                    size: ColumnSize.M,
-                                  ),
-                                  DataColumn2(
-                                    label: DataColHeader('Color'),
-                                    fixedWidth: 110,
-                                  ),
-                                  DataColumn2(
-                                    label: DataColHeader('Descripción'),
-                                    size: ColumnSize.L,
-                                  ),
-                                  DataColumn2(
-                                    label: DataColHeader('Óptica'),
-                                    size: ColumnSize.M,
-                                  ),
-                                  DataColumn2(
-                                    label: DataColHeader('Precio'),
-                                    fixedWidth: 95,
-                                  ),
-                                  DataColumn2(
-                                    label: DataColHeader(''),
-                                    fixedWidth: 105,
-                                    isResizable: false,
-                                  ),
-                                ],
-                                source: MountsDataSource(
-                                  mounts: filteredMounts,
-                                  context: context,
-                                  ref: ref,
-                                ),
-                                availableRowsPerPage: const [5, 10, 20, 50],
-                                rowsPerPage: sellState.rowsPerPage,
-                                onRowsPerPageChanged:
-                                    (value) => sellNotifier.changeRowsPerPage(
-                                      value ?? 5,
-                                    ),
+                            height: 420,
+                            child: ClientPagedList<MountModel>(
+                              items: filteredMounts,
+                              pageSize: 5,
+                              emptyLabel: 'Sin monturas en esta sucursal',
+                              emptyIcon: Icons.visibility_off_outlined,
+                              itemBuilder: (_, m) => MountSellTile(
+                                mount: m,
+                                onAdd: () => sellNotifier.selectItemToSell(m),
                               ),
                             ),
                           );
@@ -342,75 +285,15 @@ class _SellViewState extends ConsumerState<SellView> {
                     if (sellState.resins.isNotEmpty && !sellState.isLoading)
                       SizedBox(
                         width: double.infinity,
-                        height: 340,
-                        child: MaterialUiScope(
-                          showTooltips: false,
-                          child: PaginatedDataTable2(
-                            wrapInCard: false,
-                            showCheckboxColumn: false,
-                            columnSpacing: 12,
-                            horizontalMargin: 16,
-                            minWidth: 820,
-                            isHorizontalScrollBarVisible: true,
-                            isVerticalScrollBarVisible: true,
-                            headingRowHeight: 38,
-                            dataRowHeight: 44,
-                            columnResizingParameters: ColumnResizingParameters(
-                              realTime: false,
-                              widgetColor: Theme.of(context).primaryColor,
-                            ),
-                            headingRowColor: WidgetStateProperty.all(
-                              AppColors.zinc50,
-                            ),
-                            columns: const [
-                              DataColumn2(
-                                label: DataColHeader('Descripción'),
-                                size: ColumnSize.S,
-                              ),
-                              DataColumn2(
-                                label: DataColHeader('Diseño'),
-                                size: ColumnSize.L,
-                              ),
-                              DataColumn2(
-                                label: DataColHeader('Línea'),
-                                size: ColumnSize.S,
-                              ),
-                              DataColumn2(
-                                label: DataColHeader('Material'),
-                                size: ColumnSize.S,
-                              ),
-                              DataColumn2(
-                                label: DataColHeader('Tecnología'),
-                                size: ColumnSize.M,
-                              ),
-                              DataColumn2(
-                                label: DataColHeader('Cant.'),
-                                fixedWidth: 58,
-                              ),
-                              DataColumn2(
-                                label: DataColHeader('P. Interno'),
-                                fixedWidth: 95,
-                              ),
-                              DataColumn2(
-                                label: DataColHeader('P. Público'),
-                                fixedWidth: 95,
-                              ),
-                              DataColumn2(
-                                label: DataColHeader(''),
-                                fixedWidth: 105,
-                                isResizable: false,
-                              ),
-                            ],
-                            source: ResinDataSource(
-                              resins: sellState.resins,
-                              context: context,
-                              ref: ref,
-                            ),
-                            availableRowsPerPage: const [5, 10, 20, 50],
-                            rowsPerPage: sellState.rowsPerPage,
-                            onRowsPerPageChanged:
-                                (value) =>
-                                    sellNotifier.changeRowsPerPage(value ?? 5),
+                        height: 420,
+                        child: ClientPagedList<ResinModel>(
+                          items: sellState.resins,
+                          pageSize: 5,
+                          emptyLabel: 'Sin resinas',
+                          emptyIcon: Icons.lens_outlined,
+                          itemBuilder: (_, r) => ResinSellTile(
+                            resin: r,
+                            onAdd: () => sellNotifier.selectItemToSell(r),
                           ),
                         ),
                       ),
