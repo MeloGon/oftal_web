@@ -136,7 +136,8 @@ class MountsView extends ConsumerWidget {
           Expanded(
            child: ShadCard(
             padding: EdgeInsets.zero,
-            child: LoadingOverlay(
+            child: MaterialUiScope(
+             child: LoadingOverlay(
               isLoading: mountsState.isLoading,
               child: PaginatedDataTable2(
                   wrapInCard: false,
@@ -201,6 +202,7 @@ class MountsView extends ConsumerWidget {
                   ),
                 ),
               ),
+             ),
             ),
           ),
         ],

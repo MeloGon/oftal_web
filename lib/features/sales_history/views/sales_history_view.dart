@@ -122,8 +122,8 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
           Expanded(
             child: ShadCard(
             padding: EdgeInsets.zero,
-            child: TooltipVisibility(
-                visible: false,
+            child: MaterialUiScope(
+                showTooltips: false,
                 child: PaginatedDataTable2(
                   headingRowHeight: 40,
                   showCheckboxColumn: false,

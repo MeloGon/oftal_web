@@ -6,23 +6,18 @@ part 'profile_model.g.dart';
 @freezed
 @JsonSerializable()
 class ProfileModel with _$ProfileModel {
-  @override
   @JsonKey(name: 'id', includeFromJson: true, includeToJson: true)
   final String? id;
 
-  @override
   @JsonKey(name: 'nombre', includeFromJson: true, includeToJson: true)
   final String? name;
 
-  @override
   @JsonKey(name: 'sucursal', includeFromJson: true, includeToJson: true)
   final String? branchName;
 
-  @override
   @JsonKey(name: 'rol', includeFromJson: true, includeToJson: true)
   final String? role;
 
-  @override
   @JsonKey(name: 'email', includeFromJson: true, includeToJson: true)
   final String? email;
 

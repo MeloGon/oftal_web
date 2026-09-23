@@ -271,8 +271,8 @@ class _SellViewState extends ConsumerState<SellView> {
                           return SizedBox(
                             width: double.infinity,
                             height: 340,
-                            child: TooltipVisibility(
-                              visible: false,
+                            child: MaterialUiScope(
+                              showTooltips: false,
                               child: PaginatedDataTable2(
                                 wrapInCard: false,
                                 showCheckboxColumn: false,
@@ -343,8 +343,8 @@ class _SellViewState extends ConsumerState<SellView> {
                       SizedBox(
                         width: double.infinity,
                         height: 340,
-                        child: TooltipVisibility(
-                          visible: false,
+                        child: MaterialUiScope(
+                          showTooltips: false,
                           child: PaginatedDataTable2(
                             wrapInCard: false,
                             showCheckboxColumn: false,

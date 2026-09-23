@@ -6,10 +6,8 @@ part 'seller_model.g.dart';
 @freezed
 @JsonSerializable()
 class SellerModel with _$SellerModel {
-  @override
   @JsonKey(name: 'id', includeFromJson: true, includeToJson: true)
   final int id;
-  @override
   @JsonKey(name: 'NOMBRE', includeFromJson: true, includeToJson: true)
   final String name;
 

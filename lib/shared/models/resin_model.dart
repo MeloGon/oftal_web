@@ -6,34 +6,24 @@ part 'resin_model.g.dart';
 @freezed
 @JsonSerializable()
 class ResinModel with _$ResinModel {
-  @override
   @JsonKey(name: 'id_oftalmico', includeFromJson: true, includeToJson: true)
   final int id;
-  @override
   @JsonKey(name: 'descripcion', includeFromJson: true, includeToJson: true)
   final String? description;
-  @override
   @JsonKey(name: 'diseño', includeFromJson: true, includeToJson: true)
   final String? design;
-  @override
   @JsonKey(name: 'linea', includeFromJson: true, includeToJson: true)
   final String? line;
-  @override
   @JsonKey(name: 'material', includeFromJson: true, includeToJson: true)
   final String? material;
-  @override
   @JsonKey(name: 'tecnologia', includeFromJson: true, includeToJson: true)
   final String? technology;
-  @override
   @JsonKey(name: 'texto', includeFromJson: true, includeToJson: true)
   final String? text;
-  @override
   @JsonKey(name: 'cantidad', includeFromJson: true, includeToJson: true)
   final int? quantity;
-  @override
   @JsonKey(name: 'precio', includeFromJson: true, includeToJson: true)
   final double? price;
-  @override
   @JsonKey(name: 'precio_interno', includeFromJson: true, includeToJson: true)
   final double? priceInternal;
 

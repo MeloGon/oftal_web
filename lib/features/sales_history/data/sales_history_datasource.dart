@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide DataCell, DataRow, DataTableSource;
+import 'package:material_ui/material_ui.dart' show DataCell, DataRow, DataTableSource;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:oftal_web/core/theme/app_colors.dart';

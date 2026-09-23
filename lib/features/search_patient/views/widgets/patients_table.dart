@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/features/search_patient/data/patients_datasource.dart';
 import 'package:oftal_web/features/search_patient/viewmodels/search_patient_provider.dart';
-import 'package:oftal_web/shared/widgets/data_col_header.dart';
+import 'package:oftal_web/shared/widgets/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class PatientsTable extends ConsumerWidget {
@@ -20,8 +20,8 @@ class PatientsTable extends ConsumerWidget {
     return Expanded(
       child: ShadCard(
         padding: EdgeInsets.zero,
-        child: TooltipVisibility(
-          visible: false,
+        child: MaterialUiScope(
+          showTooltips: false,
           child: PaginatedDataTable2(
             controller: paginatorController,
             wrapInCard: false,

@@ -6,39 +6,30 @@ part 'patient_model.g.dart';
 @freezed
 @JsonSerializable()
 class PatientModel with _$PatientModel {
-  @override
   @JsonKey(name: 'ID PACIENTE', includeFromJson: true, includeToJson: true)
   final int id;
-  @override
   @JsonKey(name: 'SUCURSAL', includeFromJson: true, includeToJson: true)
   final String branch;
-  @override
   @JsonKey(
     name: 'FECHA DE REGISTRO',
     includeFromJson: true,
     includeToJson: true,
   )
   final String registerDate;
-  @override
   @JsonKey(name: 'NOMBRE COMPLETO', includeFromJson: true, includeToJson: true)
   final String name;
-  @override
   @JsonKey(
     name: 'FECHA DE NACIMIENTO',
     includeFromJson: true,
     includeToJson: true,
   )
   final String birthDate;
-  @override
   @JsonKey(name: 'TELEFONO CEL', includeFromJson: true, includeToJson: true)
   final String phone;
-  @override
   @JsonKey(name: 'OBSERVACIONES', includeFromJson: true, includeToJson: true)
   final String observations;
-  @override
   @JsonKey(name: 'GENERO', includeFromJson: true, includeToJson: true)
   final String gender;
-  @override
   @JsonKey(
     name: 'fecha_registro_actualizada',
     includeFromJson: true,
