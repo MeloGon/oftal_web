@@ -11,7 +11,6 @@ export 'app_spinner.dart';
 export 'loading_dialog.dart';
 export 'loading_overlay.dart';
 export 'data_col_header.dart';
-export 'material_ui_scope.dart';
 export 'empty_state.dart';
 export 'field_chip.dart';
 export 'list_pagination_bar.dart';
