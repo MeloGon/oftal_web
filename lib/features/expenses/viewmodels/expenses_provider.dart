@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:oftal_web/core/data/providers/infrastructure_providers.dart';
 import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/features/expenses/viewmodels/expenses_state.dart';
@@ -21,9 +22,12 @@ Future<Map<String, double>> expensesSummary(Ref ref) async {
 
 @Riverpod(keepAlive: true)
 class Expenses extends _$Expenses {
+  final searchController = TextEditingController();
+
   @override
   ExpensesState build() {
     Future.microtask(_init);
+    ref.onDispose(searchController.dispose);
     return const ExpensesState();
   }
 
@@ -195,6 +199,8 @@ class Expenses extends _$Expenses {
     getExpenses();
   }
 
+  void search() => setSearchQuery(searchController.text);
+
   void setBranchFilter(String? branch) {
     state = state.copyWith(filterBranch: branch, offset: 0);
     getExpenses();
@@ -206,6 +212,7 @@ class Expenses extends _$Expenses {
   }
 
   void clearFilters() {
+    searchController.clear();
     state = state.copyWith(
       searchQuery: '',
       filterBranch: null,

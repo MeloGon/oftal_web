@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/enums/enums.dart';
@@ -23,21 +21,6 @@ class ExpensesView extends ConsumerStatefulWidget {
 }
 
 class _ExpensesViewState extends ConsumerState<ExpensesView> {
-  Timer? _searchDebounce;
-
-  @override
-  void dispose() {
-    _searchDebounce?.cancel();
-    super.dispose();
-  }
-
-  void _onSearchChanged(String value) {
-    _searchDebounce?.cancel();
-    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
-      ref.read(expensesProvider.notifier).setSearchQuery(value);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(expensesProvider);
@@ -130,10 +113,7 @@ class _ExpensesViewState extends ConsumerState<ExpensesView> {
           ),
 
           // ─── Filters ──────────────────────────────────────────
-          ExpenseFilterBar(
-            state: state,
-            onSearchChanged: _onSearchChanged,
-          ),
+          ExpenseFilterBar(state: state),
 
           // ─── List ─────────────────────────────────────────────
           Expanded(

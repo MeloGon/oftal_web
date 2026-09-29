@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:oftal_web/shared/widgets/loading_dialog.dart';
 
 extension LoadingListener on WidgetRef {
@@ -17,7 +16,7 @@ extension LoadingListener on WidgetRef {
       }
       if (!next && (previous ?? false)) {
         if (context.mounted) {
-          context.pop();
+          Navigator.of(context, rootNavigator: true).pop();
           onHidden?.call();
         }
       }

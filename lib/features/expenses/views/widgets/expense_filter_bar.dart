@@ -11,11 +11,9 @@ class ExpenseFilterBar extends ConsumerWidget {
   const ExpenseFilterBar({
     super.key,
     required this.state,
-    required this.onSearchChanged,
   });
 
   final ExpensesState state;
-  final ValueChanged<String> onSearchChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,10 +29,23 @@ class ExpenseFilterBar extends ConsumerWidget {
           SizedBox(
             width: 300,
             child: ShadInput(
+              controller: notifier.searchController,
               placeholder: const Text('Buscar por descripción o comprobante'),
               leading:
                   const Icon(Icons.search, size: 14, color: AppColors.zinc500),
-              onChanged: onSearchChanged,
+              onSubmitted: (_) => notifier.search(),
+              trailing: state.searchQuery.isEmpty
+                  ? null
+                  : ShadButton.ghost(
+                      height: 28,
+                      width: 28,
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        notifier.searchController.clear();
+                        notifier.search();
+                      },
+                      child: const Icon(Icons.close, size: 14),
+                    ),
             ),
           ),
           SizedBox(
