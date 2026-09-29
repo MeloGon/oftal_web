@@ -430,6 +430,7 @@ class _FieldGrid extends StatelessWidget {
           fields.map((f) {
             return Row(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 4,
               children: [
                 Text(
@@ -440,11 +441,13 @@ class _FieldGrid extends StatelessWidget {
                     color: AppColors.zinc600,
                   ),
                 ),
-                Text(
-                  f.value,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.zinc900,
+                Flexible(
+                  child: Text(
+                    f.value,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.zinc900,
+                    ),
                   ),
                 ),
               ],
