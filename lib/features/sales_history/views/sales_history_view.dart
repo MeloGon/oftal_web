@@ -32,11 +32,21 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
 
   @override
   Widget build(BuildContext context) {
-    final salesState = ref.watch(salesHistoryProvider);
     final salesNotifier = ref.read(salesHistoryProvider.notifier);
+    final sales = ref.watch(salesHistoryProvider.select((s) => s.sales));
+    final pageNumber = ref.watch(
+      salesHistoryProvider.select((s) => s.pageNumber),
+    );
+    final canPrev = ref.watch(
+      salesHistoryProvider.select((s) => s.offset > 0 && !s.isLoading),
+    );
+    final canNext = ref.watch(
+      salesHistoryProvider.select((s) => s.hasMore && !s.isLoading),
+    );
     final changeDateEnabled = ref.watch(
       appFeaturesProvider.select((s) => s.changeDateEnabled),
     );
+    final showProgressBar = context.width >= 820;
 
     ref.listenLoading(
       salesHistoryProvider.select((s) => s.isLoading),
@@ -77,8 +87,7 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
               const Expanded(child: SalesHistoryPageHeader()),
               ShadButton.outline(
                 size: ShadButtonSize.sm,
-                onPressed:
-                    () => salesNotifier.exportPatientsToCsv(salesState.sales),
+                onPressed: () => salesNotifier.exportPatientsToCsv(sales),
                 child: const Row(
                   spacing: 6,
                   mainAxisSize: MainAxisSize.min,
@@ -105,21 +114,22 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
           // ─── List ─────────────────────────────────────────
           Expanded(
             child: PagedListCard<SalesModel>(
-              items: salesState.sales,
+              items: sales,
               emptyLabel: 'Sin ventas',
               emptyIcon: Icons.point_of_sale_outlined,
               itemBuilder: (_, sale) => SaleHistoryTile(
                 sale: sale,
                 changeDateEnabled: changeDateEnabled,
+                showProgressBar: showProgressBar,
               ),
             ),
           ),
 
           // ─── Pagination ───────────────────────────────────
           ListPaginationBar(
-            label: 'Página ${salesState.pageNumber}',
-            canPrev: salesState.offset > 0 && !salesState.isLoading,
-            canNext: salesState.hasMore && !salesState.isLoading,
+            label: 'Página $pageNumber',
+            canPrev: canPrev,
+            canNext: canNext,
             onPrev: salesNotifier.prevPage,
             onNext: salesNotifier.nextPage,
           ),
