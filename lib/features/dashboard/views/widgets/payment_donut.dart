@@ -13,6 +13,8 @@ Color methodColor(String method) {
       return AppColors.sky;
     case 'transferencia':
       return AppColors.primary;
+    case 'yape':
+      return AppColors.yape;
     case 'nomina':
       return AppColors.warningDark;
     default:

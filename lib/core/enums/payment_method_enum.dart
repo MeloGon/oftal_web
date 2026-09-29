@@ -2,6 +2,7 @@ enum PaymentMethodEnum {
   efectivo('efectivo', 'Efectivo'),
   tarjeta('tarjeta', 'Tarjeta'),
   transferencia('transferencia', 'Transferencia'),
+  yape('yape', 'Yape'),
   nomina('nomina', 'Nómina'),
   otro('otro', 'Otro');
 

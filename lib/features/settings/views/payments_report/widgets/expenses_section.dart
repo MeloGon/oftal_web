@@ -50,6 +50,7 @@ class ExpensesTable extends StatelessWidget {
     'efectivo': 'Efectivo',
     'tarjeta': 'Tarjeta',
     'transferencia': 'Transferencia',
+    'yape': 'Yape',
     'nomina': 'Nómina',
     'otro': 'Otro',
   };
@@ -58,6 +59,7 @@ class ExpensesTable extends StatelessWidget {
     'efectivo': AppColors.efectivo,
     'tarjeta': AppColors.tarjeta,
     'transferencia': AppColors.transferencia,
+    'yape': AppColors.yape,
     'nomina': AppColors.warning,
     'otro': AppColors.gray500,
   };

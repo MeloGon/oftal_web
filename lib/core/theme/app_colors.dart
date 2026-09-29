@@ -76,6 +76,7 @@ abstract final class AppColors {
   static const efectivo = Color(0xff22C55E);
   static const tarjeta = Color(0xff3B82F6);
   static const transferencia = Color(0xff8B5CF6);
+  static const yape = Color(0xff742284);
 
   // Layout
   static const layoutBg = Color(0xffEDF1F2);

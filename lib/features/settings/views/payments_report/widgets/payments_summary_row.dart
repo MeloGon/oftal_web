@@ -31,6 +31,12 @@ class PaymentsSummaryRow extends StatelessWidget {
       color: AppColors.transferencia,
       bg: AppColors.violetBg,
     ),
+    'yape': MethodMeta(
+      label: 'Yape',
+      icon: Icons.qr_code_2_rounded,
+      color: AppColors.yape,
+      bg: AppColors.violetBg,
+    ),
     'nomina': MethodMeta(
       label: 'Nómina',
       icon: Icons.account_balance_outlined,
