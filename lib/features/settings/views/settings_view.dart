@@ -35,26 +35,6 @@ class SettingsView extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 24,
         children: [
-          // ─── Page header ─────────────────────────────────
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 4,
-            children: [
-              const Text(
-                'Configuración',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.zinc900,
-                ),
-              ),
-              Text(
-                'Gestiona el inventario y consulta los reportes',
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
-              ),
-            ],
-          ),
-
           // ─── Feature flags ───────────────────────────────
           if (isAdmin) ...[
             const Text(
