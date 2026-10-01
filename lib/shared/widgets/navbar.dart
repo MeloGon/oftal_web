@@ -15,10 +15,12 @@ class Navbar extends ConsumerWidget {
     final authState = ref.watch(authProvider);
     final navigationState = ref.watch(navigationProvider);
     final pageTitle = _pageTitle(navigationState.currentPage);
+    final pageSubtitle = _pageSubtitle(navigationState.currentPage);
+    final showSubtitle = pageSubtitle != null && size.width > 700;
 
     return Container(
       width: double.infinity,
-      height: 52,
+      height: showSubtitle ? 60 : 52,
       margin: const EdgeInsets.fromLTRB(12, 8, 12, 0),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
@@ -43,14 +45,25 @@ class Navbar extends ConsumerWidget {
             ),
           if (size.width <= 700) const SizedBox(width: 8),
 
-          // Page title
-          Text(
-            pageTitle,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: AppColors.zinc900,
-            ),
+          // Page title + description
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                pageTitle,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.zinc900,
+                ),
+              ),
+              if (showSubtitle)
+                Text(
+                  pageSubtitle,
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                ),
+            ],
           ),
 
           const Spacer(),
@@ -126,9 +139,20 @@ class Navbar extends ConsumerWidget {
     RouterName.searchPatient => 'Buscar Paciente',
     RouterName.sell => 'Nueva Venta',
     RouterName.salesHistory => 'Historial de Ventas',
+    RouterName.expenses => 'Egresos',
     RouterName.settings => 'Configuración',
     RouterName.resins => 'Inventario · Resinas',
     RouterName.mounts => 'Inventario · Monturas',
     _ => 'Dashboard',
+  };
+
+  String? _pageSubtitle(String? page) => switch (page) {
+    RouterName.addPatient => 'Registra un paciente en la red Oftal Web',
+    RouterName.searchPatient => 'Busca y gestiona los registros de pacientes',
+    RouterName.sell => 'Sigue los pasos para registrar una venta',
+    RouterName.salesHistory => 'Consulta y filtra todas las ventas registradas',
+    RouterName.expenses => 'Registra y consulta todos los gastos',
+    RouterName.settings => 'Gestiona el inventario y consulta los reportes',
+    _ => null,
   };
 }
