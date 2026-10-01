@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:oftal_web/core/enums/enums.dart';
-import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/features/expenses/viewmodels/expenses_provider.dart';
 import 'package:oftal_web/features/expenses/views/widgets/expense_category_dialog.dart';
 import 'package:oftal_web/features/expenses/views/widgets/expense_filter_bar.dart';
@@ -56,27 +55,7 @@ class _ExpensesViewState extends ConsumerState<ExpensesView> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 4,
-                  children: [
-                    const Text(
-                      'Egresos',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.zinc900,
-                      ),
-                    ),
-                    Text(
-                      'Registra y consulta todos los gastos',
-                      style:
-                          TextStyle(fontSize: 13, color: Colors.grey.shade500),
-                    ),
-                  ],
-                ),
-              ),
+              const Spacer(),
               ShadButton.outline(
                 size: ShadButtonSize.sm,
                 onPressed: () => ExpenseCategoryDialog().show(context, ref),
