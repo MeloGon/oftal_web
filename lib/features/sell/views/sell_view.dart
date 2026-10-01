@@ -5,7 +5,6 @@ import 'package:oftal_web/core/enums/enums.dart';
 import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_provider.dart';
 import 'package:oftal_web/features/sell/viewmodels/sell_state.dart';
-import 'package:oftal_web/features/sell/views/widgets/page_header.dart';
 import 'package:oftal_web/features/sell/views/widgets/patient_result_list.dart';
 import 'package:oftal_web/features/sell/views/widgets/sell_catalog_tiles.dart';
 import 'package:oftal_web/features/sell/views/widgets/sell_item_card.dart';
@@ -59,9 +58,6 @@ class _SellViewState extends ConsumerState<SellView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 20,
           children: [
-            // ─── Page header ─────────────────────────────────
-            const PageHeader(),
-
             // ─── Step 1: Patient search ───────────────────────
             StepCard(
               step: 1,

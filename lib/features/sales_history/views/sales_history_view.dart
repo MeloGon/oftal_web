@@ -6,7 +6,6 @@ import 'package:oftal_web/features/settings/viewmodels/app_features_provider.dar
 import 'package:oftal_web/features/sales_history/views/widgets/filter_history_sales.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/sale_history_tile.dart';
 import 'package:oftal_web/features/sales_history/views/widgets/sales_details_dialog.dart';
-import 'package:oftal_web/features/sales_history/views/widgets/sales_history_page_header.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
@@ -84,7 +83,7 @@ class _SalesHistoryViewState extends ConsumerState<SalesHistoryView> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Expanded(child: SalesHistoryPageHeader()),
+              const Spacer(),
               ShadButton.outline(
                 size: ShadButtonSize.sm,
                 onPressed: () => salesNotifier.exportPatientsToCsv(sales),
