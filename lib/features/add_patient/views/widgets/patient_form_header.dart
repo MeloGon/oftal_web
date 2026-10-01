@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:oftal_web/core/theme/app_colors.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class PatientFormHeader extends StatelessWidget {
@@ -18,30 +17,8 @@ class PatientFormHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isNarrow = constraints.maxWidth < 560;
-
-        final titleBlock = Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 4,
-          children: [
-            const Text(
-              'Nuevo paciente',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                color: AppColors.zinc900,
-              ),
-            ),
-            Text(
-              'Registra un paciente en la red Oftal Web',
-              style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
-            ),
-          ],
-        );
-
-        final actionButtons = Row(
-          mainAxisAlignment:
-              isNarrow ? MainAxisAlignment.end : MainAxisAlignment.start,
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
           spacing: 12,
           children: [
             ShadButton.outline(
@@ -70,22 +47,6 @@ class PatientFormHeader extends StatelessWidget {
                       ],
                     ),
             ),
-          ],
-        );
-
-        if (isNarrow) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 12,
-            children: [titleBlock, actionButtons],
-          );
-        }
-
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(child: titleBlock),
-            actionButtons,
           ],
         );
       },

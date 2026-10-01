@@ -8,7 +8,6 @@ import 'package:oftal_web/features/search_patient/views/widgets/patients_empty_s
 import 'package:oftal_web/features/search_patient/views/widgets/patient_tile.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/review_details_dialog.dart';
 import 'package:oftal_web/features/search_patient/views/widgets/search_patient_bar.dart';
-import 'package:oftal_web/features/search_patient/views/widgets/search_patient_header.dart';
 import 'package:oftal_web/shared/extensions/extensions.dart';
 import 'package:oftal_web/shared/models/shared_models.dart';
 import 'package:oftal_web/shared/widgets/widgets.dart';
@@ -75,7 +74,6 @@ class _SearchPatientViewState extends ConsumerState<SearchPatientView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 20,
         children: [
-          const SearchPatientHeader(),
           const SearchPatientBar(),
           if (searchPatientState.patients.isEmpty &&
               searchPatientState.offset == 0)
